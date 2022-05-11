@@ -1,3 +1,5 @@
+import 'dart:ui';
+
 import 'package:flutter/material.dart';
 
 class MyThemes {
@@ -20,6 +22,15 @@ class MyThemes {
       },
     ),
     secondaryHeaderColor: const Color(0xFF84826a),
+    scaffoldBackgroundColor: const Color(0xFF0e0f19),
+    appBarTheme: const AppBarTheme(
+      backgroundColor: Color(0xFF0e0f19),
+      iconTheme: IconThemeData(
+        color: Colors.white,
+        opacity: 1.0,
+      ),
+      shadowColor: Colors.transparent,
+    ),
     fontFamily: 'QuickSand',
     iconTheme: const IconThemeData(
       color: Colors.white,
@@ -27,7 +38,8 @@ class MyThemes {
     ),
     textTheme: const TextTheme(
       bodyText1: TextStyle(
-        fontWeight: FontWeight.w500,
+        fontWeight: FontWeight.w400,
+        color: Colors.white,
       ),
       bodyText2: TextStyle(
         fontWeight: FontWeight.w500,
@@ -37,6 +49,10 @@ class MyThemes {
       headline4: TextStyle(
         color: Colors.white,
         fontWeight: FontWeight.w400,
+      ),
+      headline6: TextStyle(
+        color: Colors.white,
+        fontWeight: FontWeight.w500,
       ),
     ),
   );

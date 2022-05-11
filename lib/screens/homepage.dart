@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:quicksend/screens/chat_screen.dart';
 
 class MyHomePage extends StatefulWidget {
   const MyHomePage({Key? key, required this.title}) : super(key: key);
@@ -10,11 +11,10 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  int _selectedIndex = 1;
+  int _selectedIndex = 0;
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Theme.of(context).backgroundColor,
       bottomNavigationBar: BottomNavigationBar(
         currentIndex: _selectedIndex,
         onTap: (int index) {
@@ -27,10 +27,6 @@ class _MyHomePageState extends State<MyHomePage> {
         unselectedItemColor: Colors.blueGrey,
         items: const [
           BottomNavigationBarItem(
-            icon: Icon(Icons.camera),
-            label: "Kamera",
-          ),
-          BottomNavigationBarItem(
             icon: Icon(Icons.chat),
             label: "Chats",
           ),
@@ -41,9 +37,6 @@ class _MyHomePageState extends State<MyHomePage> {
         ],
       ),
       appBar: AppBar(
-        iconTheme: Theme.of(context).iconTheme,
-        backgroundColor: Theme.of(context).backgroundColor,
-        shadowColor: Colors.transparent,
         title: Text(
           "Chats",
           style: Theme.of(context).textTheme.headline4,
@@ -58,11 +51,24 @@ class _MyHomePageState extends State<MyHomePage> {
         ],
       ),
       body: ListView.builder(
-        itemExtent: 100.0,
         itemBuilder: (context, index) => ListTile(
-          title: Text(
-            'Item: ${index + 1}',
-            style: Theme.of(context).textTheme.bodyText2,
+          title: ListTile(
+            title: Text(
+              'Benutzername: ${index + 1}',
+              style: Theme.of(context).textTheme.headline6,
+            ),
+            subtitle: Text(
+              "Last Message",
+              style: Theme.of(context).textTheme.bodyText1,
+            ),
+            onTap: () => Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) {
+                  return const ChatScreen();
+                },
+              ),
+            ),
           ),
         ),
         itemCount: 20,
