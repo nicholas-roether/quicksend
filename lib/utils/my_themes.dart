@@ -1,5 +1,3 @@
-import 'dart:ui';
-
 import 'package:flutter/material.dart';
 
 class MyThemes {
@@ -35,6 +33,13 @@ class MyThemes {
     iconTheme: const IconThemeData(
       color: Colors.white,
       opacity: 1.0,
+    ),
+    inputDecorationTheme: const InputDecorationTheme(
+      hintStyle: TextStyle(
+        fontWeight: FontWeight.w500,
+        color: Colors.grey,
+      ),
+      border: InputBorder.none,
     ),
     textTheme: const TextTheme(
       bodyText1: TextStyle(

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:quicksend/screens/chat_screen.dart';
+import 'package:quicksend/utils/user_search_delegate.dart';
 
 class MyHomePage extends StatefulWidget {
   const MyHomePage({Key? key, required this.title}) : super(key: key);
@@ -43,7 +44,8 @@ class _MyHomePageState extends State<MyHomePage> {
         ),
         actions: [
           IconButton(
-            onPressed: () {},
+            onPressed: () =>
+                showSearch(context: context, delegate: UserSearchDelegate()),
             icon: const Icon(
               Icons.search,
             ),
@@ -53,6 +55,9 @@ class _MyHomePageState extends State<MyHomePage> {
       body: ListView.builder(
         itemBuilder: (context, index) => ListTile(
           title: ListTile(
+            leading: const CircleAvatar(
+              backgroundColor: Colors.white,
+            ),
             title: Text(
               'Benutzername: ${index + 1}',
               style: Theme.of(context).textTheme.headline6,
