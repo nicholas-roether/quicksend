@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:quicksend/screens/chat_screen.dart';
+import 'package:quicksend/screens/chat_list.dart';
+import 'package:quicksend/screens/settings_screen.dart';
 import 'package:quicksend/utils/user_search_delegate.dart';
+import 'package:quicksend/widgets/custom_bottom_navbar.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({Key? key}) : super(key: key);
@@ -10,73 +12,45 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
-  int _selectedIndex = 0;
+  int selectedIndex = 0;
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      bottomNavigationBar: BottomNavigationBar(
-        currentIndex: _selectedIndex,
-        onTap: (int index) {
+      bottomNavigationBar: CustomBottomNavbar(
+        currentIndex: selectedIndex,
+        setIndex: (int index) {
           setState(() {
-            _selectedIndex = index;
+            selectedIndex = index;
           });
         },
-        backgroundColor: Theme.of(context).backgroundColor,
-        selectedItemColor: Theme.of(context).primaryColor,
-        unselectedItemColor: Colors.blueGrey,
-        items: const [
-          BottomNavigationBarItem(
-            icon: Icon(Icons.chat),
-            label: "Chats",
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.settings),
-            label: "Settings",
-          ),
-        ],
       ),
       appBar: AppBar(
         title: Text(
-          "Chats",
-          style: Theme.of(context).textTheme.headline4,
+          selectedIndex == 0 ? "Chats" : "Settings",
+          style: Theme.of(context).textTheme.headline5,
         ),
         actions: [
-          IconButton(
-            onPressed: () =>
-                showSearch(context: context, delegate: UserSearchDelegate()),
-            icon: const Icon(
-              Icons.search,
-            ),
-          ),
+          selectedIndex == 0
+              ? Padding(
+                  padding: const EdgeInsets.only(right: 8.0),
+                  child: IconButton(
+                    splashRadius: 18,
+                    iconSize: 30,
+                    onPressed: () => showSearch(
+                        context: context, delegate: UserSearchDelegate()),
+                    icon: const Icon(
+                      Icons.search,
+                    ),
+                  ),
+                )
+              : const SizedBox(
+                  height: 0,
+                  width: 0,
+                ),
         ],
       ),
-      body: ListView.builder(
-        itemBuilder: (context, index) => ListTile(
-          title: ListTile(
-            leading: const CircleAvatar(
-              backgroundColor: Colors.white,
-            ),
-            title: Text(
-              'Benutzername: ${index + 1}',
-              style: Theme.of(context).textTheme.headline6,
-            ),
-            subtitle: Text(
-              "Last Message",
-              style: Theme.of(context).textTheme.bodyText1,
-            ),
-            onTap: () => Navigator.push(
-              context,
-              MaterialPageRoute(
-                builder: (context) {
-                  return const ChatScreen();
-                },
-              ),
-            ),
-          ),
-        ),
-        itemCount: 20,
-      ),
+      body: selectedIndex == 0 ? const ChatList() : const SettingScreen(),
     );
   }
 }

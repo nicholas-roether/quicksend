@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 
 class ChatScreen extends StatefulWidget {
-  const ChatScreen({Key? key}) : super(key: key);
+  const ChatScreen({Key? key, required this.username}) : super(key: key);
+  final String username;
 
   @override
   State<ChatScreen> createState() => _ChatScreenState();
@@ -13,7 +14,7 @@ class _ChatScreenState extends State<ChatScreen> {
     return Scaffold(
       appBar: AppBar(
         title: Text(
-          "Benutzername",
+          widget.username,
           style: Theme.of(context).textTheme.bodyText1,
         ),
         centerTitle: true,
