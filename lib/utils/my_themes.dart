@@ -51,7 +51,23 @@ class MyThemes {
         //color: Color(0xFFffcb5c),
         color: Colors.white,
       ),
+      headline1: TextStyle(
+        color: Colors.white,
+        fontWeight: FontWeight.w400,
+      ),
+      headline2: TextStyle(
+        color: Colors.white,
+        fontWeight: FontWeight.w400,
+      ),
+      headline3: TextStyle(
+        color: Colors.white,
+        fontWeight: FontWeight.w400,
+      ),
       headline4: TextStyle(
+        color: Colors.white,
+        fontWeight: FontWeight.w400,
+      ),
+      headline5: TextStyle(
         color: Colors.white,
         fontWeight: FontWeight.w400,
       ),

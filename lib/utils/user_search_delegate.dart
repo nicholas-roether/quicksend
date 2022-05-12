@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
 class UserSearchDelegate extends SearchDelegate {
-  List<String> searchResults = ["Brazil", "China", "India"];
+  List<String> searchResults = ["Nicholas", "Benni", "Leo"];
 
   @override
   String? get searchFieldLabel => "Benutzername";
