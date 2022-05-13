@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:quicksend/screens/settings/user_edit_screen.dart';
 
 class SettingScreen extends StatelessWidget {
   const SettingScreen({Key? key}) : super(key: key);
@@ -8,32 +9,33 @@ class SettingScreen extends StatelessWidget {
     return SingleChildScrollView(
       child: Column(
         children: [
-          Card(
-            margin: const EdgeInsets.all(8),
-            child: Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: Row(
-                children: const [
-                  CircleAvatar(
-                    backgroundColor: Colors.black,
-                    radius: 50,
-                  ),
-                  Text(
-                    "Benutzername",
-                    style: TextStyle(
-                      color: Colors.black,
-                    ),
-                  ),
-                  Text(
-                    "Status",
-                    style: TextStyle(
-                      color: Colors.black,
-                    ),
-                  ),
-                ],
-              ),
+          ListTile(
+            onTap: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => const UserEditScreen(),
+                ),
+              );
+            },
+            title: Text(
+              "Anzeigename",
+              style: Theme.of(context).textTheme.headline6,
+            ),
+            subtitle: Text(
+              "Status",
+              style: Theme.of(context).textTheme.bodyText1,
+            ),
+            leading: const CircleAvatar(
+              backgroundColor: Colors.white,
+              radius: 30,
             ),
           ),
+          MaterialButton(
+            onPressed: () {},
+            color: Colors.red,
+            child: const Text("Ausloggen"),
+          )
         ],
       ),
     );
