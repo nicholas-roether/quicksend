@@ -1,12 +1,11 @@
 import 'package:dio/dio.dart';
-import 'package:flutter_config/flutter_config.dart';
 import 'package:quicksend/client/auth.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 import 'db.dart';
 
 class _QuicksendClient {
-  static final _dio =
-      Dio(BaseOptions(baseUrl: FlutterConfig.get("SERVER_URI")));
+  static final _dio = Dio(BaseOptions(baseUrl: dotenv.get("BACKEND_URI")));
   static final _db = ClientDB();
   static final _auth = AuthManager(_db, _dio);
 
