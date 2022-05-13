@@ -1,9 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_config/flutter_config.dart';
 import 'package:quicksend/screens/homepage.dart';
 import 'package:quicksend/screens/settings_screen.dart';
 import 'package:quicksend/utils/my_themes.dart';
 
-void main() {
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await FlutterConfig.loadEnvVariables();
   runApp(const MyApp());
 }
 
