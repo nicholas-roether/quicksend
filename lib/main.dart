@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:quicksend/screens/homepage.dart';
-import 'package:quicksend/screens/settings_screen.dart';
 import 'package:quicksend/utils/my_themes.dart';
 
 void main() {
@@ -13,12 +12,9 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Flutter Demo',
+      title: 'Quicksend',
       debugShowCheckedModeBanner: false,
       theme: MyThemes.mainTheme,
-      routes: {
-        "/settings": (context) => const SettingScreen(),
-      },
       home: const HomePage(),
     );
   }

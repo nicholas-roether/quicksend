@@ -19,7 +19,37 @@ class _ChatScreenState extends State<ChatScreen> {
         ),
         centerTitle: true,
       ),
-      body: Container(),
+      body: SizedBox(
+        //height: MediaQuery.of(context).size.height,
+        width: MediaQuery.of(context).size.width,
+        child: Stack(
+          children: [
+            SingleChildScrollView(
+              child: Column(
+                children: const [],
+              ),
+            ),
+            Align(
+              alignment: Alignment.bottomCenter,
+              child: Row(
+                children: [
+                  SizedBox(
+                    width: MediaQuery.of(context).size.width - 55,
+                    height: 40,
+                    child: const Card(child: TextField()),
+                  ),
+                  InkWell(
+                    onTap: () {},
+                    child: const CircleAvatar(
+                      radius: 15,
+                    ),
+                  )
+                ],
+              ),
+            )
+          ],
+        ),
+      ),
     );
   }
 }
