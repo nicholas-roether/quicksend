@@ -9,6 +9,7 @@ class ChatScreen extends StatefulWidget {
 }
 
 class _ChatScreenState extends State<ChatScreen> {
+  final double _radius = 15;
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -32,6 +33,7 @@ class _ChatScreenState extends State<ChatScreen> {
             Align(
               alignment: Alignment.bottomCenter,
               child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 children: [
                   SizedBox(
                     width: MediaQuery.of(context).size.width - 55,
@@ -39,9 +41,11 @@ class _ChatScreenState extends State<ChatScreen> {
                     child: const Card(child: TextField()),
                   ),
                   InkWell(
+                    splashColor: Colors.transparent,
+                    borderRadius: BorderRadius.circular(_radius),
                     onTap: () {},
-                    child: const CircleAvatar(
-                      radius: 15,
+                    child: CircleAvatar(
+                      radius: _radius,
                     ),
                   )
                 ],

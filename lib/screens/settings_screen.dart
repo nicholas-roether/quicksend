@@ -9,6 +9,9 @@ class SettingScreen extends StatelessWidget {
     return SingleChildScrollView(
       child: Column(
         children: [
+          const SizedBox(
+            height: 50,
+          ),
           ListTile(
             onTap: () {
               Navigator.push(
@@ -31,11 +34,27 @@ class SettingScreen extends StatelessWidget {
               radius: 30,
             ),
           ),
-          MaterialButton(
-            onPressed: () {},
-            color: Colors.red,
-            child: const Text("Ausloggen"),
-          )
+          const SizedBox(
+            height: 20,
+          ),
+          ListTile(
+            onTap: () {},
+            title: Text(
+              "Benutzerverwaltung",
+              style: Theme.of(context).textTheme.headline6,
+            ),
+            subtitle: Text(
+              "Aktuell angemeldete Benutzer: ",
+              style: Theme.of(context).textTheme.bodyText1,
+            ),
+          ),
+          ListTile(
+            onTap: () {},
+            title: Text(
+              "About",
+              style: Theme.of(context).textTheme.headline6,
+            ),
+          ),
         ],
       ),
     );
