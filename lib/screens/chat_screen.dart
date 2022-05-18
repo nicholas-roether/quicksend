@@ -41,7 +41,6 @@ class _ChatScreenState extends State<ChatScreen> {
                     child: const Card(child: TextField()),
                   ),
                   InkWell(
-                    splashColor: Colors.transparent,
                     borderRadius: BorderRadius.circular(_radius),
                     onTap: () {},
                     child: CircleAvatar(

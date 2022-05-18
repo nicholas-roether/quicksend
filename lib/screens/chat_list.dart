@@ -8,9 +8,7 @@ class ChatList extends StatelessWidget {
   Widget build(BuildContext context) {
     return ListView.builder(
       itemBuilder: (context, index) => ListTile(
-        leading: const CircleAvatar(
-          backgroundColor: Colors.white,
-        ),
+        leading: const CircleAvatar(),
         title: Text(
           'Benutzername: ${index + 1}',
           style: Theme.of(context).textTheme.headline6,
