@@ -30,7 +30,6 @@ class SettingScreen extends StatelessWidget {
               style: Theme.of(context).textTheme.bodyText1,
             ),
             leading: const CircleAvatar(
-              backgroundColor: Colors.white,
               radius: 30,
             ),
           ),
