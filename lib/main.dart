@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:quicksend/client/quicksend_client.dart';
 import 'package:quicksend/screens/homepage.dart';
 import 'package:quicksend/utils/my_themes.dart';
 
 void main() async {
   await dotenv.load();
+  await quicksendClient.init();
   runApp(const MyApp());
 }
 
