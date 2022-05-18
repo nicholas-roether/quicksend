@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:quicksend/client/quicksend_client.dart';
 import 'package:quicksend/screens/homepage.dart';
+import 'package:quicksend/screens/login_screen.dart';
 import 'package:quicksend/utils/my_themes.dart';
 
 void main() async {
@@ -20,7 +21,7 @@ class MyApp extends StatelessWidget {
       title: 'Quicksend',
       debugShowCheckedModeBanner: false,
       theme: MyThemes.mainTheme,
-      home: const HomePage(),
+      home: const LoginScreen(),
     );
   }
 }
