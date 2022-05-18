@@ -7,6 +7,7 @@ import 'package:quicksend/utils/my_themes.dart';
 void main() async {
   await dotenv.load();
   await quicksendClient.init();
+
   runApp(const MyApp());
 }
 

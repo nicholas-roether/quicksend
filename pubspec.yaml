@@ -73,6 +73,9 @@ flutter:
     - assets/img/icon-transparent.png
     - assets/img/wallpaper1.jpg
     - assets/img/wallpaper2.png
+    - packages/fast_rsa/web/assets/worker.js
+    - packages/fast_rsa/web/assets/wasm_exec.js
+    - packages/fast_rsa/web/assets/rsa.wasm
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware.

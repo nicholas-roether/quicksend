@@ -6,7 +6,8 @@ import 'db.dart';
 
 class _QuicksendClient extends Initialized<_QuicksendClient> {
   final _db = ClientDB();
-  late final _loginManager = LoginManager(_db);
+  final _requestManager = RequestManager();
+  late final _loginManager = LoginManager(_db, _requestManager);
 
   @override
   Future<void> onInit() async {
@@ -27,7 +28,7 @@ class _QuicksendClient extends Initialized<_QuicksendClient> {
     String? display,
   ) async {
     assertInit();
-    await RequestManager.createUser(username, password, display);
+    await _requestManager.createUser(username, password, display);
   }
 
   /// Returns `true` if this device is logged into an account.
@@ -39,8 +40,8 @@ class _QuicksendClient extends Initialized<_QuicksendClient> {
   /// Registers this device to an account and logs it in. For this it is
   /// necessary to not only provide the account [username] and [password], but
   /// also a name for this device, [deviceName], that is unique among all
-  /// devices registered to this account. Throws a [RequestException] if the
-  /// login attempt fails.
+  /// devices registered to this account. Does nothing if this device is
+  /// already logged in. Throws a [RequestException] if the login attempt fails.
   ///
   /// Note that this function generates RSA keypairs for this device, and can
   /// therefore take quite a long time to execute.
@@ -69,7 +70,7 @@ class _QuicksendClient extends Initialized<_QuicksendClient> {
     assertInit();
     _loginManager.assertLoggedIn();
     SignatureAuthenticator auth = await _loginManager.getAuthenticator();
-    return await RequestManager.getUserInfo(auth);
+    return await _requestManager.getUserInfo(auth);
   }
 }
 

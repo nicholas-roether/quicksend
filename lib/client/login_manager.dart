@@ -18,9 +18,10 @@ class LoginStateException implements Exception {
 
 class LoginManager extends Initialized<LoginManager> {
   final ClientDB _db;
+  final RequestManager _requestManager;
   bool _isLoggedIn = false;
 
-  LoginManager(this._db);
+  LoginManager(this._db, this._requestManager);
 
   Future<void> logIn(
     String deviceName,
@@ -28,6 +29,7 @@ class LoginManager extends Initialized<LoginManager> {
     String password,
   ) async {
     assertInit();
+    if (_isLoggedIn) return;
     final basicAuth = BasicAuthenticator(username, password);
     final keypairs = await Future.wait([
       CryptoUtils.generateKeypair(),
@@ -36,7 +38,7 @@ class LoginManager extends Initialized<LoginManager> {
     final sigKeypair = keypairs[0];
     final encKeypair = keypairs[1];
 
-    final deviceID = await RequestManager.addDevice(
+    final deviceID = await _requestManager.addDevice(
       basicAuth,
       deviceName,
       1,
@@ -55,7 +57,7 @@ class LoginManager extends Initialized<LoginManager> {
     assertLoggedIn();
     final SignatureAuthenticator auth = await getAuthenticator();
     final String deviceID = _db.getDeviceID() as String;
-    await RequestManager.removeDevice(auth, deviceID);
+    await _requestManager.removeDevice(auth, deviceID);
     _db.setDeviceID(null);
     await _db.setSignatureKey(null);
     await _db.setEncryptionKey(null);

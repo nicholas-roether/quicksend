@@ -1,17 +1,11 @@
 import 'dart:convert';
 
 import 'package:dio/dio.dart' as dio;
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:quicksend/client/crypto_utils.dart';
 import 'package:intl/intl.dart';
 
-class User {
-  final String username;
-  final String display;
-
-  const User(this.username, this.display);
-}
-
-final isoDateFormat = DateFormat("yyyy-MM-ddThh:mm:ss.SSSZ");
+final isoDateFormat = DateFormat("yyyy-MM-ddThh:mm:ss.SSS'Z'");
 final Codec<String, String> strBase64 = utf8.fuse(base64);
 
 abstract class Authenticator {
@@ -28,7 +22,7 @@ class BasicAuthenticator extends Authenticator {
 
   @override
   Future<void> authenticate(String target, dio.Options options) async {
-    final token = strBase64.encode("$_username:$_password}");
+    final token = strBase64.encode("$_username:$_password");
     options.headers ??= {};
     options.headers?["Authorization"] = "Basic $token";
   }
@@ -44,13 +38,14 @@ class SignatureAuthenticator extends Authenticator {
   Future<void> authenticate(String target, dio.Options options) async {
     final dateStr = _getDateString();
     assert(options.method != null);
+    final methodStr = (options.method as String).toLowerCase();
     final signatureStr =
-        "(request-target): ${options.method} $target\nx-date: $dateStr\n";
+        "(request-target): $methodStr $target\nx-date: $dateStr\n";
     final signature = await CryptoUtils.sign(signatureStr, _key);
     options.headers ??= {};
     options.headers?["X-Date"] = dateStr;
     options.headers?["Authorization"] =
-        'Signature keyId="$_deviceID",signature"$signature",headers="(request-target) x-date';
+        'Signature keyId="$_deviceID",signature="$signature",headers="(request-target) x-date"';
   }
 
   String _getDateString() {
@@ -66,6 +61,10 @@ class UserInfo {
 
   const UserInfo(this.id, this.username, this.display);
 
+  /// Returns the name that should be displayed for this user.
+  ///
+  /// Will return the display name if this user has one, and their username
+  /// otherwise.
   String getName() {
     return display ?? username;
   }
@@ -88,14 +87,22 @@ class RequestException implements Exception {
 
   @override
   String toString() {
-    return "Error $status: $message";
+    return "[$status] $message";
   }
 }
 
 class RequestManager {
-  static final _dio = dio.Dio();
+  final _dio = dio.Dio();
 
-  static Future<String> createUser(
+  RequestManager() {
+    final backendUri = dotenv.env["BACKEND_URI"];
+    assert(backendUri != null, "A URI to the backend server must be provided");
+    _dio.options.baseUrl = backendUri as String;
+    _dio.options.headers["Accept"] = "application/json";
+    _dio.options.validateStatus = (status) => true;
+  }
+
+  Future<String> createUser(
     String username,
     String password,
     String? display,
@@ -105,16 +112,16 @@ class RequestManager {
       "password": password,
       "display": display
     };
-    final res = await _request("/user/create", body: body);
+    final res = await _request("POST", "/user/create", body: body);
     return res["id"];
   }
 
-  static Future<UserInfo> getUserInfo(SignatureAuthenticator auth) async {
-    final res = await _request("/user/info", auth: auth);
+  Future<UserInfo> getUserInfo(SignatureAuthenticator auth) async {
+    final res = await _request("GET", "/user/info", auth: auth);
     return UserInfo(res["id"], res["username"], res["display"]);
   }
 
-  static Future<String> addDevice(
+  Future<String> addDevice(
     BasicAuthenticator auth,
     String name,
     int type,
@@ -127,19 +134,17 @@ class RequestManager {
       "signaturePublicKey": signatureKey,
       "encryptionPublicKey": encryptionKey
     };
-    final deviceID = await _request("/devices/add", auth: auth, body: body);
-    return deviceID;
+    final res = await _request("POST", "/devices/add", auth: auth, body: body);
+    return res["id"];
   }
 
-  static Future<void> removeDevice(
-      SignatureAuthenticator auth, String id) async {
+  Future<void> removeDevice(SignatureAuthenticator auth, String id) async {
     final body = {"id": id};
-    await _request("/devices/remove", auth: auth, body: body);
+    await _request("POST", "/devices/remove", auth: auth, body: body);
   }
 
-  static Future<List<DeviceInfo>> listDevices(
-      SignatureAuthenticator auth) async {
-    final res = await _request("/devices/list", auth: auth);
+  Future<List<DeviceInfo>> listDevices(SignatureAuthenticator auth) async {
+    final res = await _request("GET", "/devices/list", auth: auth);
     assert(res is List<dynamic>);
     return List.from((res as List<dynamic>).map(
       (e) => DeviceInfo(
@@ -151,22 +156,24 @@ class RequestManager {
     ));
   }
 
-  static Future<dynamic> _request(
+  Future<dynamic> _request(
+    String method,
     String target, {
     Authenticator? auth,
     dynamic body,
     dio.Options? options,
   }) async {
     options ??= dio.Options();
-    auth?.authenticate(target, options);
+    options.method = method;
+    await auth?.authenticate(target, options);
     final response = await _dio.request(target, data: body, options: options);
     if (response.statusCode == null) throw Exception("Something broke :(");
-    if ((response.statusCode as int) / 100 != 2) {
+    if ((response.statusCode as int) ~/ 100 != 2) {
       String? message = response.data["error"]?.toString();
-      message ??= "No error message provided";
+      message ??= "(No error message provided)";
       throw RequestException(response.statusCode ?? 0, message);
     }
-    final resBody = response.data["data"];
+    final dynamic resBody = response.data["data"];
     return resBody;
   }
 }
