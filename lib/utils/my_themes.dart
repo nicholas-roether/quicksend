@@ -31,7 +31,6 @@ class MyThemes {
       hintStyle: TextStyle(
         fontWeight: FontWeight.w500,
       ),
-      border: InputBorder.none,
     ),
     textTheme: const TextTheme(
       bodyText1: TextStyle(
