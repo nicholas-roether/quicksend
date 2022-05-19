@@ -13,7 +13,7 @@ class CustomTextFormField extends StatelessWidget {
   Widget build(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.only(
-        bottom: 10,
+        bottom: 20,
       ),
       child: TextFormField(
         decoration: InputDecoration(
