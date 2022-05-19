@@ -57,9 +57,9 @@ class ChatManager {
     return Chat(_db, user);
   }
 
-  Future<Chat?> createChat(String userId) async {
+  Future<Chat> createChat(String userId) async {
     final UserInfo? user = await _requestManager.getUserInfoFor(userId);
-    if (user == null) return null;
+    if (user == null) throw Exception("User does not exist");
     await _db.createChat(userId);
     return Chat(_db, user);
   }
