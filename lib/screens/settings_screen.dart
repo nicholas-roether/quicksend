@@ -22,7 +22,7 @@ class SettingScreen extends StatelessWidget {
               );
             },
             title: Text(
-              "Anzeigename",
+              "Display Name",
               style: Theme.of(context).textTheme.headline6,
             ),
             subtitle: Text(
@@ -39,11 +39,11 @@ class SettingScreen extends StatelessWidget {
           ListTile(
             onTap: () {},
             title: Text(
-              "Benutzerverwaltung",
+              "Account Settings",
               style: Theme.of(context).textTheme.headline6,
             ),
             subtitle: Text(
-              "Aktuell angemeldete Benutzer: ",
+              "Currently Registered devices: ",
               style: Theme.of(context).textTheme.bodyText1,
             ),
           ),

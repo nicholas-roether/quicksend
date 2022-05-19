@@ -10,7 +10,7 @@ class ChatList extends StatelessWidget {
       itemBuilder: (context, index) => ListTile(
         leading: const CircleAvatar(),
         title: Text(
-          'Benutzername: ${index + 1}',
+          'Username: ${index + 1}',
           style: Theme.of(context).textTheme.headline6,
         ),
         subtitle: Text(
@@ -22,7 +22,7 @@ class ChatList extends StatelessWidget {
           MaterialPageRoute(
             builder: (context) {
               return ChatScreen(
-                username: "Benutzername: ${index + 1}",
+                username: "Username: ${index + 1}",
               );
             },
           ),
