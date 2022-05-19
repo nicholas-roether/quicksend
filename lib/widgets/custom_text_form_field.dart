@@ -11,20 +11,25 @@ class CustomTextFormField extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return TextFormField(
-      decoration: InputDecoration(
-        hintText: hintInfo,
-        labelText: labelInfo,
-        border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(10),
-        ),
+    return Padding(
+      padding: const EdgeInsets.only(
+        bottom: 10,
       ),
-      validator: (value) {
-        if (value != null && value.isEmpty) {
-          return "Please enter some textahh";
-        }
-        return null;
-      },
+      child: TextFormField(
+        decoration: InputDecoration(
+          hintText: hintInfo,
+          labelText: labelInfo,
+          border: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(10),
+          ),
+        ),
+        validator: (value) {
+          if (value != null && value.isEmpty) {
+            return "Please enter some textahh";
+          }
+          return null;
+        },
+      ),
     );
   }
 }
