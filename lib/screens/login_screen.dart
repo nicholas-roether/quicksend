@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+import '../widgets/custom_text_form_field.dart';
+
 enum LoginMode { login, register }
 
 class LoginScreen extends StatefulWidget {
@@ -28,60 +30,33 @@ class _LoginScreenState extends State<LoginScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Padding(
-        padding: const EdgeInsets.symmetric(
-          horizontal: 15.0,
-          vertical: 100,
+      appBar: AppBar(
+        title: Text(
+          mode == LoginMode.login ? "Login" : "Register",
+          style: Theme.of(context).textTheme.headline5,
         ),
-        child: Form(
-          key: _formKey,
+      ),
+      body: Form(
+        key: _formKey,
+        child: Padding(
+          padding: const EdgeInsets.symmetric(
+            horizontal: 15.0,
+          ),
           child: Column(
-            mainAxisAlignment: MainAxisAlignment.start,
+            mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Padding(
-                padding: const EdgeInsets.only(bottom: 20.0),
-                child: Text(
-                  mode == LoginMode.login ? "Login" : "Register",
-                  style: Theme.of(context).textTheme.headline4,
-                ),
+              const CustomTextFormField(
+                hintInfo: "Enter a Username",
+                labelInfo: "Username",
               ),
-              TextFormField(
-                decoration: const InputDecoration(
-                  hintText: "Enter a Username",
-                  labelText: "Username",
-                ),
-                validator: (value) {
-                  if (value != null && value.isEmpty) {
-                    return "Please enter some textahh";
-                  }
-                  return null;
-                },
-              ),
-              TextFormField(
-                decoration: const InputDecoration(
-                  hintText: "Enter a Password",
-                  labelText: "Password",
-                ),
-                validator: (value) {
-                  if (value != null && value.isEmpty) {
-                    return "Please enter some textahh";
-                  }
-                  return null;
-                },
+              const CustomTextFormField(
+                hintInfo: "Enter a password",
+                labelInfo: "Password",
               ),
               mode == LoginMode.register
-                  ? TextFormField(
-                      decoration: const InputDecoration(
-                          border: InputBorder.none,
-                          hintText: "Enter a display Name",
-                          labelText: "Display Name"),
-                      validator: (value) {
-                        if (value != null && value.isEmpty) {
-                          return "Please enter some textahh";
-                        }
-                        return null;
-                      },
-                    )
+                  ? const CustomTextFormField(
+                      hintInfo: "Enter a Display Name",
+                      labelInfo: "Display Name")
                   : const SizedBox(
                       height: 0,
                     ),
