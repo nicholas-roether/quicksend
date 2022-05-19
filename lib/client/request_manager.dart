@@ -79,6 +79,22 @@ class DeviceInfo {
   const DeviceInfo(this.id, this.name, this.type, this.lastActivity);
 }
 
+class IncomingMessage {
+  final String fromUser;
+  final DateTime sentAt;
+  final Map<String, String> headers;
+  final String key;
+  final String body;
+
+  const IncomingMessage(
+    this.fromUser,
+    this.sentAt,
+    this.headers,
+    this.key,
+    this.body,
+  );
+}
+
 class RequestException implements Exception {
   int status;
   String message;
@@ -125,6 +141,57 @@ class RequestManager {
     final res = await _request("GET", "/user/info/$id");
     if (res == null) return null;
     return UserInfo(res["id"], res["username"], res["display"]);
+  }
+
+  Future<List<IncomingMessage>> pollMessages(
+    SignatureAuthenticator auth,
+  ) async {
+    final List<dynamic> res = await _request(
+      "GET",
+      "/messages/poll",
+      auth: auth,
+    );
+    return List.from(res.map((msg) => IncomingMessage(
+          msg["fromUser"],
+          DateTime.parse(msg["sentAt"]),
+          msg["headers"],
+          msg["key"],
+          msg["body"],
+        )));
+  }
+
+  Future<Map<String, String>> getMessageTargets(
+    SignatureAuthenticator auth,
+    String userID,
+  ) async {
+    return await _request("GET", "/messages/targets/$userID", auth: auth);
+  }
+
+  Future<void> sendMessage(
+    SignatureAuthenticator auth,
+    String to,
+    DateTime sentAt,
+    Map<String, String> headers,
+    Map<String, String> keys,
+    String body,
+  ) async {
+    final reqBody = {
+      "to": to,
+      "sentAt": sentAt.toUtc().toIso8601String(),
+      "headers": headers,
+      "keys": keys,
+      "body": body
+    };
+    await _request(
+      "POST",
+      "/messages/send",
+      auth: auth,
+      body: reqBody,
+    );
+  }
+
+  Future<void> clearMessages(SignatureAuthenticator auth) async {
+    await _request("POST", "/messages/clear", auth: auth);
   }
 
   Future<String> addDevice(
