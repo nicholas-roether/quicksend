@@ -100,12 +100,12 @@ flutter:
   #       - asset: fonts/TrajanPro_Bold.ttf
   #         weight: 700
   fonts:
-    - family: QuickSand
+    - family: Quicksand
       fonts:
-        - asset: assets/fonts/QuickSand-Regular.ttf
-        - asset: assets/fonts/QuickSand-Medium.ttf
-        - asset: assets/fonts/QuickSand-Bold.ttf
-        - asset: assets/fonts/QuickSand-Light.ttf
+        - asset: assets/fonts/Quicksand-Regular.ttf
+        - asset: assets/fonts/Quicksand-Medium.ttf
+        - asset: assets/fonts/Quicksand-Bold.ttf
+        - asset: assets/fonts/Quicksand-Light.ttf
   #
   # For details regarding fonts from package dependencies,
   # see https://flutter.dev/custom-fonts/#from-packages
