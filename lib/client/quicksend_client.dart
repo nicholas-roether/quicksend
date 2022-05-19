@@ -72,6 +72,14 @@ class _QuicksendClient extends Initialized<_QuicksendClient> {
     SignatureAuthenticator auth = await _loginManager.getAuthenticator();
     return await _requestManager.getUserInfo(auth);
   }
+
+  /// Returns the user info for the user with the given ID. Returns null if the
+  /// User with the ID does not exist. Throws a [RequestException] if the
+  /// user info request fails.
+  Future<UserInfo?> getUserInfoFor(String id) async {
+    assertInit();
+    return await _requestManager.getUserInfoFor(id);
+  }
 }
 
 /// The API used for interaction with the quicksend system.

@@ -121,6 +121,12 @@ class RequestManager {
     return UserInfo(res["id"], res["username"], res["display"]);
   }
 
+  Future<UserInfo?> getUserInfoFor(String id) async {
+    final res = await _request("GET", "/user/info/$id");
+    if (res == null) return null;
+    return UserInfo(res["id"], res["username"], res["display"]);
+  }
+
   Future<String> addDevice(
     BasicAuthenticator auth,
     String name,
