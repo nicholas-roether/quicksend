@@ -1,21 +1,28 @@
 import 'package:flutter/material.dart';
 
 class CustomTextFormField extends StatelessWidget {
-  const CustomTextFormField({
-    Key? key,
-    required this.hintInfo,
-    required this.labelInfo,
-  }) : super(key: key);
+  const CustomTextFormField(
+      {Key? key,
+      required this.hintInfo,
+      required this.labelInfo,
+      this.textController,
+      this.inputType,
+      required this.obscure})
+      : super(key: key);
   final String hintInfo;
   final String labelInfo;
+  final TextEditingController? textController;
+  final TextInputType? inputType;
+  final bool obscure;
 
   @override
   Widget build(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.only(
-        bottom: 10,
+        bottom: 20,
       ),
       child: TextFormField(
+        controller: textController,
         decoration: InputDecoration(
           hintText: hintInfo,
           labelText: labelInfo,
@@ -25,10 +32,13 @@ class CustomTextFormField extends StatelessWidget {
         ),
         validator: (value) {
           if (value != null && value.isEmpty) {
-            return "Please enter some textahh";
+            return "Please fill in $labelInfo";
+          } else {
+            return null;
           }
-          return null;
         },
+        keyboardType: inputType,
+        obscureText: obscure,
       ),
     );
   }

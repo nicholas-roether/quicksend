@@ -21,7 +21,10 @@ class MyApp extends StatelessWidget {
       title: 'Quicksend',
       debugShowCheckedModeBanner: false,
       theme: MyThemes.mainTheme,
-      home: const LoginScreen(),
+      routes: {
+        "/": (context) => const LoginScreen(),
+        "/home": (context) => const HomePage(),
+      },
     );
   }
 }
