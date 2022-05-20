@@ -61,6 +61,7 @@ class LoginManager extends Initialized<LoginManager> {
     _db.setDeviceID(null);
     await _db.setSignatureKey(null);
     await _db.setEncryptionKey(null);
+    _isLoggedIn = false;
   }
 
   bool isLoggedIn() {
