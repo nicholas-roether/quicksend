@@ -107,8 +107,19 @@ class RequestException implements Exception {
   }
 }
 
+class _CachedValue<T> {
+  T? chached;
+
+  Future<T> get(Future<T> Function() getter) {
+    if (chached != null) return Future.value(chached);
+    return getter();
+  }
+}
+
 class RequestManager {
   final _dio = dio.Dio();
+
+  final _userInfo = _CachedValue<UserInfo>();
 
   RequestManager() {
     final backendUri = dotenv.env["BACKEND_URI"];
@@ -133,8 +144,10 @@ class RequestManager {
   }
 
   Future<UserInfo> getUserInfo(SignatureAuthenticator auth) async {
-    final res = await _request("GET", "/user/info", auth: auth);
-    return UserInfo(res["id"], res["username"], res["display"]);
+    return _userInfo.get(() async {
+      final res = await _request("GET", "/user/info", auth: auth);
+      return UserInfo(res["id"], res["username"], res["display"]);
+    });
   }
 
   Future<UserInfo?> getUserInfoFor(String id) async {
