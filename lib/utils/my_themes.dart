@@ -64,6 +64,9 @@ class MyThemes {
       headline6: TextStyle(
         fontWeight: FontWeight.w500,
       ),
+    ).apply(
+      displayColor: Colors.white,
+      bodyColor: Colors.white,
     ),
   );
 }
