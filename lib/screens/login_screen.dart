@@ -1,8 +1,4 @@
-import 'dart:io';
-
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
-import 'package:loading_animation_widget/loading_animation_widget.dart';
 import 'package:quicksend/client/quicksend_client.dart';
 import 'package:quicksend/client/request_manager.dart';
 import 'package:quicksend/widgets/custom_button.dart';

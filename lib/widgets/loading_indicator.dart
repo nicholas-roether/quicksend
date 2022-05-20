@@ -5,7 +5,7 @@ class LoadingIndicator extends StatelessWidget {
   LoadingIndicator({
     Key? key,
   }) : super(key: key);
-  List<String> statements = ["Loading..."];
+  final List<String> statements = ["Loading..."];
 
   @override
   Widget build(BuildContext context) {
