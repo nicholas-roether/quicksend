@@ -61,12 +61,17 @@ class SettingScreen extends StatelessWidget {
                   style: Theme.of(context).textTheme.headline6,
                 ),
               ),
-              CustomButton(
-                pressedCallback: () async {
-                  await quicksendClient.logOut();
-                  Navigator.popAndPushNamed(context, "/");
-                },
-                title: "Logout",
+              Padding(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 15.0,
+                ),
+                child: CustomButton(
+                  pressedCallback: () async {
+                    await quicksendClient.logOut();
+                    Navigator.popAndPushNamed(context, "/");
+                  },
+                  title: "Logout",
+                ),
               ),
             ],
           ),

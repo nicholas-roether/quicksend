@@ -1,8 +1,4 @@
-import 'dart:io';
-
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
-import 'package:loading_animation_widget/loading_animation_widget.dart';
 import 'package:quicksend/client/quicksend_client.dart';
 import 'package:quicksend/client/request_manager.dart';
 import 'package:quicksend/widgets/custom_button.dart';
@@ -80,15 +76,15 @@ class _LoginScreenState extends State<LoginScreen> {
     Navigator.popAndPushNamed(context, "/home");
   }
 
-  @override
-  void initState() {
+  //@override
+  /*void initState() {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (quicksendClient.isLoggedIn()) {
         Navigator.popAndPushNamed(context, "/home");
       }
     });
-  }
+  }*/
 
   @override
   Widget build(BuildContext context) {
