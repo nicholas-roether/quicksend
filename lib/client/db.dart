@@ -22,9 +22,12 @@ class DBMessage {
   final DBMessageDirection direction;
 
   @HiveField(2)
+  final DateTime sentAt;
+
+  @HiveField(3)
   final Uint8List content;
 
-  const DBMessage(this.type, this.direction, this.content);
+  const DBMessage(this.type, this.direction, this.sentAt, this.content);
 }
 
 class ClientDB extends Initialized<ClientDB> {

@@ -81,6 +81,7 @@ class DeviceInfo {
 
 class IncomingMessage {
   final String fromUser;
+  final bool incoming;
   final DateTime sentAt;
   final Map<String, String> headers;
   final String key;
@@ -88,6 +89,7 @@ class IncomingMessage {
 
   const IncomingMessage(
     this.fromUser,
+    this.incoming,
     this.sentAt,
     this.headers,
     this.key,
@@ -166,6 +168,7 @@ class RequestManager {
     );
     return List.from(res.map((msg) => IncomingMessage(
           msg["fromUser"],
+          msg["incoming"],
           DateTime.parse(msg["sentAt"]),
           msg["headers"],
           msg["key"],
