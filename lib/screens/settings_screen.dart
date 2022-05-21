@@ -61,6 +61,9 @@ class SettingScreen extends StatelessWidget {
                   style: Theme.of(context).textTheme.headline6,
                 ),
               ),
+              const SizedBox(
+                height: 20,
+              ),
               Padding(
                 padding: const EdgeInsets.symmetric(
                   horizontal: 15.0,

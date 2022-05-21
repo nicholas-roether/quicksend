@@ -10,6 +10,7 @@ class ChatScreen extends StatefulWidget {
 
 class _ChatScreenState extends State<ChatScreen> {
   final double _radius = 15;
+  final TextEditingController _chatController = TextEditingController();
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -38,7 +39,14 @@ class _ChatScreenState extends State<ChatScreen> {
                   SizedBox(
                     width: MediaQuery.of(context).size.width - 55,
                     height: 40,
-                    child: const Card(child: TextField()),
+                    child: Card(
+                      child: TextField(
+                        controller: _chatController,
+                        decoration: const InputDecoration(
+                          border: InputBorder.none,
+                        ),
+                      ),
+                    ),
                   ),
                   InkWell(
                     borderRadius: BorderRadius.circular(_radius),

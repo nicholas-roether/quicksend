@@ -59,7 +59,7 @@ class _LoginScreenState extends State<LoginScreen> {
         await quicksendClient.createAccount(_usernameController.text,
             _passwordController.text, _displaynameController.text);
       }
-      await quicksendClient.logIn(uuid.v1().substring(0, 10),
+      await quicksendClient.logIn(uuid.v1().substring(0, 15),
           _usernameController.text, _passwordController.text);
     } on RequestException catch (error) {
       var errorMessage = "login attempt failed!";
