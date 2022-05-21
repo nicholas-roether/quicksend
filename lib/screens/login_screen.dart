@@ -79,7 +79,7 @@ class _LoginScreenState extends State<LoginScreen> {
   //@override
   /*void initState() {
     super.initState();
-    WidgetsBinding.instance?.addPostFrameCallback((_) {
+    WidgetsBinding.instance.addPostFrameCallback((_) {
       if (quicksendClient.isLoggedIn()) {
         Navigator.popAndPushNamed(context, "/home");
       }
