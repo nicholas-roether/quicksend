@@ -27,7 +27,20 @@ class DBMessage {
   @HiveField(3)
   final Uint8List content;
 
-  const DBMessage(this.type, this.direction, this.sentAt, this.content);
+  @HiveField(4)
+  final String user;
+
+  @HiveField(5)
+  final String key;
+
+  const DBMessage(
+    this.type,
+    this.direction,
+    this.sentAt,
+    this.content,
+    this.user,
+    this.key,
+  );
 }
 
 class ClientDB extends Initialized<ClientDB> {
@@ -99,6 +112,16 @@ class ClientDB extends Initialized<ClientDB> {
   Future<void> setEncryptionKey(String? key) async {
     assertInit();
     await _secureStorage.write(key: "encryption-key", value: key);
+  }
+
+  Future<String?> getEncryptionPublicKey() async {
+    assertInit();
+    return await _secureStorage.read(key: "encryption-public-key");
+  }
+
+  Future<void> setEncryptionPublicKey(String? key) async {
+    assertInit();
+    await _secureStorage.write(key: "encryption-public-key", value: key);
   }
 
   String _getChatBoxName(String id) {

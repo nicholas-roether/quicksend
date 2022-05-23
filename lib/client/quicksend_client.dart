@@ -1,3 +1,4 @@
+import 'package:quicksend/client/chat_manager.dart';
 import 'package:quicksend/client/initialized.dart';
 import 'package:quicksend/client/login_manager.dart';
 import 'package:quicksend/client/request_manager.dart';
@@ -8,11 +9,21 @@ class _QuicksendClient extends Initialized<_QuicksendClient> {
   final _db = ClientDB();
   final _requestManager = RequestManager();
   late final _loginManager = LoginManager(_db, _requestManager);
+  ChatManager? _chatManager;
 
   @override
   Future<void> onInit() async {
     await _db.init();
     await _loginManager.init();
+    if (_loginManager.isLoggedIn()) {
+      final UserInfo userInfo = await getUserInfo();
+      _chatManager = ChatManager(
+        userInfo.id,
+        _loginManager,
+        _requestManager,
+        _db,
+      );
+    }
   }
 
   /// Creates a new account with the provided [username] and [password], as well
@@ -79,6 +90,38 @@ class _QuicksendClient extends Initialized<_QuicksendClient> {
   Future<UserInfo?> getUserInfoFor(String id) async {
     assertInit();
     return await _requestManager.getUserInfoFor(id);
+  }
+
+  /// Lists all user IDs for which open chats exist on this device
+  /// (meaning a message has either been sent to or has been recieved from
+  /// this user before)
+  List<String> listChatIDs() {
+    assertInit();
+    return _getChatManager().listChatIDs();
+  }
+
+  /// Returns the [Chat] object associated with the given user id, if it exists.
+  Future<Chat?> getChat(String id) {
+    assertInit();
+    return _getChatManager().getChat(id);
+  }
+
+  /// Creates and returns a new chat with the given user id. If a chat with this
+  /// user already exists, simply returns the existing one. Throws ans exception
+  /// if [userId] is not a valid user ID.
+  Future<Chat> createChat(String userId) {
+    return _getChatManager().createChat(userId);
+  }
+
+  /// Gets all new messages from the server and saves them.
+  Future<void> refreshMessages() {
+    return _getChatManager().refreshMessages();
+  }
+
+  ChatManager _getChatManager() {
+    _loginManager.assertInit();
+    assert(_chatManager != null);
+    return _chatManager as ChatManager;
   }
 }
 
