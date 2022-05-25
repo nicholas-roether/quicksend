@@ -8,9 +8,12 @@ abstract class Initialized<T> {
   Future<void> init() async {
     await onInit();
     _didInit = true;
+    afterInit();
   }
 
   Future<void> onInit();
+
+  Future<void> afterInit() async {}
 
   void assertInit() {
     if (!_didInit) throw InitializationException<T>();

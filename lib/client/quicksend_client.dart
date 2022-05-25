@@ -22,7 +22,11 @@ class QuicksendClient extends Initialized<QuicksendClient> {
   Future<void> onInit() async {
     await _db.init();
     await _loginManager.init();
-    if (_loginManager.isLoggedIn()) _onLoggedIn();
+  }
+
+  @override
+  Future<void> afterInit() async {
+    if (_loginManager.isLoggedIn()) await _onLoggedIn();
   }
 
   /// Creates a new account with the provided [username] and [password], as well
