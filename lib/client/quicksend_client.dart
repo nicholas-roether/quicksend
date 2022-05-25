@@ -15,15 +15,7 @@ class _QuicksendClient extends Initialized<_QuicksendClient> {
   Future<void> onInit() async {
     await _db.init();
     await _loginManager.init();
-    if (_loginManager.isLoggedIn()) {
-      final UserInfo userInfo = await getUserInfo();
-      _chatManager = ChatManager(
-        userInfo.id,
-        _loginManager,
-        _requestManager,
-        _db,
-      );
-    }
+    if (_loginManager.isLoggedIn()) _onLoggedIn();
   }
 
   /// Creates a new account with the provided [username] and [password], as well
@@ -63,6 +55,7 @@ class _QuicksendClient extends Initialized<_QuicksendClient> {
   ) async {
     assertInit();
     await _loginManager.logIn(deviceName, username, password);
+    await _onLoggedIn();
   }
 
   /// Removes this device from the currently associated account and logs it out.
@@ -71,6 +64,7 @@ class _QuicksendClient extends Initialized<_QuicksendClient> {
   Future<void> logOut() async {
     assertInit();
     await _loginManager.logOut();
+    await _onLoggedOut();
   }
 
   /// Returns the user info of the currently logged in account. Will throw a
@@ -120,8 +114,22 @@ class _QuicksendClient extends Initialized<_QuicksendClient> {
 
   ChatManager _getChatManager() {
     _loginManager.assertInit();
-    assert(_chatManager != null);
+
     return _chatManager as ChatManager;
+  }
+
+  Future<void> _onLoggedIn() async {
+    final UserInfo userInfo = await getUserInfo();
+    _chatManager = ChatManager(
+      userInfo.id,
+      _loginManager,
+      _requestManager,
+      _db,
+    );
+  }
+
+  Future<void> _onLoggedOut() async {
+    _chatManager = null;
   }
 }
 
