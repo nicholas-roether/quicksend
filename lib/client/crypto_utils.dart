@@ -21,7 +21,7 @@ class CryptoUtils {
   }
 
   static Future<String> generateKey() async {
-    final key = enc.Key.fromSecureRandom(2048);
+    final key = enc.Key.fromSecureRandom(256);
     return key.base64;
   }
 
