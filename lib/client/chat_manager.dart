@@ -86,7 +86,8 @@ class Chat {
   }) async {
     final sentAt = DateTime.now();
     final key = await CryptoUtils.generateKey();
-    final encryptedBody = await CryptoUtils.encrypt(body, key);
+    final iv = await CryptoUtils.generateIV();
+    final encryptedBody = await CryptoUtils.encrypt(body, key, iv);
 
     await _requestManager.sendMessage(
       await _loginManager.getAuthenticator(),
@@ -94,6 +95,7 @@ class Chat {
       sentAt,
       {"type": type, ...(headers ?? {})},
       await _getEncryptedKeys(key),
+      base64.encode(iv),
       base64.encode(encryptedBody),
     );
 
@@ -105,7 +107,8 @@ class Chat {
     final encryptionKey = await _db.getEncryptionKey();
     assert(encryptionKey != null);
     final key = await CryptoUtils.generateKey();
-    final encryptedBody = await CryptoUtils.encrypt(message.content, key);
+    final iv = await CryptoUtils.generateIV();
+    final encryptedBody = await CryptoUtils.encrypt(message.content, key, iv);
     final encryptedKey =
         await CryptoUtils.encryptKey(key, encryptionKey as String);
 
@@ -116,6 +119,7 @@ class Chat {
       encryptedBody,
       recipient.id,
       encryptedKey,
+      iv,
     );
     _db.addMessage(recipient.id, dbMessage);
     _messageStreamController.add(message);
@@ -131,6 +135,7 @@ class Chat {
     final messageContent = await CryptoUtils.decrypt(
       dbMessage.content,
       msgKey,
+      dbMessage.iv,
     );
     return Message(
       dbMessage.type,
@@ -142,13 +147,13 @@ class Chat {
     );
   }
 
-  Future<Map<String, String>> _getEncryptedKeys(String key) async {
+  Future<Map<String, String>> _getEncryptedKeys(Uint8List key) async {
     final Map<String, String> deviceKeyMap = await _getTargetKeys();
     final List<MapEntry<String, String>> encKeyMapEntries = await Future.wait(
       deviceKeyMap.entries.map(
         (e) async => MapEntry(
           e.key,
-          await CryptoUtils.encryptKey(key, e.value),
+          base64.encode(await CryptoUtils.encryptKey(key, e.value)),
         ),
       ),
     );
@@ -224,9 +229,13 @@ class ChatManager {
   Future<Uint8List> _decryptMessageBody(IncomingMessage msg) async {
     final encKey = await _db.getEncryptionKey();
     assert(encKey != null);
-    final msgKey = await CryptoUtils.decryptKey(msg.key, encKey as String);
-    final Uint8List encMsgBody = base64.decode(msg.body);
-    final msgBody = await CryptoUtils.decrypt(encMsgBody, msgKey);
+    final msgKey = await CryptoUtils.decryptKey(
+      base64.decode(msg.key),
+      encKey as String,
+    );
+    final Uint8List msgBodyBytes = base64.decode(msg.body);
+    final Uint8List ivBytes = base64.decode(msg.iv);
+    final msgBody = await CryptoUtils.decrypt(msgBodyBytes, msgKey, ivBytes);
     return msgBody;
   }
 }

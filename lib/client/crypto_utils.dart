@@ -1,3 +1,4 @@
+import 'dart:math';
 import 'dart:typed_data';
 
 import 'package:encrypt/encrypt.dart' as enc;
@@ -20,34 +21,51 @@ class CryptoUtils {
     return await frsa.RSA.signPKCS1v15(str, frsa.Hash.SHA256, key);
   }
 
-  static Future<String> generateKey() async {
-    final key = enc.Key.fromSecureRandom(256);
-    return key.base64;
+  static Future<Uint8List> generateKey() async {
+    return _secureRandom(256);
   }
 
-  static Future<Uint8List> encrypt(Uint8List data, String key) async {
-    final parsedKey = enc.Key.fromBase64(key);
-    final aes = enc.AES(parsedKey);
-    return aes.encrypt(data).bytes;
+  static Future<Uint8List> generateIV() async {
+    return _secureRandom(16);
   }
 
-  static Future<Uint8List> decrypt(Uint8List data, String key) async {
-    final parsedKey = enc.Key.fromBase64(key);
-    final aes = enc.AES(parsedKey);
-    return aes.decrypt(enc.Encrypted(data));
+  static Future<Uint8List> encrypt(
+    Uint8List data,
+    Uint8List key,
+    Uint8List iv,
+  ) async {
+    final aes = enc.AES(enc.Key(key));
+    return aes.encrypt(data, iv: enc.IV(iv)).bytes;
   }
 
-  static Future<String> encryptKey(
-    String key,
+  static Future<Uint8List> decrypt(
+    Uint8List data,
+    Uint8List key,
+    Uint8List iv,
+  ) async {
+    final aes = enc.AES(enc.Key(key));
+    return aes.decrypt(enc.Encrypted(data), iv: enc.IV(iv));
+  }
+
+  static Future<Uint8List> encryptKey(
+    Uint8List key,
     String publicKey,
   ) async {
-    return await frsa.RSA.encryptPKCS1v15(key, publicKey);
+    return await frsa.RSA.encryptPKCS1v15Bytes(key, publicKey);
   }
 
-  static Future<String> decryptKey(
-    String encryptedKey,
+  static Future<Uint8List> decryptKey(
+    Uint8List encryptedKey,
     String privateKey,
   ) async {
-    return await frsa.RSA.decryptPKCS1v15(encryptedKey, privateKey);
+    return await frsa.RSA.decryptPKCS1v15Bytes(encryptedKey, privateKey);
+  }
+
+  static Uint8List _secureRandom(int length) {
+    final rand = Random.secure();
+    final bytes = Uint8List.fromList(
+      List.generate(length, (_) => rand.nextInt(0xFF)),
+    );
+    return bytes;
   }
 }

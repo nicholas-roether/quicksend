@@ -85,6 +85,7 @@ class IncomingMessage {
   final DateTime sentAt;
   final Map<String, String> headers;
   final String key;
+  final String iv;
   final String body;
 
   const IncomingMessage(
@@ -93,6 +94,7 @@ class IncomingMessage {
     this.sentAt,
     this.headers,
     this.key,
+    this.iv,
     this.body,
   );
 }
@@ -172,6 +174,7 @@ class RequestManager {
           DateTime.parse(msg["sentAt"]),
           msg["headers"],
           msg["key"],
+          msg["iv"],
           msg["body"],
         )));
   }
@@ -189,6 +192,7 @@ class RequestManager {
     DateTime sentAt,
     Map<String, String> headers,
     Map<String, String> keys,
+    String iv,
     String body,
   ) async {
     final reqBody = {
@@ -196,6 +200,7 @@ class RequestManager {
       "sentAt": sentAt.toUtc().toIso8601String(),
       "headers": headers,
       "keys": keys,
+      "iv": iv,
       "body": body
     };
     await _request(

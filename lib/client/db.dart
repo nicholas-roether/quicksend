@@ -31,7 +31,10 @@ class DBMessage {
   final String user;
 
   @HiveField(5)
-  final String key;
+  final Uint8List key;
+
+  @HiveField(6)
+  final Uint8List iv;
 
   const DBMessage(
     this.type,
@@ -40,6 +43,7 @@ class DBMessage {
     this.content,
     this.user,
     this.key,
+    this.iv,
   );
 }
 
