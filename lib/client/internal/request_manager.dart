@@ -58,7 +58,7 @@ class SignatureAuthenticator extends Authenticator {
 }
 
 class IncomingMessage {
-  final String fromUser;
+  final String chat;
   final bool incoming;
   final DateTime sentAt;
   final Map<String, String> headers;
@@ -67,7 +67,7 @@ class IncomingMessage {
   final String body;
 
   const IncomingMessage(
-    this.fromUser,
+    this.chat,
     this.incoming,
     this.sentAt,
     this.headers,
@@ -135,10 +135,10 @@ class RequestManager {
       auth: auth,
     );
     return List.from(res.map((msg) => IncomingMessage(
-          msg["fromUser"],
+          msg["chat"],
           msg["incoming"],
           DateTime.parse(msg["sentAt"]),
-          msg["headers"],
+          Map.from(msg["headers"]),
           msg["key"],
           msg["iv"],
           msg["body"],
