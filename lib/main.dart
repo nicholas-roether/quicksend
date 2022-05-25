@@ -7,7 +7,6 @@ import 'package:quicksend/utils/my_themes.dart';
 
 void main() async {
   await dotenv.load();
-  await quicksendClient.init();
 
   runApp(const MyApp());
 }
@@ -17,14 +16,16 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'Quicksend',
-      debugShowCheckedModeBanner: false,
-      theme: MyThemes.mainTheme,
-      routes: {
-        "/": (context) => const LoginScreen(),
-        "/home": (context) => const HomePage(),
-      },
+    return QuicksendClientProvider(
+      child: MaterialApp(
+        title: 'Quicksend',
+        debugShowCheckedModeBanner: false,
+        theme: MyThemes.mainTheme,
+        routes: {
+          "/": (context) => const LoginScreen(),
+          "/home": (context) => const HomePage(),
+        },
+      ),
     );
   }
 }

@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:quicksend/client/quicksend_client.dart';
-import 'package:quicksend/client/request_manager.dart';
 import 'package:quicksend/widgets/custom_button.dart';
 import 'package:uuid/uuid.dart';
 
@@ -47,6 +46,8 @@ class _LoginScreenState extends State<LoginScreen> {
   }
 
   void _submit() async {
+    final quicksendClient = QuicksendClientProvider.get(context);
+
     if (!_formKey.currentState!.validate()) {
       return;
     }

@@ -2,7 +2,7 @@ import 'dart:typed_data';
 
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:hive_flutter/hive_flutter.dart';
-import 'package:quicksend/client/initialized.dart';
+import 'initialized.dart';
 
 @HiveType(typeId: 1)
 enum DBMessageDirection {

@@ -1,11 +1,18 @@
-import 'package:quicksend/client/chat_manager.dart';
-import 'package:quicksend/client/initialized.dart';
-import 'package:quicksend/client/login_manager.dart';
-import 'package:quicksend/client/request_manager.dart';
+import 'chat.dart';
+import 'internal/chat_manager.dart';
+import 'internal/initialized.dart';
+import 'internal/login_manager.dart';
+import 'internal/request_manager.dart';
 
-import 'db.dart';
+import 'internal/db.dart';
+import 'models.dart';
 
-class _QuicksendClient extends Initialized<_QuicksendClient> {
+export 'chat.dart';
+export 'models.dart';
+export 'provider.dart';
+export 'exceptions.dart';
+
+class QuicksendClient extends Initialized<QuicksendClient> {
   final _db = ClientDB();
   final _requestManager = RequestManager();
   late final _loginManager = LoginManager(_db, _requestManager);
@@ -132,8 +139,3 @@ class _QuicksendClient extends Initialized<_QuicksendClient> {
     _chatManager = null;
   }
 }
-
-/// The API used for interaction with the quicksend system.
-///
-/// See `/client/quicksend_client.dart` for more details.
-final quicksendClient = _QuicksendClient();

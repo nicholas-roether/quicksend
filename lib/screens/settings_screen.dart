@@ -1,16 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:quicksend/client/quicksend_client.dart';
-import 'package:quicksend/client/request_manager.dart';
 import 'package:quicksend/screens/settings/user_edit_screen.dart';
 import 'package:quicksend/widgets/custom_button.dart';
 import 'package:quicksend/widgets/loading_indicator.dart';
 
 class SettingScreen extends StatelessWidget {
   SettingScreen({Key? key}) : super(key: key);
-  final Future<UserInfo> userInfo = quicksendClient.getUserInfo();
 
   @override
   Widget build(BuildContext context) {
+    final quicksendClient = QuicksendClientProvider.get(context);
+    final Future<UserInfo> userInfo = quicksendClient.getUserInfo();
+
     return FutureBuilder<UserInfo>(
       future: userInfo,
       builder: (context, snapshot) {

@@ -2,8 +2,11 @@ import 'dart:convert';
 
 import 'package:dio/dio.dart' as dio;
 import 'package:flutter_dotenv/flutter_dotenv.dart';
-import 'package:quicksend/client/crypto_utils.dart';
 import 'package:intl/intl.dart';
+
+import '../exceptions.dart';
+import 'crypto_utils.dart';
+import '../models.dart';
 
 final isoDateFormat = DateFormat("yyyy-MM-ddThh:mm:ss.SSS'Z'");
 final Codec<String, String> strBase64 = utf8.fuse(base64);
@@ -54,31 +57,6 @@ class SignatureAuthenticator extends Authenticator {
   }
 }
 
-class UserInfo {
-  final String id;
-  final String username;
-  final String? display;
-
-  const UserInfo(this.id, this.username, this.display);
-
-  /// Returns the name that should be displayed for this user.
-  ///
-  /// Will return the display name if this user has one, and their username
-  /// otherwise.
-  String getName() {
-    return display ?? username;
-  }
-}
-
-class DeviceInfo {
-  final String id;
-  final String name;
-  final int type;
-  final DateTime lastActivity;
-
-  const DeviceInfo(this.id, this.name, this.type, this.lastActivity);
-}
-
 class IncomingMessage {
   final String fromUser;
   final bool incoming;
@@ -97,18 +75,6 @@ class IncomingMessage {
     this.iv,
     this.body,
   );
-}
-
-class RequestException implements Exception {
-  int status;
-  String message;
-
-  RequestException(this.status, this.message);
-
-  @override
-  String toString() {
-    return "[$status] $message";
-  }
 }
 
 class _CachedValue<T> {

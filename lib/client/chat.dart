@@ -2,40 +2,11 @@ import 'dart:async';
 import 'dart:convert';
 import 'dart:typed_data';
 
-import 'package:quicksend/client/crypto_utils.dart';
-import 'package:quicksend/client/db.dart';
-import 'package:quicksend/client/login_manager.dart';
-import 'package:quicksend/client/request_manager.dart';
-
-enum MessageDirection { incoming, outgoing }
-
-/// The class representing a message in a chat.
-class Message {
-  /// The MIME type of this message's content. This will most commonly be
-  /// `"text/plain"` for simple text messages.
-  final String type;
-
-  /// Whether this message was sent by this user themselves, or recieved from
-  /// another user.
-  final MessageDirection direction;
-
-  /// The date and time at which this message was sent.
-  final DateTime sentAt;
-
-  /// The content of this message, in binary format.
-  ///
-  /// To get the message's content as a String, see [Message.asString].
-  final Uint8List content;
-
-  const Message(this.type, this.direction, this.sentAt, this.content);
-
-  /// Returns this message's content interpreted as a UTF-8 string. Consider
-  /// checking whether the message's type matches this, as this method will
-  /// return garbage otherwise.
-  String asString() {
-    return utf8.decode(content);
-  }
-}
+import 'internal/crypto_utils.dart';
+import 'internal/db.dart';
+import 'internal/login_manager.dart';
+import 'internal/request_manager.dart';
+import 'models.dart';
 
 class Chat {
   final StreamController<Message> _messageStreamController =
@@ -99,10 +70,10 @@ class Chat {
       base64.encode(encryptedBody),
     );
 
-    await _pushMessage(Message(type, MessageDirection.outgoing, sentAt, body));
+    await pushMessage(Message(type, MessageDirection.outgoing, sentAt, body));
   }
 
-  Future<void> _pushMessage(Message message) async {
+  Future<void> pushMessage(Message message) async {
     _loginManager.assertLoggedIn();
     final encryptionKey = await _db.getEncryptionKey();
     assert(encryptionKey != null);
@@ -166,76 +137,5 @@ class Chat {
       await _loginManager.getAuthenticator(),
       recipient.id,
     );
-  }
-}
-
-class ChatManager {
-  final String user;
-  final LoginManager _loginManager;
-  final RequestManager _requestManager;
-  final ClientDB _db;
-
-  const ChatManager(
-      this.user, this._loginManager, this._requestManager, this._db);
-
-  List<String> listChatIDs() {
-    return _db.getChatList();
-  }
-
-  bool chatExists(String id) {
-    return listChatIDs().contains(id);
-  }
-
-  Future<Chat?> getChat(String id) async {
-    if (!chatExists(id)) return null;
-    final UserInfo? recipient = await _requestManager.getUserInfoFor(id);
-    if (recipient == null) return null;
-    return Chat(_db, _loginManager, _requestManager, recipient, user);
-  }
-
-  Future<Chat> createChat(String userId) async {
-    final existing = await getChat(userId);
-    if (existing != null) return existing;
-    final UserInfo? recipient = await _requestManager.getUserInfoFor(userId);
-    if (recipient == null) throw Exception("User does not exist");
-    await _db.createChat(userId);
-    return Chat(_db, _loginManager, _requestManager, recipient, user);
-  }
-
-  Future<void> refreshMessages() async {
-    final auth = await _loginManager.getAuthenticator();
-    final List<IncomingMessage> messages =
-        await _requestManager.pollMessages(auth);
-    for (final message in messages) {
-      _saveIncomingMessage(message);
-    }
-    await _requestManager.clearMessages(auth);
-  }
-
-  Future<void> _saveIncomingMessage(IncomingMessage message) async {
-    final chat = await createChat(message.fromUser);
-    chat._pushMessage(
-      Message(
-        message.headers["type"] ?? "text/plain",
-        message.incoming
-            ? MessageDirection.incoming
-            : MessageDirection.outgoing,
-        message.sentAt,
-        await _decryptMessageBody(message),
-      ),
-    );
-  }
-
-  Future<Uint8List> _decryptMessageBody(IncomingMessage msg) async {
-    final encKey = await _db.getEncryptionKey();
-    assert(encKey != null);
-    final msgKey = await CryptoUtils.decryptKey(
-      base64.decode(msg.key),
-      encKey as String,
-    );
-    final Uint8List msgBodyBytes = base64.decode(msg.body);
-    final Uint8List ivBytes = base64.decode(msg.iv);
-    final msgBody = await CryptoUtils.decrypt(msgBodyBytes, msgKey, ivBytes);
-    return msgBody;
   }
 }

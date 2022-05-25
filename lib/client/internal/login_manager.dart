@@ -1,20 +1,9 @@
-import 'package:quicksend/client/crypto_utils.dart';
-import 'package:quicksend/client/db.dart';
-import 'package:quicksend/client/initialized.dart';
-import 'package:quicksend/client/request_manager.dart';
+import 'package:quicksend/client/internal/crypto_utils.dart';
+import 'package:quicksend/client/internal/db.dart';
+import 'package:quicksend/client/internal/initialized.dart';
+import 'package:quicksend/client/internal/request_manager.dart';
 
-/// Thrown primarily when attempting to perform an action that requires this
-/// device to be logged into an account, when it is not.
-class LoginStateException implements Exception {
-  final String message;
-
-  const LoginStateException(this.message);
-
-  @override
-  String toString() {
-    return message;
-  }
-}
+import '../exceptions.dart';
 
 class LoginManager extends Initialized<LoginManager> {
   final ClientDB _db;
