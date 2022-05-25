@@ -2,29 +2,37 @@ import 'package:flutter/cupertino.dart';
 import 'package:provider/provider.dart';
 import 'package:quicksend/client/quicksend_client.dart';
 
-class QuicksendClientProvider extends StatelessWidget {
+class QuicksendClientProvider extends StatefulWidget {
   final Widget child;
-  final _client = QuicksendClient();
 
-  QuicksendClientProvider({Key? key, required this.child}) : super(key: key);
+  const QuicksendClientProvider({Key? key, required this.child})
+      : super(key: key);
 
   @override
-  Widget build(BuildContext context) {
-    return FutureBuilder<void>(
-      future: _client.init(),
-      builder: (context, snapshot) {
-        if (snapshot.connectionState != ConnectionState.done) {
-          return const SizedBox();
-        }
-        return Provider<QuicksendClient>.value(
-          value: _client,
-          child: child,
-        );
-      },
-    );
-  }
+  State<QuicksendClientProvider> createState() =>
+      _QuicksendClientProviderState();
 
   static QuicksendClient get(BuildContext context) {
     return Provider.of<QuicksendClient>(context, listen: false);
+  }
+}
+
+class _QuicksendClientProviderState extends State<QuicksendClientProvider> {
+  late QuicksendClient _client;
+  bool didInit = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _client = QuicksendClient();
+    _client.init().then((_) => setState(() {
+          didInit = true;
+        }));
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    if (!didInit) return const SizedBox();
+    return Provider.value(value: _client, child: widget.child);
   }
 }
