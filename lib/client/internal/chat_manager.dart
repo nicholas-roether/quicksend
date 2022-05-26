@@ -17,7 +17,11 @@ class ChatManager {
   final ClientDB _db;
   final Map<String, Chat> openChats = {};
 
-  ChatManager(this.user, this._loginManager, this._requestManager, this._db);
+  ChatManager(this.user, this._loginManager, this._requestManager, this._db) {
+    Timer.periodic(const Duration(seconds: 5), (_) {
+      refreshMessages();
+    });
+  }
 
   List<String> listChatIDs() {
     return _db.getChatList();
