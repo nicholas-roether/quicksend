@@ -20,8 +20,12 @@ class LoginStateException implements Exception {
   }
 }
 
+/// Thrown when the backend server returns an error for a request.
 class RequestException implements Exception {
+  /// The HTTP status of the server's response
   int status;
+
+  /// The error messsage sent by the server
   String message;
 
   RequestException(this.status, this.message);

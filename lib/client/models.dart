@@ -2,8 +2,13 @@ import 'dart:convert';
 import 'dart:typed_data';
 
 class UserInfo {
+  /// The unique ID of this user
   final String id;
+
+  /// The unique login name of this user
   final String username;
+
+  /// This user's display name
   final String? display;
 
   const UserInfo(this.id, this.username, this.display);
@@ -18,9 +23,23 @@ class UserInfo {
 }
 
 class DeviceInfo {
+  /// The unique ID of this device
   final String id;
+
+  /// This device's name, unique among all devices of this user
   final String name;
+
+  /// An integer indicating the type of this device.
+  ///
+  /// | Numeric value | Device Type            |
+  /// |---------------|------------------------|
+  /// |             0 | Unknown device type    |
+  /// |             1 | Mobile device          |
+  /// |             2 | Desktop device         |
+  /// |             3 | Command line interface |
   final int type;
+
+  /// The last time this device was used.
   final DateTime lastActivity;
 
   const DeviceInfo(this.id, this.name, this.type, this.lastActivity);

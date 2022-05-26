@@ -58,7 +58,7 @@ class ChatManager {
 
   Future<void> _saveIncomingMessage(IncomingMessage message) async {
     final chat = await createChat(message.chat);
-    chat.pushMessage(
+    chat.saveMessage(
       Message(
         message.headers["type"] ?? "text/plain",
         message.incoming

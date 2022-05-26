@@ -12,6 +12,7 @@ class QuicksendClientProvider extends StatefulWidget {
   State<QuicksendClientProvider> createState() =>
       _QuicksendClientProviderState();
 
+  /// Get the global quicksend client instance
   static QuicksendClient get(BuildContext context) {
     return Provider.of<QuicksendClient>(context, listen: false);
   }

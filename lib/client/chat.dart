@@ -9,6 +9,7 @@ import 'internal/login_manager.dart';
 import 'internal/request_manager.dart';
 import 'models.dart';
 
+/// An object that represents an open chat with a certain user.
 class Chat {
   final List<Message> _messages = [];
   final StreamController<Message> _messageStreamController =
@@ -71,10 +72,14 @@ class Chat {
       base64.encode(encryptedBody),
     );
 
-    await pushMessage(Message(type, MessageDirection.outgoing, sentAt, body));
+    await saveMessage(Message(type, MessageDirection.outgoing, sentAt, body));
   }
 
-  Future<void> pushMessage(Message message) async {
+  /// Saves a message to this device WITHOUT sending it to the server.
+  ///
+  /// Unless you know what you are doing, consider using [sendMessage]
+  /// or [sendTextMessage] instead.
+  Future<void> saveMessage(Message message) async {
     _loginManager.assertLoggedIn();
     final encryptionKey = await _db.getEncryptionPublicKey();
     assert(encryptionKey != null);
