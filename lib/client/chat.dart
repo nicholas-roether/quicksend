@@ -4,6 +4,7 @@ import 'dart:typed_data';
 
 import 'internal/crypto_utils.dart';
 import 'internal/db.dart';
+import 'internal/db_models/db_message.dart';
 import 'internal/login_manager.dart';
 import 'internal/request_manager.dart';
 import 'models.dart';
@@ -24,7 +25,9 @@ class Chat {
     this.recipient,
     this._userId,
   ) {
-    getMessages().forEach(_messageStreamController.add);
+    getMessages().then((messages) {
+      messages.forEach(_messageStreamController.add);
+    });
   }
 
   /// A stream containing all messages sent in this chat, updated live as new
@@ -35,11 +38,11 @@ class Chat {
 
   /// Returns a list of all messages that have been sent in this chat up until
   /// now.
-  List<Message> getMessages() {
+  Future<List<Message>> getMessages() async {
     final List<DBMessage> dbMessages = _db.getMessages(recipient.id);
-    return List.from(
+    return await Future.wait(List.from(
       dbMessages.where((msg) => msg.user == _userId).map(_decryptDBMessage),
-    );
+    ));
   }
 
   /// Send a plain text message in this chat.
@@ -75,7 +78,7 @@ class Chat {
 
   Future<void> pushMessage(Message message) async {
     _loginManager.assertLoggedIn();
-    final encryptionKey = await _db.getEncryptionKey();
+    final encryptionKey = await _db.getEncryptionPublicKey();
     assert(encryptionKey != null);
     final key = await CryptoUtils.generateKey();
     final iv = await CryptoUtils.generateIV();
@@ -85,7 +88,7 @@ class Chat {
 
     final dbMessage = DBMessage(
       message.type,
-      DBMessageDirection.values[message.direction.index],
+      message.direction == MessageDirection.incoming,
       message.sentAt,
       encryptedBody,
       recipient.id,
@@ -110,7 +113,7 @@ class Chat {
     );
     return Message(
       dbMessage.type,
-      dbMessage.direction == DBMessageDirection.incoming
+      dbMessage.incoming
           ? MessageDirection.incoming
           : MessageDirection.outgoing,
       dbMessage.sentAt,

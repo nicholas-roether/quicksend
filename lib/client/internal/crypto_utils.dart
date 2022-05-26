@@ -22,7 +22,7 @@ class CryptoUtils {
   }
 
   static Future<Uint8List> generateKey() async {
-    return _secureRandom(256);
+    return _secureRandom(32);
   }
 
   static Future<Uint8List> generateIV() async {
@@ -34,7 +34,7 @@ class CryptoUtils {
     Uint8List key,
     Uint8List iv,
   ) async {
-    final aes = enc.AES(enc.Key(key));
+    final aes = enc.AES(enc.Key(key), mode: enc.AESMode.cbc);
     return aes.encrypt(data, iv: enc.IV(iv)).bytes;
   }
 
@@ -43,7 +43,7 @@ class CryptoUtils {
     Uint8List key,
     Uint8List iv,
   ) async {
-    final aes = enc.AES(enc.Key(key));
+    final aes = enc.AES(enc.Key(key), mode: enc.AESMode.cbc);
     return aes.decrypt(enc.Encrypted(data), iv: enc.IV(iv));
   }
 

@@ -1,51 +1,9 @@
-import 'dart:typed_data';
-
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:hive_flutter/hive_flutter.dart';
+// ignore: implementation_imports
+import 'package:hive/src/adapters/date_time_adapter.dart';
+import 'db_models/db_message.dart';
 import 'initialized.dart';
-
-@HiveType(typeId: 1)
-enum DBMessageDirection {
-  @HiveField(0)
-  incoming,
-
-  @HiveField(1)
-  outgoing
-}
-
-@HiveType(typeId: 2)
-class DBMessage {
-  @HiveField(0)
-  final String type;
-
-  @HiveField(1)
-  final DBMessageDirection direction;
-
-  @HiveField(2)
-  final DateTime sentAt;
-
-  @HiveField(3)
-  final Uint8List content;
-
-  @HiveField(4)
-  final String user;
-
-  @HiveField(5)
-  final Uint8List key;
-
-  @HiveField(6)
-  final Uint8List iv;
-
-  const DBMessage(
-    this.type,
-    this.direction,
-    this.sentAt,
-    this.content,
-    this.user,
-    this.key,
-    this.iv,
-  );
-}
 
 class ClientDB extends Initialized<ClientDB> {
   final _secureStorage = const FlutterSecureStorage();
@@ -55,8 +13,14 @@ class ClientDB extends Initialized<ClientDB> {
   @override
   Future<void> onInit() async {
     await Hive.initFlutter();
+    Hive.registerAdapter(DateTimeAdapter(), internal: true);
+    Hive.registerAdapter(DBMessageAdapter());
     _general = await Hive.openBox("general");
     _chatList = await Hive.openBox("chat-list");
+    await Future.wait(
+      List.from(_chatList.values)
+          .map((chatId) => Hive.openBox(_getChatBoxName(chatId))),
+    );
   }
 
   String? getDeviceID() {

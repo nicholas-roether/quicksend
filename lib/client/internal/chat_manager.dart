@@ -47,9 +47,7 @@ class ChatManager {
     final auth = await _loginManager.getAuthenticator();
     final List<IncomingMessage> messages =
         await _requestManager.pollMessages(auth);
-    for (final message in messages) {
-      _saveIncomingMessage(message);
-    }
+    await Future.wait(messages.map(_saveIncomingMessage));
     await _requestManager.clearMessages(auth);
   }
 
