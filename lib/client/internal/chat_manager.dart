@@ -15,9 +15,9 @@ class ChatManager {
   final LoginManager _loginManager;
   final RequestManager _requestManager;
   final ClientDB _db;
+  final Map<String, Chat> openChats = {};
 
-  const ChatManager(
-      this.user, this._loginManager, this._requestManager, this._db);
+  ChatManager(this.user, this._loginManager, this._requestManager, this._db);
 
   List<String> listChatIDs() {
     return _db.getChatList();
@@ -29,9 +29,12 @@ class ChatManager {
 
   Future<Chat?> getChat(String id) async {
     if (!chatExists(id)) return null;
+    if (openChats.containsKey(id)) return openChats[id];
     final UserInfo? recipient = await _requestManager.getUserInfoFor(id);
     if (recipient == null) return null;
-    return Chat(_db, _loginManager, _requestManager, recipient, user);
+    final chat = Chat(_db, _loginManager, _requestManager, recipient, user);
+    openChats[id] = chat;
+    return chat;
   }
 
   Future<Chat> createChat(String userId) async {
@@ -40,7 +43,9 @@ class ChatManager {
     final UserInfo? recipient = await _requestManager.getUserInfoFor(userId);
     if (recipient == null) throw Exception("User does not exist");
     await _db.createChat(userId);
-    return Chat(_db, _loginManager, _requestManager, recipient, user);
+    final chat = Chat(_db, _loginManager, _requestManager, recipient, user);
+    openChats[userId] = chat;
+    return chat;
   }
 
   Future<void> refreshMessages() async {

@@ -10,6 +10,7 @@ import 'internal/request_manager.dart';
 import 'models.dart';
 
 class Chat {
+  final List<Message> _messages = [];
   final StreamController<Message> _messageStreamController =
       StreamController.broadcast();
   final ClientDB _db;
@@ -25,8 +26,8 @@ class Chat {
     this.recipient,
     this._userId,
   ) {
-    getMessages().then((messages) {
-      messages.forEach(_messageStreamController.add);
+    _loadMessages().then((messages) {
+      messages.forEach(_broadcastMessage);
     });
   }
 
@@ -38,11 +39,8 @@ class Chat {
 
   /// Returns a list of all messages that have been sent in this chat up until
   /// now.
-  Future<List<Message>> getMessages() async {
-    final List<DBMessage> dbMessages = _db.getMessages(recipient.id);
-    return await Future.wait(List.from(
-      dbMessages.where((msg) => msg.user == _userId).map(_decryptDBMessage),
-    ));
+  List<Message> getMessages() {
+    return _messages;
   }
 
   /// Send a plain text message in this chat.
@@ -96,7 +94,19 @@ class Chat {
       iv,
     );
     _db.addMessage(recipient.id, dbMessage);
+    _broadcastMessage(message);
+  }
+
+  Future<List<Message>> _loadMessages() async {
+    final List<DBMessage> dbMessages = _db.getMessages(recipient.id);
+    return await Future.wait(List.from(
+      dbMessages.where((msg) => msg.user == _userId).map(_decryptDBMessage),
+    ));
+  }
+
+  void _broadcastMessage(Message message) {
     _messageStreamController.add(message);
+    _messages.add(message);
   }
 
   Future<Message> _decryptDBMessage(DBMessage dbMessage) async {
