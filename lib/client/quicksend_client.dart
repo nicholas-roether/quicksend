@@ -98,6 +98,8 @@ class QuicksendClient extends Initialized<QuicksendClient> {
     return await _requestManager.getUserInfoFor(id);
   }
 
+  /// Returns the ChatList instance for this client, which contains all open
+  /// chats, which can be used to load and send messages.
   ChatList getChatList() {
     return _getChatManager().getChatList();
   }
