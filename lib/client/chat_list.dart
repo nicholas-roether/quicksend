@@ -18,20 +18,26 @@ class ChatList extends ChangeNotifier {
     });
   }
 
+  /// Get all chats that currently exist
   List<Chat> getChats() {
     return List.from(_chats);
   }
 
+  /// Get an existing chat from a user id
   Chat? getChatFromId(String id) {
     return _chats.firstWhere((chat) => chat.recipientId == id);
   }
 
+  /// Create a new chat with a user with the provided [username]
+  /// Throws an UnknownUserException if no such user exists.
   Future<Chat> createChat(String username) async {
     final userInfo = await _requestManager.findUser(username);
     if (userInfo == null) throw UnknownUserException(username);
     return await createChatFromId(userInfo.id);
   }
 
+  /// Create a new chat with the user with [id].
+  /// This method will not check whether that user actually exists.
   Future<Chat> createChatFromId(String id) async {
     await _db.createChat(id);
     final chat = Chat(
