@@ -9,7 +9,6 @@ class ChatScreen extends StatefulWidget {
 }
 
 class _ChatScreenState extends State<ChatScreen> {
-  final double _radius = 12;
   final TextEditingController _chatController = TextEditingController();
   @override
   Widget build(BuildContext context) {
