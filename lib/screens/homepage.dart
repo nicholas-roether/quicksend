@@ -50,7 +50,7 @@ class _HomePageState extends State<HomePage> {
                 ),
         ],
       ),
-      body: selectedIndex == 0 ? const ChatList() : SettingScreen(),
+      body: selectedIndex == 0 ? const ChatList() : const SettingScreen(),
     );
   }
 }
