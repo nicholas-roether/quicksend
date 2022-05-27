@@ -3,7 +3,8 @@ import 'dart:convert';
 import 'dart:typed_data';
 
 import 'package:flutter/cupertino.dart';
-import 'package:quicksend/client/internal/utils.dart';
+
+import 'internal/utils.dart';
 
 import 'internal/crypto_utils.dart';
 import 'internal/db.dart';
@@ -13,13 +14,11 @@ import 'internal/request_manager.dart';
 import 'models.dart';
 
 /// An object that represents an open chat with a certain user.
-class Chat {
+class Chat extends ChangeNotifier {
   final String recipientId;
 
   final _recipientInfo = CachedValue<UserInfo?>();
   final List<Message> _messages = [];
-  final StreamController<Message> _messageStreamController =
-      StreamController.broadcast();
   final ClientDB _db;
   final LoginManager _loginManager;
   final RequestManager _requestManager;
@@ -38,16 +37,10 @@ class Chat {
         .get(() => _requestManager.getUserInfoFor(recipientId));
   }
 
-  /// Loads the messages for this chat and broadcasts them to [messageStream].
+  /// Loads the messages for this chat.
   Future<void> loadMessages() async {
     final messages = await _loadMessagesFromDB();
     messages.forEach(_broadcastMessage);
-  }
-
-  /// A stream containing all messages sent in this chat, updated live as new
-  /// messages come in.
-  Stream<Message> get messageStream {
-    return _messageStreamController.stream;
   }
 
   /// Returns a list of all messages that have been sent in this chat up until
@@ -111,7 +104,12 @@ class Chat {
       iv,
     );
     _db.addMessage(recipientId, dbMessage);
+    _sortMessages();
     _broadcastMessage(message);
+  }
+
+  void _sortMessages() {
+    _messages.sort((msg1, msg2) => msg1.sentAt.compareTo(msg2.sentAt));
   }
 
   Future<List<Message>> _loadMessagesFromDB() async {
@@ -122,8 +120,9 @@ class Chat {
   }
 
   void _broadcastMessage(Message message) {
-    _messageStreamController.add(message);
     _messages.add(message);
+    _sortMessages();
+    notifyListeners();
   }
 
   Future<Message> _decryptDBMessage(DBMessage dbMessage) async {
