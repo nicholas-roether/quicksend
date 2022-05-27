@@ -9,7 +9,7 @@ class ChatScreen extends StatefulWidget {
 }
 
 class _ChatScreenState extends State<ChatScreen> {
-  final double _radius = 15;
+  final double _radius = 12;
   final TextEditingController _chatController = TextEditingController();
   @override
   Widget build(BuildContext context) {
@@ -21,45 +21,50 @@ class _ChatScreenState extends State<ChatScreen> {
         ),
         centerTitle: true,
       ),
-      body: SizedBox(
-        //height: MediaQuery.of(context).size.height,
-        width: MediaQuery.of(context).size.width,
-        child: Stack(
-          children: [
-            SingleChildScrollView(
+      body: Column(
+        children: [
+          Expanded(
+            flex: 1,
+            child: SingleChildScrollView(
               child: Column(
                 children: const [],
               ),
             ),
-            Align(
-              alignment: Alignment.bottomCenter,
+          ),
+          SizedBox(
+            width: MediaQuery.of(context).size.width,
+            child: Padding(
+              padding: const EdgeInsets.all(8.0),
               child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 children: [
-                  SizedBox(
-                    width: MediaQuery.of(context).size.width - 55,
-                    height: 40,
-                    child: Card(
-                      child: TextField(
-                        controller: _chatController,
-                        decoration: const InputDecoration(
-                          border: InputBorder.none,
+                  Expanded(
+                    child: TextField(
+                      style: const TextStyle(
+                        fontSize: 20,
+                      ),
+                      controller: _chatController,
+                      decoration: InputDecoration(
+                        contentPadding: const EdgeInsets.fromLTRB(8, 3, 8, 3),
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(10),
                         ),
                       ),
                     ),
                   ),
-                  InkWell(
-                    borderRadius: BorderRadius.circular(_radius),
-                    onTap: () {},
-                    child: CircleAvatar(
-                      radius: _radius,
-                    ),
-                  )
+                  const SizedBox(
+                    width: 10,
+                  ),
+                  FloatingActionButton.small(
+                    onPressed: () {},
+                    child: const Icon(Icons.send),
+                    backgroundColor: Theme.of(context).primaryColor,
+                    elevation: 3,
+                  ),
                 ],
               ),
-            )
-          ],
-        ),
+            ),
+          )
+        ],
       ),
     );
   }
