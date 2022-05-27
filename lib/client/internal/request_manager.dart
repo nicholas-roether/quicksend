@@ -7,6 +7,7 @@ import 'package:intl/intl.dart';
 import '../exceptions.dart';
 import 'crypto_utils.dart';
 import '../models.dart';
+import 'utils.dart';
 
 final isoDateFormat = DateFormat("yyyy-MM-ddThh:mm:ss.SSS'Z'");
 final Codec<String, String> strBase64 = utf8.fuse(base64);
@@ -77,19 +78,10 @@ class IncomingMessage {
   );
 }
 
-class _CachedValue<T> {
-  T? chached;
-
-  Future<T> get(Future<T> Function() getter) {
-    if (chached != null) return Future.value(chached);
-    return getter();
-  }
-}
-
 class RequestManager {
   final _dio = dio.Dio();
 
-  final _userInfo = _CachedValue<UserInfo>();
+  final _userInfo = CachedValue<UserInfo>();
 
   RequestManager() {
     final backendUri = dotenv.env["BACKEND_URI"];
@@ -122,6 +114,12 @@ class RequestManager {
 
   Future<UserInfo?> getUserInfoFor(String id) async {
     final res = await _request("GET", "/user/info/$id");
+    if (res == null) return null;
+    return UserInfo(res["id"], res["username"], res["display"]);
+  }
+
+  Future<UserInfo?> findUser(String name) async {
+    final res = await _request("GET", "/user/find$name");
     if (res == null) return null;
     return UserInfo(res["id"], res["username"], res["display"]);
   }

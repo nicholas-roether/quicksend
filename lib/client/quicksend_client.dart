@@ -1,4 +1,4 @@
-import 'chat.dart';
+import 'chat_list.dart';
 import 'internal/chat_manager.dart';
 import 'internal/initialized.dart';
 import 'internal/login_manager.dart';
@@ -8,6 +8,7 @@ import 'internal/db.dart';
 import 'models.dart';
 
 export 'chat.dart';
+export 'chat_list.dart';
 export 'models.dart';
 export 'provider.dart';
 export 'exceptions.dart';
@@ -97,25 +98,8 @@ class QuicksendClient extends Initialized<QuicksendClient> {
     return await _requestManager.getUserInfoFor(id);
   }
 
-  /// Lists all user IDs for which open chats exist on this device
-  /// (meaning a message has either been sent to or has been recieved from
-  /// this user before)
-  List<String> listChatIDs() {
-    assertInit();
-    return _getChatManager().listChatIDs();
-  }
-
-  /// Returns the [Chat] object associated with the given user id, if it exists.
-  Future<Chat?> getChat(String id) {
-    assertInit();
-    return _getChatManager().getChat(id);
-  }
-
-  /// Creates and returns a new chat with the given user id. If a chat with this
-  /// user already exists, simply returns the existing one. Throws ans exception
-  /// if [userId] is not a valid user ID.
-  Future<Chat> createChat(String userId) {
-    return _getChatManager().createChat(userId);
+  ChatList getChatList() {
+    return _getChatManager().getChatList();
   }
 
   /// Gets all new messages from the server and saves them.

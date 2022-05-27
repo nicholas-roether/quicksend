@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:convert';
 import 'dart:typed_data';
 
+import '../chat_list.dart';
 import 'crypto_utils.dart';
 import 'db.dart';
 import 'login_manager.dart';
@@ -11,45 +12,22 @@ import '../chat.dart';
 import '../models.dart';
 
 class ChatManager {
-  final String user;
+  final String _userId;
   final LoginManager _loginManager;
   final RequestManager _requestManager;
   final ClientDB _db;
-  final Map<String, Chat> openChats = {};
+  // final Map<String, Chat> openChats = {};
+  late final _chatList = ChatList(_requestManager, _loginManager, _db, _userId);
 
-  ChatManager(this.user, this._loginManager, this._requestManager, this._db) {
+  ChatManager(
+      this._userId, this._loginManager, this._requestManager, this._db) {
     Timer.periodic(const Duration(seconds: 5), (_) {
       refreshMessages();
     });
   }
 
-  List<String> listChatIDs() {
-    return _db.getChatList();
-  }
-
-  bool chatExists(String id) {
-    return listChatIDs().contains(id);
-  }
-
-  Future<Chat?> getChat(String id) async {
-    if (!chatExists(id)) return null;
-    if (openChats.containsKey(id)) return openChats[id];
-    final UserInfo? recipient = await _requestManager.getUserInfoFor(id);
-    if (recipient == null) return null;
-    final chat = Chat(_db, _loginManager, _requestManager, recipient, user);
-    openChats[id] = chat;
-    return chat;
-  }
-
-  Future<Chat> createChat(String userId) async {
-    final existing = await getChat(userId);
-    if (existing != null) return existing;
-    final UserInfo? recipient = await _requestManager.getUserInfoFor(userId);
-    if (recipient == null) throw Exception("User does not exist");
-    await _db.createChat(userId);
-    final chat = Chat(_db, _loginManager, _requestManager, recipient, user);
-    openChats[userId] = chat;
-    return chat;
+  ChatList getChatList() {
+    return _chatList;
   }
 
   Future<void> refreshMessages() async {
@@ -61,7 +39,8 @@ class ChatManager {
   }
 
   Future<void> _saveIncomingMessage(IncomingMessage message) async {
-    final chat = await createChat(message.chat);
+    final Chat chat = _chatList.getChatFromId(message.chat) ??
+        await _chatList.createChatFromId(message.chat);
     chat.saveMessage(
       Message(
         message.headers["type"] ?? "text/plain",

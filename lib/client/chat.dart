@@ -2,6 +2,9 @@ import 'dart:async';
 import 'dart:convert';
 import 'dart:typed_data';
 
+import 'package:flutter/cupertino.dart';
+import 'package:quicksend/client/internal/utils.dart';
+
 import 'internal/crypto_utils.dart';
 import 'internal/db.dart';
 import 'internal/db_models/db_message.dart';
@@ -11,25 +14,34 @@ import 'models.dart';
 
 /// An object that represents an open chat with a certain user.
 class Chat {
+  final String recipientId;
+
+  final _recipientInfo = CachedValue<UserInfo?>();
   final List<Message> _messages = [];
   final StreamController<Message> _messageStreamController =
       StreamController.broadcast();
   final ClientDB _db;
   final LoginManager _loginManager;
   final RequestManager _requestManager;
-  final UserInfo recipient;
   final String _userId;
 
   Chat(
     this._db,
     this._loginManager,
     this._requestManager,
-    this.recipient,
+    this.recipientId,
     this._userId,
-  ) {
-    _loadMessages().then((messages) {
-      messages.forEach(_broadcastMessage);
-    });
+  );
+
+  Future<UserInfo?> getRecipient() {
+    return _recipientInfo
+        .get(() => _requestManager.getUserInfoFor(recipientId));
+  }
+
+  /// Loads the messages for this chat and broadcasts them to [messageStream].
+  Future<void> loadMessages() async {
+    final messages = await _loadMessagesFromDB();
+    messages.forEach(_broadcastMessage);
   }
 
   /// A stream containing all messages sent in this chat, updated live as new
@@ -64,7 +76,7 @@ class Chat {
 
     await _requestManager.sendMessage(
       await _loginManager.getAuthenticator(),
-      recipient.id,
+      recipientId,
       sentAt,
       {"type": type, ...(headers ?? {})},
       await _getEncryptedKeys(key),
@@ -94,16 +106,16 @@ class Chat {
       message.direction == MessageDirection.incoming,
       message.sentAt,
       encryptedBody,
-      recipient.id,
+      recipientId,
       encryptedKey,
       iv,
     );
-    _db.addMessage(recipient.id, dbMessage);
+    _db.addMessage(recipientId, dbMessage);
     _broadcastMessage(message);
   }
 
-  Future<List<Message>> _loadMessages() async {
-    final List<DBMessage> dbMessages = _db.getMessages(recipient.id);
+  Future<List<Message>> _loadMessagesFromDB() async {
+    final List<DBMessage> dbMessages = _db.getMessages(recipientId);
     return await Future.wait(List.from(
       dbMessages.where((msg) => msg.user == _userId).map(_decryptDBMessage),
     ));
@@ -153,7 +165,7 @@ class Chat {
   Future<Map<String, String>> _getTargetKeys() async {
     return await _requestManager.getMessageTargets(
       await _loginManager.getAuthenticator(),
-      recipient.id,
+      recipientId,
     );
   }
 }

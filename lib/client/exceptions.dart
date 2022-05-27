@@ -35,3 +35,14 @@ class RequestException implements Exception {
     return "[$status] $message";
   }
 }
+
+class UnknownUserException {
+  String user;
+
+  UnknownUserException(this.user);
+
+  @override
+  String toString() {
+    return "Unknown user '$user'";
+  }
+}
