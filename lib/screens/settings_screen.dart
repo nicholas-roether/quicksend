@@ -5,7 +5,7 @@ import 'package:quicksend/widgets/custom_button.dart';
 import 'package:quicksend/widgets/loading_indicator.dart';
 
 class SettingScreen extends StatelessWidget {
-  SettingScreen({Key? key}) : super(key: key);
+  const SettingScreen({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
