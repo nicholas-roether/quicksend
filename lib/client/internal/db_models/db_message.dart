@@ -18,22 +18,5 @@ class DBMessage {
   @HiveField(3)
   final Uint8List content;
 
-  @HiveField(4)
-  final String user;
-
-  @HiveField(5)
-  final Uint8List key;
-
-  @HiveField(6)
-  final Uint8List iv;
-
-  DBMessage(
-    this.type,
-    this.incoming,
-    this.sentAt,
-    this.content,
-    this.user,
-    this.key,
-    this.iv,
-  ) : super();
+  DBMessage(this.type, this.incoming, this.sentAt, this.content) : super();
 }

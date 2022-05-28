@@ -38,7 +38,6 @@ class LoginManager extends Initialized<LoginManager> {
     _db.setDeviceID(deviceID);
     await _db.setSignatureKey(sigKeypair.private);
     await _db.setEncryptionKey(encKeypair.private);
-    await _db.setEncryptionPublicKey(encKeypair.public);
     _isLoggedIn = true;
   }
 
@@ -48,10 +47,6 @@ class LoginManager extends Initialized<LoginManager> {
     final SignatureAuthenticator auth = await getAuthenticator();
     final String deviceID = _db.getDeviceID() as String;
     await _requestManager.removeDevice(auth, deviceID);
-    _db.setDeviceID(null);
-    await _db.setSignatureKey(null);
-    await _db.setEncryptionKey(null);
-    await _db.setEncryptionPublicKey(null);
     _isLoggedIn = false;
   }
 

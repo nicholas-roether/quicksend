@@ -1,26 +1,43 @@
+import 'dart:convert';
+import 'dart:typed_data';
+
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 // ignore: implementation_imports
 import 'package:hive/src/adapters/date_time_adapter.dart';
+import 'package:quicksend/client/internal/crypto_utils.dart';
 import 'db_models/db_message.dart';
 import 'initialized.dart';
 
 class ClientDB extends Initialized<ClientDB> {
   final _secureStorage = const FlutterSecureStorage();
-  late final Box _general;
-  late final Box _chatList;
+
+  Box get _general {
+    return Hive.box("general");
+  }
+
+  Box get _chatList {
+    return Hive.box("chat-list");
+  }
 
   @override
   Future<void> onInit() async {
     await Hive.initFlutter();
     Hive.registerAdapter(DateTimeAdapter(), internal: true);
     Hive.registerAdapter(DBMessageAdapter());
-    _general = await Hive.openBox("general");
-    _chatList = await Hive.openBox("chat-list");
+    await Hive.openBox("general");
+    final _chatList = await Hive.openBox("chat-list");
+    await Future.wait(List.from(_chatList.values)
+        .map((chatId) => Hive.openBox(_getChatBoxName(chatId))));
+  }
+
+  Future<void> onLoggedOut() async {
     await Future.wait(
       List.from(_chatList.values)
-          .map((chatId) => Hive.openBox(_getChatBoxName(chatId))),
+          .map((chatId) => Hive.deleteBoxFromDisk(_getChatBoxName(chatId))),
     );
+    await _general.clear();
+    await _chatList.clear();
   }
 
   String? getDeviceID() {
@@ -41,7 +58,7 @@ class ClientDB extends Initialized<ClientDB> {
   Future<void> createChat(String id) async {
     assertInit();
     _chatList.add(id);
-    await Hive.openBox(_getChatBoxName(id));
+    await _openChatBox(id);
   }
 
   Future<void> deleteChat(String id) async {
@@ -67,7 +84,7 @@ class ClientDB extends Initialized<ClientDB> {
     return await _secureStorage.read(key: "signature-key");
   }
 
-  Future<void> setSignatureKey(String? key) async {
+  Future<void> setSignatureKey(String key) async {
     assertInit();
     await _secureStorage.write(key: "signature-key", value: key);
   }
@@ -77,19 +94,32 @@ class ClientDB extends Initialized<ClientDB> {
     return await _secureStorage.read(key: "encryption-key");
   }
 
-  Future<void> setEncryptionKey(String? key) async {
+  Future<void> setEncryptionKey(String key) async {
     assertInit();
     await _secureStorage.write(key: "encryption-key", value: key);
   }
 
-  Future<String?> getEncryptionPublicKey() async {
-    assertInit();
-    return await _secureStorage.read(key: "encryption-public-key");
+  Future<Uint8List?> _getChatBoxKey(String name) async {
+    final key = await _secureStorage.read(key: "$name-key");
+    if (key == null) return null;
+    return base64.decode(key);
   }
 
-  Future<void> setEncryptionPublicKey(String? key) async {
-    assertInit();
-    await _secureStorage.write(key: "encryption-public-key", value: key);
+  Future<void> _setChatBoxKey(String name, Uint8List key) async {
+    await _secureStorage.write(key: "$name-key", value: base64.encode(key));
+  }
+
+  Future<void> _openChatBox(String id) async {
+    final boxName = _getChatBoxName(id);
+    final savedKey = await _getChatBoxKey(boxName);
+    Uint8List key;
+    if (savedKey != null) {
+      key = savedKey;
+    } else {
+      key = await CryptoUtils.generateKey();
+      _setChatBoxKey(boxName, key);
+    }
+    await Hive.openBox(boxName, encryptionCipher: HiveAesCipher(key));
   }
 
   String _getChatBoxName(String id) {

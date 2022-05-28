@@ -21,16 +21,13 @@ class DBMessageAdapter extends TypeAdapter<DBMessage> {
       fields[1] as bool,
       fields[2] as DateTime,
       fields[3] as Uint8List,
-      fields[4] as String,
-      fields[5] as Uint8List,
-      fields[6] as Uint8List,
     );
   }
 
   @override
   void write(BinaryWriter writer, DBMessage obj) {
     writer
-      ..writeByte(7)
+      ..writeByte(4)
       ..writeByte(0)
       ..write(obj.type)
       ..writeByte(1)
@@ -38,13 +35,7 @@ class DBMessageAdapter extends TypeAdapter<DBMessage> {
       ..writeByte(2)
       ..write(obj.sentAt)
       ..writeByte(3)
-      ..write(obj.content)
-      ..writeByte(4)
-      ..write(obj.user)
-      ..writeByte(5)
-      ..write(obj.key)
-      ..writeByte(6)
-      ..write(obj.iv);
+      ..write(obj.content);
   }
 
   @override

@@ -127,5 +127,6 @@ class QuicksendClient extends Initialized<QuicksendClient> {
 
   Future<void> _onLoggedOut() async {
     _chatManager = null;
+    _db.onLoggedOut();
   }
 }

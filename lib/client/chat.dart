@@ -31,18 +31,15 @@ class Chat extends ChangeNotifier {
     this._requestManager,
     this.recipientId,
     this._userId,
-  );
+  ) {
+    final messages = _loadMessagesFromDB();
+    messages.forEach(_broadcastMessage);
+  }
 
   /// Get the user info for the user this chat is with
   Future<UserInfo?> getRecipient() {
     return _recipientInfo
         .get(() => _requestManager.getUserInfoFor(recipientId));
-  }
-
-  /// Loads the messages for this chat.
-  Future<void> loadMessages() async {
-    final messages = await _loadMessagesFromDB();
-    messages.forEach(_broadcastMessage);
   }
 
   /// Returns a list of all messages that have been sent in this chat up until
@@ -88,22 +85,11 @@ class Chat extends ChangeNotifier {
   /// or [sendTextMessage] instead.
   Future<void> saveMessage(Message message) async {
     _loginManager.assertLoggedIn();
-    final encryptionKey = await _db.getEncryptionPublicKey();
-    assert(encryptionKey != null);
-    final key = await CryptoUtils.generateKey();
-    final iv = await CryptoUtils.generateIV();
-    final encryptedBody = await CryptoUtils.encrypt(message.content, key, iv);
-    final encryptedKey =
-        await CryptoUtils.encryptKey(key, encryptionKey as String);
-
     final dbMessage = DBMessage(
       message.type,
       message.direction == MessageDirection.incoming,
       message.sentAt,
-      encryptedBody,
-      recipientId,
-      encryptedKey,
-      iv,
+      message.content,
     );
     _db.addMessage(recipientId, dbMessage);
     _sortMessages();
@@ -114,10 +100,15 @@ class Chat extends ChangeNotifier {
     _messages.sort((msg1, msg2) => msg1.sentAt.compareTo(msg2.sentAt));
   }
 
-  Future<List<Message>> _loadMessagesFromDB() async {
+  List<Message> _loadMessagesFromDB() {
     final List<DBMessage> dbMessages = _db.getMessages(recipientId);
-    return await Future.wait(List.from(
-      dbMessages.where((msg) => msg.user == _userId).map(_decryptDBMessage),
+    return List.from(dbMessages.map(
+      (dbMsg) => Message(
+        dbMsg.type,
+        dbMsg.incoming ? MessageDirection.incoming : MessageDirection.outgoing,
+        dbMsg.sentAt,
+        dbMsg.content,
+      ),
     ));
   }
 
@@ -125,28 +116,6 @@ class Chat extends ChangeNotifier {
     _messages.add(message);
     _sortMessages();
     notifyListeners();
-  }
-
-  Future<Message> _decryptDBMessage(DBMessage dbMessage) async {
-    final encKey = await _db.getEncryptionKey();
-    assert(encKey != null);
-    final msgKey = await CryptoUtils.decryptKey(
-      dbMessage.key,
-      encKey as String,
-    );
-    final messageContent = await CryptoUtils.decrypt(
-      dbMessage.content,
-      msgKey,
-      dbMessage.iv,
-    );
-    return Message(
-      dbMessage.type,
-      dbMessage.incoming
-          ? MessageDirection.incoming
-          : MessageDirection.outgoing,
-      dbMessage.sentAt,
-      messageContent,
-    );
   }
 
   Future<Map<String, String>> _getEncryptedKeys(Uint8List key) async {
