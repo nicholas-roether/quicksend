@@ -10,7 +10,9 @@ class LoginManager extends Initialized<LoginManager> {
   final RequestManager _requestManager;
   bool _isLoggedIn = false;
 
-  LoginManager(this._db, this._requestManager);
+  LoginManager({required ClientDB db, required RequestManager requestManager})
+      : _db = db,
+        _requestManager = requestManager;
 
   Future<void> logIn(
     String deviceName,

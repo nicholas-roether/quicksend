@@ -22,12 +22,15 @@ class ChatManager {
   late final _chatList = ChatList(_requestManager, _loginManager, _db, _userId);
 
   ChatManager(
-    this._userId,
-    this._loginManager,
-    this._eventManager,
-    this._requestManager,
-    this._db,
-  ) {
+    this._userId, {
+    required LoginManager loginManager,
+    required RequestManager requestManager,
+    required EventManager eventManager,
+    required ClientDB db,
+  })  : _loginManager = loginManager,
+        _requestManager = requestManager,
+        _eventManager = eventManager,
+        _db = db {
     _eventManager.on("message", _onMessageEvent);
   }
 

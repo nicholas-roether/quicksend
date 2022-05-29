@@ -12,7 +12,11 @@ class EventManager extends EventSource {
   late final String _socketUri;
   WebSocket? _ws;
 
-  EventManager(this._requestManager, this._loginManager) {
+  EventManager({
+    required LoginManager loginManager,
+    required RequestManager requestManager,
+  })  : _loginManager = loginManager,
+        _requestManager = requestManager {
     final socketUri = dotenv.env["SOCKET_URI"];
     assert(
       socketUri != null,

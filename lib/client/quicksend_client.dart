@@ -18,8 +18,14 @@ export 'exceptions.dart';
 class QuicksendClient extends Initialized<QuicksendClient> {
   final _db = ClientDB();
   final _requestManager = RequestManager();
-  late final _loginManager = LoginManager(_db, _requestManager);
-  late final _eventManager = EventManager(_requestManager, _loginManager);
+  late final _loginManager = LoginManager(
+    db: _db,
+    requestManager: _requestManager,
+  );
+  late final _eventManager = EventManager(
+    requestManager: _requestManager,
+    loginManager: _loginManager,
+  );
   ChatManager? _chatManager;
 
   @override
@@ -122,10 +128,10 @@ class QuicksendClient extends Initialized<QuicksendClient> {
     final UserInfo userInfo = await getUserInfo();
     _chatManager = ChatManager(
       userInfo.id,
-      _loginManager,
-      _eventManager,
-      _requestManager,
-      _db,
+      loginManager: _loginManager,
+      eventManager: _eventManager,
+      requestManager: _requestManager,
+      db: _db,
     );
     _eventManager.onLoggedIn();
   }
