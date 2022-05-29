@@ -27,7 +27,7 @@ class EventManager extends EventSource {
 
   Future<void> onLoggedIn() async {
     final auth = await _loginManager.getAuthenticator();
-    final token = _requestManager.getSocketToken(auth);
+    final token = await _requestManager.getSocketToken(auth);
     _ws = await WebSocket.connect(
       _socketUri,
       headers: {"Authorization": "Token $token"},
