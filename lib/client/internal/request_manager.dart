@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:typed_data';
 
 import 'package:dio/dio.dart' as dio;
 import 'package:flutter_dotenv/flutter_dotenv.dart';
@@ -214,9 +215,9 @@ class RequestManager {
     ));
   }
 
-  Future<String> getSocketToken(SignatureAuthenticator auth) async {
+  Future<Uint8List> getSocketToken(SignatureAuthenticator auth) async {
     final res = await _request("GET", "/socket", auth: auth);
-    return res["token"];
+    return base64.decode(res["token"]);
   }
 
   Future<dynamic> _request(
