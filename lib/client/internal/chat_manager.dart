@@ -2,6 +2,8 @@ import 'dart:async';
 import 'dart:convert';
 import 'dart:typed_data';
 
+import 'package:quicksend/client/internal/event_manager.dart';
+
 import '../chat_list.dart';
 import 'crypto_utils.dart';
 import 'db.dart';
@@ -15,15 +17,18 @@ class ChatManager {
   final String _userId;
   final LoginManager _loginManager;
   final RequestManager _requestManager;
+  final EventManager _eventManager;
   final ClientDB _db;
-  // final Map<String, Chat> openChats = {};
   late final _chatList = ChatList(_requestManager, _loginManager, _db, _userId);
 
   ChatManager(
-      this._userId, this._loginManager, this._requestManager, this._db) {
-    Timer.periodic(const Duration(seconds: 5), (_) {
-      refreshMessages();
-    });
+    this._userId,
+    this._loginManager,
+    this._eventManager,
+    this._requestManager,
+    this._db,
+  ) {
+    _eventManager.on("message", _onMessageEvent);
   }
 
   ChatList getChatList() {
@@ -36,6 +41,14 @@ class ChatManager {
         await _requestManager.pollMessages(auth);
     await Future.wait(messages.map(_saveIncomingMessage));
     await _requestManager.clearMessages(auth);
+  }
+
+  void close() {
+    _eventManager.removeListener("message", _onMessageEvent);
+  }
+
+  void _onMessageEvent(_) {
+    refreshMessages();
   }
 
   Future<void> _saveIncomingMessage(IncomingMessage message) async {

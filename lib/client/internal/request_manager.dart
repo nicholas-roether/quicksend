@@ -214,6 +214,11 @@ class RequestManager {
     ));
   }
 
+  Future<String> getSocketToken(SignatureAuthenticator auth) async {
+    final res = await _request("GET", "/socket", auth: auth);
+    return res["token"];
+  }
+
   Future<dynamic> _request(
     String method,
     String target, {

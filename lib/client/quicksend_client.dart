@@ -1,3 +1,5 @@
+import 'package:quicksend/client/internal/event_manager.dart';
+
 import 'chat_list.dart';
 import 'internal/chat_manager.dart';
 import 'internal/initialized.dart';
@@ -17,6 +19,7 @@ class QuicksendClient extends Initialized<QuicksendClient> {
   final _db = ClientDB();
   final _requestManager = RequestManager();
   late final _loginManager = LoginManager(_db, _requestManager);
+  late final _eventManager = EventManager(_requestManager, _loginManager);
   ChatManager? _chatManager;
 
   @override
@@ -120,13 +123,17 @@ class QuicksendClient extends Initialized<QuicksendClient> {
     _chatManager = ChatManager(
       userInfo.id,
       _loginManager,
+      _eventManager,
       _requestManager,
       _db,
     );
+    _eventManager.onLoggedIn();
   }
 
   Future<void> _onLoggedOut() async {
+    _chatManager?.close();
     _chatManager = null;
     _db.onLoggedOut();
+    _eventManager.onLoggedOut();
   }
 }
