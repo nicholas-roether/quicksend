@@ -148,7 +148,9 @@ class RequestManager {
     SignatureAuthenticator auth,
     String userID,
   ) async {
-    return await _request("GET", "/messages/targets/$userID", auth: auth);
+    return Map.from(
+      await _request("GET", "/messages/targets/$userID", auth: auth),
+    );
   }
 
   Future<void> sendMessage(
