@@ -46,8 +46,7 @@ class _ChatScreenState extends State<ChatScreen> {
                   return Align(
                     alignment: const Alignment(0.9, 1.0),
                     child: MessageBox(
-                      message:
-                          widget.chat.getMessages().elementAt(index).asString(),
+                      message: widget.chat.getMessages().elementAt(index),
                       color: Theme.of(context).primaryColor,
                     ),
                   );
