@@ -119,9 +119,9 @@ class QuicksendClient extends Initialized<QuicksendClient> {
   }
 
   ChatManager _getChatManager() {
-    _loginManager.assertInit();
+    _loginManager.assertLoggedIn();
 
-    return _chatManager as ChatManager;
+    return _chatManager!;
   }
 
   Future<void> _onLoggedIn() async {
