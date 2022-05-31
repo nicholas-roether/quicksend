@@ -1,9 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:quicksend/widgets/message_box.dart';
 
+import '../client/chat.dart';
+
 class ChatScreen extends StatefulWidget {
-  const ChatScreen({Key? key, required this.username}) : super(key: key);
+  const ChatScreen({Key? key, required this.username, required this.chat})
+      : super(key: key);
   final String username;
+  final Chat chat;
 
   @override
   State<ChatScreen> createState() => _ChatScreenState();
@@ -15,14 +19,15 @@ class _ChatScreenState extends State<ChatScreen> {
 
   void _sendMessage() {
     if (_chatController.text.isEmpty) return;
-    /*setState(() {
-      messages.insert(0, _chatController.text);
+    setState(() {
+      widget.chat.sendTextMessage(_chatController.text);
       _chatController.text = "";
-    });*/
+    });
   }
 
   @override
   Widget build(BuildContext context) {
+    widget.chat.loadSavedMessages();
     return Scaffold(
       appBar: AppBar(
         title: Text(
@@ -35,18 +40,22 @@ class _ChatScreenState extends State<ChatScreen> {
         children: [
           Expanded(
             flex: 1,
-            child: ListView.builder(
-              itemBuilder: (context, index) {
-                return Align(
-                  alignment: const Alignment(0.9, 1.0),
-                  child: MessageBox(
-                    message: messages[index],
-                    color: Theme.of(context).primaryColor,
-                  ),
-                );
-              },
-              itemCount: messages.length,
-              reverse: true,
+            child: AnimatedBuilder(
+              animation: widget.chat,
+              builder: (context, _) => ListView.builder(
+                itemBuilder: (context, index) {
+                  return Align(
+                    alignment: const Alignment(0.9, 1.0),
+                    child: MessageBox(
+                      message:
+                          widget.chat.getMessages().elementAt(index).asString(),
+                      color: Theme.of(context).primaryColor,
+                    ),
+                  );
+                },
+                itemCount: widget.chat.getMessages().length,
+                reverse: true,
+              ),
             ),
           ),
           SizedBox(
