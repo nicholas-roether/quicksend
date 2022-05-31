@@ -14,15 +14,17 @@ import '../chat.dart';
 import '../models.dart';
 
 class ChatManager {
-  final String _userId;
   final LoginManager _loginManager;
   final RequestManager _requestManager;
   final EventManager _eventManager;
   final ClientDB _db;
-  late final _chatList = ChatList(_requestManager, _loginManager, _db, _userId);
+  late final _chatList = ChatList(
+    requestManager: _requestManager,
+    loginManager: _loginManager,
+    db: _db,
+  );
 
-  ChatManager(
-    this._userId, {
+  ChatManager({
     required LoginManager loginManager,
     required RequestManager requestManager,
     required EventManager eventManager,

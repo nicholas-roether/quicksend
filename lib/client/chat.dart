@@ -23,15 +23,14 @@ class Chat extends ChangeNotifier {
   final ClientDB _db;
   final LoginManager _loginManager;
   final RequestManager _requestManager;
-  final String _userId;
 
-  Chat(
-    this._db,
-    this._loginManager,
-    this._requestManager,
-    this.recipientId,
-    this._userId,
-  );
+  Chat(this.recipientId,
+      {required ClientDB db,
+      required LoginManager loginManager,
+      required RequestManager requestManager})
+      : _db = db,
+        _loginManager = loginManager,
+        _requestManager = requestManager;
 
   /// Loads all saved messages for this chat and broadcasts them.
   void loadSavedMessages() {
