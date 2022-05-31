@@ -9,6 +9,8 @@ final quicksendClient = QuicksendClient();
 
 void main() async {
   await dotenv.load();
+
+  WidgetsFlutterBinding.ensureInitialized();
   await quicksendClient.init();
 
   runApp(const MyApp());
