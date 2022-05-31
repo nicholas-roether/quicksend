@@ -237,7 +237,8 @@ class RequestManager {
       message ??= "(No error message provided)";
       throw RequestException(response.statusCode ?? 0, message);
     }
-    final dynamic resBody = response.data ? response.data["data"] : null;
+    if (response.statusCode == 204) return null;
+    final dynamic resBody = response.data["data"];
     return resBody;
   }
 }
