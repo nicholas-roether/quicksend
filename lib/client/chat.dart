@@ -31,9 +31,13 @@ class Chat extends ChangeNotifier {
     this._requestManager,
     this.recipientId,
     this._userId,
-  ) {
+  );
+
+  /// Loads all saved messages for this chat and broadcasts them.
+  void loadSavedMessages() {
     final messages = _loadMessagesFromDB();
-    messages.forEach(_broadcastMessage);
+    messages.forEach(_addMessage);
+    notifyListeners();
   }
 
   /// Get the user info for the user this chat is with.
@@ -94,7 +98,8 @@ class Chat extends ChangeNotifier {
     );
     _db.addMessage(recipientId, dbMessage);
     _sortMessages();
-    _broadcastMessage(message);
+    _addMessage(message);
+    notifyListeners();
   }
 
   void _sortMessages() {
@@ -113,10 +118,9 @@ class Chat extends ChangeNotifier {
     ));
   }
 
-  void _broadcastMessage(Message message) {
+  void _addMessage(Message message) {
     _messages.add(message);
     _sortMessages();
-    notifyListeners();
   }
 
   Future<Map<String, String>> _getEncryptedKeys(Uint8List key) async {
