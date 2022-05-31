@@ -53,11 +53,17 @@ class _LoginScreenState extends State<LoginScreen> {
     });
     try {
       if (mode == LoginMode.register) {
-        await quicksendClient.createAccount(_usernameController.text,
-            _passwordController.text, _displaynameController.text);
+        await quicksendClient.createAccount(
+          _usernameController.text,
+          _passwordController.text,
+          _displaynameController.text,
+        );
       }
-      await quicksendClient.logIn(uuid.v1().substring(0, 15),
-          _usernameController.text, _passwordController.text);
+      await quicksendClient.logIn(
+        uuid.v1().substring(0, 15),
+        _usernameController.text,
+        _passwordController.text,
+      );
 
       Navigator.popAndPushNamed(context, "/home");
     } on RequestException catch (error) {
@@ -77,15 +83,18 @@ class _LoginScreenState extends State<LoginScreen> {
   }
 
   @override
-  Widget build(BuildContext context) {
+  void initState() {
     final quicksendClient = QuicksendClientProvider.get(context);
-
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (quicksendClient.isLoggedIn()) {
         Navigator.popAndPushNamed(context, "/home");
       }
     });
+    super.initState();
+  }
 
+  @override
+  Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         title: Text(

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:quicksend/client/provider.dart';
 import 'package:quicksend/screens/chat_list.dart';
 import 'package:quicksend/screens/settings_screen.dart';
 import 'package:quicksend/utils/user_search_delegate.dart';
@@ -15,15 +16,23 @@ class _HomePageState extends State<HomePage> {
   int selectedIndex = 0;
 
   @override
-  Widget build(BuildContext context) {
+  void initState() {
     // Stupid hack to prevent hot reloads from messing up the route stack
+    final quicksendClient = QuicksendClientProvider.get(context);
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (Navigator.canPop(context)) {
         Navigator.popUntil(context, (route) => route.isFirst);
         Navigator.popAndPushNamed(context, "/home");
       }
+      if (!quicksendClient.isLoggedIn()) {
+        Navigator.popAndPushNamed(context, "/");
+      }
     });
+    super.initState();
+  }
 
+  @override
+  Widget build(BuildContext context) {
     return Scaffold(
       bottomNavigationBar: CustomBottomNavbar(
         currentIndex: selectedIndex,
