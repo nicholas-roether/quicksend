@@ -21,6 +21,8 @@ class LoginManager extends Initialized<LoginManager> {
   ) async {
     assertInit();
     if (_isLoggedIn) return;
+    final userInfo = await _requestManager.findUser(username);
+    if (userInfo == null) throw UnknownUserException(username);
     final basicAuth = BasicAuthenticator(username, password);
     final keypairs = await Future.wait([
       CryptoUtils.generateKeypair(),

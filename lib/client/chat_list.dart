@@ -6,17 +6,18 @@ import 'package:quicksend/client/internal/login_manager.dart';
 import 'package:quicksend/client/internal/request_manager.dart';
 
 class ChatList extends ChangeNotifier {
-  final String _userId;
   final LoginManager _loginManager;
   final RequestManager _requestManager;
   final ClientDB _db;
   final List<Chat> _chats = [];
 
-  ChatList(this._requestManager, this._loginManager, this._db, this._userId) {
-    _db.getChatList().forEach((chatId) {
-      _chats.add(Chat(_db, _loginManager, _requestManager, chatId, _userId));
-    });
-  }
+  ChatList(
+      {required RequestManager requestManager,
+      required LoginManager loginManager,
+      required ClientDB db})
+      : _requestManager = requestManager,
+        _loginManager = loginManager,
+        _db = db;
 
   /// Get all chats that currently exist
   List<Chat> getChats() {
@@ -44,11 +45,10 @@ class ChatList extends ChangeNotifier {
   Future<Chat> createChatFromId(String id) async {
     await _db.createChat(id);
     final chat = Chat(
-      _db,
-      _loginManager,
-      _requestManager,
       id,
-      _userId,
+      db: _db,
+      loginManager: _loginManager,
+      requestManager: _requestManager,
     );
     _chats.add(chat);
     notifyListeners();

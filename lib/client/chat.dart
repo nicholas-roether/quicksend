@@ -23,20 +23,24 @@ class Chat extends ChangeNotifier {
   final ClientDB _db;
   final LoginManager _loginManager;
   final RequestManager _requestManager;
-  final String _userId;
 
-  Chat(
-    this._db,
-    this._loginManager,
-    this._requestManager,
-    this.recipientId,
-    this._userId,
-  ) {
+  Chat(this.recipientId,
+      {required ClientDB db,
+      required LoginManager loginManager,
+      required RequestManager requestManager})
+      : _db = db,
+        _loginManager = loginManager,
+        _requestManager = requestManager;
+
+  /// Loads all saved messages for this chat and broadcasts them.
+  void loadSavedMessages() {
     final messages = _loadMessagesFromDB();
-    messages.forEach(_broadcastMessage);
+    messages.forEach(_addMessage);
+    notifyListeners();
   }
 
-  /// Get the user info for the user this chat is with
+  /// Get the user info for the user this chat is with.
+  /// Returns null if that user no longer exists.
   Future<UserInfo?> getRecipient() {
     return _recipientInfo
         .get(() => _requestManager.getUserInfoFor(recipientId));
@@ -93,7 +97,8 @@ class Chat extends ChangeNotifier {
     );
     _db.addMessage(recipientId, dbMessage);
     _sortMessages();
-    _broadcastMessage(message);
+    _addMessage(message);
+    notifyListeners();
   }
 
   void _sortMessages() {
@@ -112,10 +117,9 @@ class Chat extends ChangeNotifier {
     ));
   }
 
-  void _broadcastMessage(Message message) {
+  void _addMessage(Message message) {
     _messages.add(message);
     _sortMessages();
-    notifyListeners();
   }
 
   Future<Map<String, String>> _getEncryptedKeys(Uint8List key) async {

@@ -125,15 +125,13 @@ class QuicksendClient extends Initialized<QuicksendClient> {
   }
 
   Future<void> _onLoggedIn() async {
-    final UserInfo userInfo = await getUserInfo();
     _chatManager = ChatManager(
-      userInfo.id,
       loginManager: _loginManager,
       eventManager: _eventManager,
       requestManager: _requestManager,
       db: _db,
     );
-    _eventManager.onLoggedIn();
+    await _eventManager.onLoggedIn();
   }
 
   Future<void> _onLoggedOut() async {
