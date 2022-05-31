@@ -45,6 +45,7 @@ class _ChatTileState extends State<ChatTile> {
           builder: (context) {
             return ChatScreen(
               username: userInfo!.getName(),
+              chat: widget.chat,
             );
           },
         ),
