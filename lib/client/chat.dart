@@ -36,7 +36,8 @@ class Chat extends ChangeNotifier {
     messages.forEach(_broadcastMessage);
   }
 
-  /// Get the user info for the user this chat is with
+  /// Get the user info for the user this chat is with.
+  /// Returns null if that user no longer exists.
   Future<UserInfo?> getRecipient() {
     return _recipientInfo
         .get(() => _requestManager.getUserInfoFor(recipientId));
