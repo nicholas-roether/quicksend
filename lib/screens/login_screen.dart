@@ -66,22 +66,14 @@ class _LoginScreenState extends State<LoginScreen> {
         errorMessage = error.message;
       }
       _showErrorDialog(errorMessage);
+    } on UnknownUserException {
+      _showErrorDialog("User does not exist!");
     }
     setState(() {
       _isLoading = false;
     });
     Navigator.popAndPushNamed(context, "/home");
   }
-
-  //@override
-  /*void initState() {
-    super.initState();
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      if (quicksendClient.isLoggedIn()) {
-        Navigator.popAndPushNamed(context, "/home");
-      }
-    });
-  }*/
 
   @override
   Widget build(BuildContext context) {
