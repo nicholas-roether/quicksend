@@ -25,7 +25,10 @@ class ChatList extends ChangeNotifier {
 
   /// Get an existing chat from a user id
   Chat? getChatFromId(String id) {
-    return _chats.firstWhere((chat) => chat.recipientId == id);
+    for (final chat in _chats) {
+      if (chat.recipientId == id) return chat;
+    }
+    return null;
   }
 
   /// Create a new chat with a user with the provided [username]
