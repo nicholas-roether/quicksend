@@ -78,6 +78,14 @@ class _LoginScreenState extends State<LoginScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final quicksendClient = QuicksendClientProvider.get(context);
+
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (quicksendClient.isLoggedIn()) {
+        Navigator.popAndPushNamed(context, "/home");
+      }
+    });
+
     return Scaffold(
       appBar: AppBar(
         title: Text(
