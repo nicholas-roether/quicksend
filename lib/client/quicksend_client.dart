@@ -76,6 +76,7 @@ class QuicksendClient with Initialized<QuicksendClient> {
   ) async {
     assertInit();
     await _loginManager.logIn(deviceName, username, password);
+    await _db.reset();
     await _onLoggedIn();
   }
 
@@ -125,7 +126,6 @@ class QuicksendClient with Initialized<QuicksendClient> {
   }
 
   Future<void> _onLoggedIn() async {
-    await _db.reset();
     _chatManager = ChatManager(
       loginManager: _loginManager,
       eventManager: _eventManager,
