@@ -8,7 +8,7 @@ part of 'db_message.dart';
 
 class DBMessageAdapter extends TypeAdapter<DBMessage> {
   @override
-  final int typeId = 0;
+  final int typeId = 1;
 
   @override
   DBMessage read(BinaryReader reader) {
