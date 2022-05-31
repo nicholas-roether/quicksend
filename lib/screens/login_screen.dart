@@ -58,6 +58,8 @@ class _LoginScreenState extends State<LoginScreen> {
       }
       await quicksendClient.logIn(uuid.v1().substring(0, 15),
           _usernameController.text, _passwordController.text);
+
+      Navigator.popAndPushNamed(context, "/home");
     } on RequestException catch (error) {
       var errorMessage = "login attempt failed!";
       if (error.status == 401) {
@@ -72,7 +74,6 @@ class _LoginScreenState extends State<LoginScreen> {
     setState(() {
       _isLoading = false;
     });
-    Navigator.popAndPushNamed(context, "/home");
   }
 
   @override
