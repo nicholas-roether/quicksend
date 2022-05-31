@@ -120,7 +120,7 @@ class RequestManager {
   }
 
   Future<UserInfo?> findUser(String name) async {
-    final res = await _request("GET", "/user/find$name");
+    final res = await _request("GET", "/user/find/$name");
     if (res == null) return null;
     return UserInfo(res["id"], res["username"], res["display"]);
   }
