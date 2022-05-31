@@ -15,7 +15,6 @@ class ChatScreen extends StatefulWidget {
 
 class _ChatScreenState extends State<ChatScreen> {
   final TextEditingController _chatController = TextEditingController();
-  List<String> messages = [];
 
   void _sendMessage() {
     if (_chatController.text.isEmpty) return;
