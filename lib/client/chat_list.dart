@@ -17,7 +17,9 @@ class ChatList extends ChangeNotifier {
       required ClientDB db})
       : _requestManager = requestManager,
         _loginManager = loginManager,
-        _db = db;
+        _db = db {
+    _db.getChatList().forEach((chatId) => createChatFromId(chatId));
+  }
 
   /// Get all chats that currently exist
   List<Chat> getChats() {
