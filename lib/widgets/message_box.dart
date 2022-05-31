@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:quicksend/client/models.dart';
 
 class MessageBox extends StatelessWidget {
   const MessageBox({Key? key, required this.message, required this.color})
       : super(key: key);
-  final String message;
+  final Message message;
   final Color color;
 
   @override
@@ -14,10 +15,10 @@ class MessageBox extends StatelessWidget {
       child: Padding(
         padding: const EdgeInsets.all(8.0),
         child: Text(
-          message,
+          message.asString(),
           style: Theme.of(context)
               .textTheme
-              .bodyText2
+              .bodyText1
               ?.copyWith(color: Colors.black),
         ),
       ),
