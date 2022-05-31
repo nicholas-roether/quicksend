@@ -25,6 +25,7 @@ class MyApp extends StatelessWidget {
           "/": (context) => const LoginScreen(),
           "/home": (context) => const HomePage(),
         },
+        home: const HomePage(),
       ),
     );
   }
