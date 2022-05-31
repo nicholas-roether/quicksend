@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:quicksend/widgets/message_box.dart';
 
 class ChatScreen extends StatefulWidget {
   const ChatScreen({Key? key, required this.username}) : super(key: key);
@@ -10,6 +11,16 @@ class ChatScreen extends StatefulWidget {
 
 class _ChatScreenState extends State<ChatScreen> {
   final TextEditingController _chatController = TextEditingController();
+  List<String> messages = [];
+
+  void _sendMessage() {
+    if (_chatController.text.isEmpty) return;
+    setState(() {
+      messages.insert(0, _chatController.text);
+      _chatController.text = "";
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -24,10 +35,18 @@ class _ChatScreenState extends State<ChatScreen> {
         children: [
           Expanded(
             flex: 1,
-            child: SingleChildScrollView(
-              child: Column(
-                children: const [],
-              ),
+            child: ListView.builder(
+              itemBuilder: (context, index) {
+                return Align(
+                  alignment: const Alignment(0.9, 1.0),
+                  child: MessageBox(
+                    message: messages[index],
+                    color: Theme.of(context).primaryColor,
+                  ),
+                );
+              },
+              itemCount: messages.length,
+              reverse: true,
             ),
           ),
           SizedBox(
@@ -54,7 +73,7 @@ class _ChatScreenState extends State<ChatScreen> {
                     width: 10,
                   ),
                   FloatingActionButton.small(
-                    onPressed: () {},
+                    onPressed: _sendMessage,
                     child: const Icon(Icons.send),
                     backgroundColor: Theme.of(context).primaryColor,
                     elevation: 3,
