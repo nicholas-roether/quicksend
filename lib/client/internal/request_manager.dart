@@ -85,6 +85,8 @@ class RequestManager {
   final _dio = dio.Dio();
 
   final _userInfo = CachedValue<UserInfo>();
+  final _userInfoId = CachedMap<String, UserInfo?>();
+  final _userInfoName = CachedMap<String, UserInfo?>();
 
   RequestManager() {
     final backendUri = dotenv.env["BACKEND_URI"];
@@ -116,15 +118,19 @@ class RequestManager {
   }
 
   Future<UserInfo?> getUserInfoFor(String id) async {
-    final res = await _request("GET", "/user/info/$id");
-    if (res == null) return null;
-    return UserInfo(res["id"], res["username"], res["display"]);
+    return _userInfoId.get(id, (id) async {
+      final res = await _request("GET", "/user/info/$id");
+      if (res == null) return null;
+      return UserInfo(res["id"], res["username"], res["display"]);
+    });
   }
 
   Future<UserInfo?> findUser(String name) async {
-    final res = await _request("GET", "/user/find/$name");
-    if (res == null) return null;
-    return UserInfo(res["id"], res["username"], res["display"]);
+    return _userInfoName.get(name, (name) async {
+      final res = await _request("GET", "/user/find/$name");
+      if (res == null) return null;
+      return UserInfo(res["id"], res["username"], res["display"]);
+    });
   }
 
   Future<List<IncomingMessage>> pollMessages(

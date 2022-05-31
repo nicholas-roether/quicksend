@@ -1,9 +1,18 @@
 class CachedValue<T> {
-  T? chached;
+  T? cached;
 
-  Future<T> get(Future<T> Function() getter) {
-    if (chached != null) return Future.value(chached);
-    return getter();
+  Future<T> get(Future<T> Function() getter) async {
+    cached ??= await getter();
+    return cached!;
+  }
+}
+
+class CachedMap<K, V> {
+  final Map<K, V> _values = {};
+
+  Future<V> get(K key, Future<V> Function(K key) getter) async {
+    _values[key] ??= await getter(key);
+    return _values[key]!;
   }
 }
 
