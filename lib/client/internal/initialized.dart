@@ -8,7 +8,7 @@ mixin Initialized<T> {
   Future<void> init() async {
     await onInit();
     _didInit = true;
-    afterInit();
+    await afterInit();
   }
 
   Future<void> onInit();
