@@ -44,7 +44,23 @@ class _HomePageState extends State<HomePage> {
       ),
       floatingActionButton: selectedIndex == 0
           ? FloatingActionButton(
-              onPressed: () {},
+              onPressed: () {
+                showModalBottomSheet(
+                  backgroundColor: Colors.transparent,
+                  context: context,
+                  builder: (context) {
+                    return Container(
+                      decoration: BoxDecoration(
+                        color: Theme.of(context).backgroundColor,
+                        borderRadius: const BorderRadius.only(
+                          topLeft: Radius.circular(20),
+                          topRight: Radius.circular(20),
+                        ),
+                      ),
+                    );
+                  },
+                );
+              },
               backgroundColor: Theme.of(context).primaryColor,
               child: const Icon(Icons.add),
             )
