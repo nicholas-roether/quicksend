@@ -70,7 +70,7 @@ class Chat extends ChangeNotifier {
     final iv = await CryptoUtils.generateIV();
     final encryptedBody = await CryptoUtils.encrypt(body, key, iv);
 
-    await _requestManager.sendMessage(
+    final msgId = await _requestManager.sendMessage(
       await _loginManager.getAuthenticator(),
       recipientId,
       sentAt,
@@ -80,7 +80,8 @@ class Chat extends ChangeNotifier {
       base64.encode(encryptedBody),
     );
 
-    await saveMessage(Message(type, MessageDirection.outgoing, sentAt, body));
+    await saveMessage(
+        Message(msgId, type, MessageDirection.outgoing, sentAt, body));
   }
 
   /// Saves a message to this device WITHOUT sending it to the server.
@@ -90,6 +91,7 @@ class Chat extends ChangeNotifier {
   Future<void> saveMessage(Message message) async {
     _loginManager.assertLoggedIn();
     final dbMessage = DBMessage(
+      message.id,
       message.type,
       message.direction == MessageDirection.incoming,
       message.sentAt,
@@ -102,13 +104,14 @@ class Chat extends ChangeNotifier {
   }
 
   void _sortMessages() {
-    _messages.sort((msg1, msg2) => msg1.sentAt.compareTo(msg2.sentAt));
+    _messages.sort((msg1, msg2) => msg2.sentAt.compareTo(msg1.sentAt));
   }
 
   List<Message> _loadMessagesFromDB() {
     final List<DBMessage> dbMessages = _db.getMessages(recipientId);
     return List.from(dbMessages.map(
       (dbMsg) => Message(
+        dbMsg.id,
         dbMsg.type,
         dbMsg.incoming ? MessageDirection.incoming : MessageDirection.outgoing,
         dbMsg.sentAt,
@@ -118,6 +121,7 @@ class Chat extends ChangeNotifier {
   }
 
   void _addMessage(Message message) {
+    _messages.removeWhere((msg) => msg.id == message.id);
     _messages.add(message);
     _sortMessages();
   }
