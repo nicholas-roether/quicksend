@@ -27,8 +27,9 @@ class ClientDB extends Initialized<ClientDB> {
     Hive.registerAdapter(DBMessageAdapter());
     await Hive.openBox("general");
     final _chatList = await Hive.openBox("chat-list");
-    await Future.wait(List.from(_chatList.values)
-        .map((chatId) => Hive.openBox(_getChatBoxName(chatId))));
+    await Future.wait(
+      List.from(_chatList.values).map((chatId) => _openChatBox(chatId)),
+    );
   }
 
   Future<void> onLoggedOut() async {
@@ -119,7 +120,7 @@ class ClientDB extends Initialized<ClientDB> {
       key = savedKey;
     } else {
       key = await CryptoUtils.generateKey();
-      _setChatBoxKey(boxName, key);
+      await _setChatBoxKey(boxName, key);
     }
     await Hive.openBox(boxName, encryptionCipher: HiveAesCipher(key));
   }
