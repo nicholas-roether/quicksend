@@ -1,6 +1,6 @@
 import '../exceptions.dart';
 
-abstract class Initialized<T> {
+mixin Initialized<T> {
   bool _didInit = false;
 
   /// Initializes this instance. It is necessary to call this method before

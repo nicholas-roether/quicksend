@@ -9,7 +9,7 @@ import 'package:quicksend/client/internal/crypto_utils.dart';
 import 'db_models/db_message.dart';
 import 'initialized.dart';
 
-class ClientDB extends Initialized<ClientDB> {
+class ClientDB with Initialized<ClientDB> {
   final _secureStorage = const FlutterSecureStorage();
 
   Box get _general {
@@ -60,6 +60,7 @@ class ClientDB extends Initialized<ClientDB> {
 
   Future<void> createChat(String id) async {
     assertInit();
+    if (_chatList.values.contains(id)) return;
     _chatList.add(id);
     await _openChatBox(id);
   }

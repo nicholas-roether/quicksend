@@ -14,10 +14,16 @@ class HomePage extends StatefulWidget {
 class _HomePageState extends State<HomePage> {
   int selectedIndex = 0;
 
-  void createChat() {}
-
   @override
   Widget build(BuildContext context) {
+    // Stupid hack to prevent hot reloads from messing up the route stack
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (Navigator.canPop(context)) {
+        Navigator.popUntil(context, (route) => route.isFirst);
+        Navigator.popAndPushNamed(context, "/home");
+      }
+    });
+
     return Scaffold(
       bottomNavigationBar: CustomBottomNavbar(
         currentIndex: selectedIndex,

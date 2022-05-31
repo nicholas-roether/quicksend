@@ -7,16 +7,20 @@ part 'db_message.g.dart';
 @HiveType(typeId: 1)
 class DBMessage {
   @HiveField(0)
-  final String type;
+  final String id;
 
   @HiveField(1)
-  final bool incoming;
+  final String type;
 
   @HiveField(2)
-  final DateTime sentAt;
+  final bool incoming;
 
   @HiveField(3)
+  final DateTime sentAt;
+
+  @HiveField(4)
   final Uint8List content;
 
-  DBMessage(this.type, this.incoming, this.sentAt, this.content) : super();
+  DBMessage(this.id, this.type, this.incoming, this.sentAt, this.content)
+      : super();
 }

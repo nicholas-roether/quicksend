@@ -45,6 +45,8 @@ class ChatList extends ChangeNotifier {
   /// Create a new chat with the user with [id].
   /// This method will not check whether that user actually exists.
   Future<Chat> createChatFromId(String id) async {
+    final existing = getChatFromId(id);
+    if (existing != null) return existing;
     await _db.createChat(id);
     final chat = Chat(
       id,

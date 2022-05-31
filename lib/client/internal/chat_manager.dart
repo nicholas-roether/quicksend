@@ -61,6 +61,7 @@ class ChatManager {
         await _chatList.createChatFromId(message.chat);
     chat.saveMessage(
       Message(
+        message.id,
         message.headers["type"] ?? "text/plain",
         message.incoming
             ? MessageDirection.incoming

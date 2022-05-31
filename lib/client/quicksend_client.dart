@@ -15,7 +15,7 @@ export 'models.dart';
 export 'provider.dart';
 export 'exceptions.dart';
 
-class QuicksendClient extends Initialized<QuicksendClient> {
+class QuicksendClient with Initialized<QuicksendClient> {
   final _db = ClientDB();
   final _requestManager = RequestManager();
   late final _loginManager = LoginManager(

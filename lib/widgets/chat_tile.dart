@@ -19,6 +19,7 @@ class _ChatTileState extends State<ChatTile> {
   @override
   Widget build(BuildContext context) {
     widget.chat.getRecipient().then((value) {
+      if (!mounted) return;
       setState(() {
         userInfo = value;
       });

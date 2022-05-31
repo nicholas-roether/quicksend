@@ -49,6 +49,9 @@ enum MessageDirection { incoming, outgoing }
 
 /// The class representing a message in a chat.
 class Message {
+  /// The unique ID of this message.
+  final String id;
+
   /// The MIME type of this message's content. This will most commonly be
   /// `"text/plain"` for simple text messages.
   final String type;
@@ -65,7 +68,7 @@ class Message {
   /// To get the message's content as a String, see [Message.asString].
   final Uint8List content;
 
-  const Message(this.type, this.direction, this.sentAt, this.content);
+  const Message(this.id, this.type, this.direction, this.sentAt, this.content);
 
   /// Returns this message's content interpreted as a UTF-8 string. Consider
   /// checking whether the message's type matches this, as this method will

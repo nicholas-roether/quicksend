@@ -60,6 +60,7 @@ class SignatureAuthenticator extends Authenticator {
 }
 
 class IncomingMessage {
+  final String id;
   final String chat;
   final bool incoming;
   final DateTime sentAt;
@@ -69,6 +70,7 @@ class IncomingMessage {
   final String body;
 
   const IncomingMessage(
+    this.id,
     this.chat,
     this.incoming,
     this.sentAt,
@@ -134,6 +136,7 @@ class RequestManager {
       auth: auth,
     );
     return List.from(res.map((msg) => IncomingMessage(
+          msg["id"],
           msg["chat"],
           msg["incoming"],
           DateTime.parse(msg["sentAt"]),
@@ -153,7 +156,7 @@ class RequestManager {
     );
   }
 
-  Future<void> sendMessage(
+  Future<String> sendMessage(
     SignatureAuthenticator auth,
     String to,
     DateTime sentAt,
@@ -170,12 +173,13 @@ class RequestManager {
       "iv": iv,
       "body": body
     };
-    await _request(
+    final res = await _request(
       "POST",
       "/messages/send",
       auth: auth,
       body: reqBody,
     );
+    return res["id"];
   }
 
   Future<void> clearMessages(SignatureAuthenticator auth) async {
