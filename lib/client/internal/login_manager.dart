@@ -5,7 +5,7 @@ import 'package:quicksend/client/internal/request_manager.dart';
 
 import '../exceptions.dart';
 
-class LoginManager extends Initialized<LoginManager> {
+class LoginManager with Initialized<LoginManager> {
   final ClientDB _db;
   final RequestManager _requestManager;
   bool _isLoggedIn = false;
