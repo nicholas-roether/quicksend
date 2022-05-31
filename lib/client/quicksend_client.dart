@@ -125,6 +125,7 @@ class QuicksendClient with Initialized<QuicksendClient> {
   }
 
   Future<void> _onLoggedIn() async {
+    await _db.reset();
     _chatManager = ChatManager(
       loginManager: _loginManager,
       eventManager: _eventManager,
@@ -137,7 +138,7 @@ class QuicksendClient with Initialized<QuicksendClient> {
   Future<void> _onLoggedOut() async {
     _chatManager?.close();
     _chatManager = null;
-    _db.onLoggedOut();
+    await _db.reset();
     _eventManager.onLoggedOut();
   }
 }

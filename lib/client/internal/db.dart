@@ -32,14 +32,13 @@ class ClientDB with Initialized<ClientDB> {
     );
   }
 
-  Future<void> onLoggedOut() async {
+  Future<void> reset() async {
     await Future.wait(
       List.from(_chatList.values).map((chatId) async {
-        await Hive.deleteBoxFromDisk(_getChatBoxName(chatId));
+        await _getChatBox(chatId).clear();
         await _secureStorage.delete(key: "$chatId-key");
       }),
     );
-    await _general.clear();
     await _chatList.clear();
   }
 

@@ -8,7 +8,6 @@ import '../exceptions.dart';
 class LoginManager with Initialized<LoginManager> {
   final ClientDB _db;
   final RequestManager _requestManager;
-  bool _isLoggedIn = false;
 
   LoginManager({required ClientDB db, required RequestManager requestManager})
       : _db = db,
@@ -20,7 +19,7 @@ class LoginManager with Initialized<LoginManager> {
     String password,
   ) async {
     assertInit();
-    if (_isLoggedIn) return;
+    if (isLoggedIn()) return;
     final userInfo = await _requestManager.findUser(username);
     if (userInfo == null) throw UnknownUserException(username);
     final basicAuth = BasicAuthenticator(username, password);
@@ -42,7 +41,6 @@ class LoginManager with Initialized<LoginManager> {
     _db.setDeviceID(deviceID);
     await _db.setSignatureKey(sigKeypair.private);
     await _db.setEncryptionKey(encKeypair.private);
-    _isLoggedIn = true;
   }
 
   Future<void> logOut() async {
@@ -51,17 +49,16 @@ class LoginManager with Initialized<LoginManager> {
     final SignatureAuthenticator auth = await getAuthenticator();
     final String deviceID = _db.getDeviceID() as String;
     await _requestManager.removeDevice(auth, deviceID);
-    _isLoggedIn = false;
+    _db.setDeviceID(null);
   }
 
   bool isLoggedIn() {
-    assertInit();
-    return _isLoggedIn;
+    return _db.getDeviceID() != null;
   }
 
   void assertLoggedIn() {
     assertInit();
-    if (!_isLoggedIn) throw const LoginStateException("Not logged in!");
+    if (!isLoggedIn()) throw const LoginStateException("Not logged in!");
   }
 
   Future<SignatureAuthenticator> getAuthenticator() async {
@@ -76,9 +73,7 @@ class LoginManager with Initialized<LoginManager> {
 
   @override
   Future<void> onInit() async {
-    final deviceId = _db.getDeviceID();
-    _isLoggedIn = deviceId != null;
-    if (_isLoggedIn) {
+    if (isLoggedIn()) {
       final sigKey = await _db.getSignatureKey();
       final encKey = await _db.getEncryptionKey();
 
