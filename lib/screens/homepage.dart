@@ -14,6 +14,8 @@ class HomePage extends StatefulWidget {
 class _HomePageState extends State<HomePage> {
   int selectedIndex = 0;
 
+  void createChat() {}
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -25,6 +27,13 @@ class _HomePageState extends State<HomePage> {
           });
         },
       ),
+      floatingActionButton: selectedIndex == 0
+          ? FloatingActionButton(
+              onPressed: () {},
+              backgroundColor: Theme.of(context).primaryColor,
+              child: const Icon(Icons.add),
+            )
+          : const SizedBox(),
       appBar: AppBar(
         title: Text(
           selectedIndex == 0 ? "Chats" : "Settings",

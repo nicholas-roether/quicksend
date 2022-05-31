@@ -15,10 +15,10 @@ class _ChatScreenState extends State<ChatScreen> {
 
   void _sendMessage() {
     if (_chatController.text.isEmpty) return;
-    setState(() {
+    /*setState(() {
       messages.insert(0, _chatController.text);
       _chatController.text = "";
-    });
+    });*/
   }
 
   @override

@@ -4,6 +4,8 @@ import 'package:quicksend/screens/settings/user_edit_screen.dart';
 import 'package:quicksend/widgets/custom_button.dart';
 import 'package:quicksend/widgets/loading_indicator.dart';
 
+// TODO add Skeleton UserEditScreen
+
 class SettingScreen extends StatelessWidget {
   const SettingScreen({Key? key}) : super(key: key);
 

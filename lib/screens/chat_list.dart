@@ -1,34 +1,22 @@
 import 'package:flutter/material.dart';
-import 'chat_screen.dart';
+import 'package:quicksend/client/quicksend_client.dart';
+import 'package:quicksend/widgets/chat_tile.dart';
 
 class ChatList extends StatelessWidget {
   const ChatList({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    return ListView.builder(
-      itemBuilder: (context, index) => ListTile(
-        leading: const CircleAvatar(),
-        title: Text(
-          'Username: ${index + 1}',
-          style: Theme.of(context).textTheme.headline6,
-        ),
-        subtitle: Text(
-          "Last Message",
-          style: Theme.of(context).textTheme.bodyText1,
-        ),
-        onTap: () => Navigator.push(
-          context,
-          MaterialPageRoute(
-            builder: (context) {
-              return ChatScreen(
-                username: "Username: ${index + 1}",
-              );
-            },
-          ),
-        ),
-      ),
-      itemCount: 20,
+    final quicksendClient = QuicksendClientProvider.get(context);
+    return AnimatedBuilder(
+      animation: quicksendClient.getChatList(),
+      builder: (context, _) {
+        final chats = quicksendClient.getChatList().getChats();
+        return ListView.builder(
+          itemBuilder: (context, index) => ChatTile(chat: chats[index]),
+          itemCount: chats.length,
+        );
+      },
     );
   }
 }
