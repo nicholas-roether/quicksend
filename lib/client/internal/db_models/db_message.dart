@@ -4,7 +4,7 @@ import 'package:hive_flutter/hive_flutter.dart';
 
 part 'db_message.g.dart';
 
-@HiveType(typeId: 0)
+@HiveType(typeId: 1)
 class DBMessage {
   @HiveField(0)
   final String type;
