@@ -41,18 +41,17 @@ class _ChatScreenState extends State<ChatScreen> {
             flex: 1,
             child: AnimatedBuilder(
               animation: widget.chat,
-              builder: (context, _) => ListView.builder(
-                itemBuilder: (context, index) {
-                  return Align(
-                    alignment: const Alignment(0.9, 1.0),
-                    child: MessageBox(
+              builder: (context, _) => Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: ListView.builder(
+                  itemBuilder: (context, index) {
+                    return MessageBox(
                       message: widget.chat.getMessages().elementAt(index),
-                      color: Theme.of(context).primaryColor,
-                    ),
-                  );
-                },
-                itemCount: widget.chat.getMessages().length,
-                reverse: true,
+                    );
+                  },
+                  itemCount: widget.chat.getMessages().length,
+                  reverse: true,
+                ),
               ),
             ),
           ),

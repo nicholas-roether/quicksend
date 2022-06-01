@@ -2,5 +2,7 @@
 	"files.eol": "\n",
 	"editor.codeActionsOnSave": {
 		"source.fixAll": true,
-	}
+	},
+	"dart.flutterHotRestartOnSave": false,
+	"dart.flutterHotReloadOnSave": "always",
 }
