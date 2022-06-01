@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:quicksend/widgets/message_box.dart';
+import 'package:quicksend/widgets/small_fab_widget.dart';
 
 import '../client/chat.dart';
 
@@ -78,12 +79,7 @@ class _ChatScreenState extends State<ChatScreen> {
                   const SizedBox(
                     width: 10,
                   ),
-                  FloatingActionButton.small(
-                    onPressed: _sendMessage,
-                    child: const Icon(Icons.send),
-                    backgroundColor: Theme.of(context).primaryColor,
-                    elevation: 3,
-                  ),
+                  SmallFAB(onPressedCallback: _sendMessage),
                 ],
               ),
             ),
