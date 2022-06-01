@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:quicksend/client/quicksend_client.dart';
 import 'package:quicksend/widgets/custom_button.dart';
+import 'package:quicksend/widgets/custom_error_alert_widget.dart';
 import 'package:uuid/uuid.dart';
 
 import '../widgets/custom_text_form_field.dart';
@@ -26,7 +27,7 @@ class _LoginScreenState extends State<LoginScreen> {
   void _showErrorDialog(String message) {
     showDialog(
       context: context,
-      builder: (ctx) => ErrorWidget(message),
+      builder: (ctx) => CustomErrorWidget(message: message),
     );
   }
 
