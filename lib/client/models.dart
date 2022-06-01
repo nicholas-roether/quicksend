@@ -11,7 +11,11 @@ class UserInfo {
   /// This user's display name
   final String? display;
 
-  const UserInfo(this.id, this.username, this.display);
+  const UserInfo({
+    required this.id,
+    required this.username,
+    required this.display,
+  });
 
   /// Returns the name that should be displayed for this user.
   ///
@@ -42,10 +46,17 @@ class DeviceInfo {
   /// The last time this device was used.
   final DateTime lastActivity;
 
-  const DeviceInfo(this.id, this.name, this.type, this.lastActivity);
+  const DeviceInfo({
+    required this.id,
+    required this.name,
+    required this.type,
+    required this.lastActivity,
+  });
 }
 
 enum MessageDirection { incoming, outgoing }
+
+enum MessageState { sending, sent, failed }
 
 /// The class representing a message in a chat.
 class Message {
@@ -55,6 +66,14 @@ class Message {
   /// The MIME type of this message's content. This will most commonly be
   /// `"text/plain"` for simple text messages.
   final String type;
+
+  /// The current state of this message. Possible values are:
+  /// - [MessageState.sending]
+  /// - [MessageState.sent]
+  /// - [MessageState.failed]
+  ///
+  /// If this is an incoming message, this value will always be [MessageState.sent].
+  final MessageState state;
 
   /// Whether this message was sent by this user themselves, or recieved from
   /// another user.
@@ -68,7 +87,14 @@ class Message {
   /// To get the message's content as a String, see [Message.asString].
   final Uint8List content;
 
-  const Message(this.id, this.type, this.direction, this.sentAt, this.content);
+  const Message({
+    required this.id,
+    required this.type,
+    required this.state,
+    required this.direction,
+    required this.sentAt,
+    required this.content,
+  });
 
   /// Returns this message's content interpreted as a UTF-8 string. Consider
   /// checking whether the message's type matches this, as this method will
