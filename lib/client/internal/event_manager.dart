@@ -28,7 +28,9 @@ class EventManager extends EventSource {
     _socketUri = socketUri!;
   }
 
-  Future<void> onLoggedIn() async {}
+  Future<void> onLoggedIn() async {
+    connectLoop();
+  }
 
   Future<void> connectLoop() async {
     while (_loginManager.isLoggedIn()) {
