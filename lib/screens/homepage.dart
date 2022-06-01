@@ -47,16 +47,20 @@ class _HomePageState extends State<HomePage> {
                     final quicksendClient =
                         QuicksendClientProvider.get(context);
                     try {
+                      final userInfo = await quicksendClient.getUserInfo();
+                      if (_popUpController.text == userInfo.username) return;
                       await quicksendClient
                           .getChatList()
                           .createChat(_popUpController.text);
+                      _popUpController.text = "";
                       Navigator.pop(context);
                     } on UnknownUserException {
                       showDialog(
-                          context: context,
-                          builder: (context) {
-                            return ErrorWidget("User does not exist");
-                          });
+                        context: context,
+                        builder: (context) {
+                          return ErrorWidget("User does not exist");
+                        },
+                      );
                     }
                   },
                   title: "Open Chat",
