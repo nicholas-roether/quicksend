@@ -1,27 +1,29 @@
-import 'package:quicksend/client/crypto_utils.dart';
-import 'package:quicksend/client/db.dart';
-import 'package:quicksend/client/initialized.dart';
-import 'package:quicksend/client/request_manager.dart';
+import 'package:quicksend/client/internal/crypto_utils.dart';
+import 'package:quicksend/client/internal/db.dart';
+import 'package:quicksend/client/internal/initialized.dart';
+import 'package:quicksend/client/internal/request_manager.dart';
 
-/// Thrown primarily when attempting to perform an action that requires this
-/// device to be logged into an account, when it is not.
-class LoginStateException implements Exception {
-  final String message;
+import '../exceptions.dart';
 
-  const LoginStateException(this.message);
-
-  @override
-  String toString() {
-    return message;
-  }
-}
-
-class LoginManager extends Initialized<LoginManager> {
+class LoginManager with Initialized<LoginManager> {
   final ClientDB _db;
   final RequestManager _requestManager;
-  bool _isLoggedIn = false;
 
-  LoginManager(this._db, this._requestManager);
+  LoginManager({required ClientDB db, required RequestManager requestManager})
+      : _db = db,
+        _requestManager = requestManager;
+
+  String get userId {
+    assertInit();
+    assertLoggedIn();
+    return _db.getUserID()!;
+  }
+
+  String get deviceId {
+    assertInit();
+    assertLoggedIn();
+    return _db.getDeviceID()!;
+  }
 
   Future<void> logIn(
     String deviceName,
@@ -29,7 +31,9 @@ class LoginManager extends Initialized<LoginManager> {
     String password,
   ) async {
     assertInit();
-    if (_isLoggedIn) return;
+    if (isLoggedIn()) return;
+    final userInfo = await _requestManager.findUser(username);
+    if (userInfo == null) throw UnknownUserException(username);
     final basicAuth = BasicAuthenticator(username, password);
     final keypairs = await Future.wait([
       CryptoUtils.generateKeypair(),
@@ -46,10 +50,10 @@ class LoginManager extends Initialized<LoginManager> {
       encKeypair.public,
     );
 
-    _db.setDeviceID(deviceID);
+    await _db.setDeviceID(deviceID);
+    await _db.setUserID(userInfo.id);
     await _db.setSignatureKey(sigKeypair.private);
     await _db.setEncryptionKey(encKeypair.private);
-    _isLoggedIn = true;
   }
 
   Future<void> logOut() async {
@@ -58,19 +62,17 @@ class LoginManager extends Initialized<LoginManager> {
     final SignatureAuthenticator auth = await getAuthenticator();
     final String deviceID = _db.getDeviceID() as String;
     await _requestManager.removeDevice(auth, deviceID);
-    _db.setDeviceID(null);
-    await _db.setSignatureKey(null);
-    await _db.setEncryptionKey(null);
+    await _db.setDeviceID(null);
+    await _db.setUserID(null);
   }
 
   bool isLoggedIn() {
-    assertInit();
-    return _isLoggedIn;
+    return _db.getDeviceID() != null;
   }
 
   void assertLoggedIn() {
     assertInit();
-    if (!_isLoggedIn) throw const LoginStateException("Not logged in!");
+    if (!isLoggedIn()) throw const LoginStateException("Not logged in!");
   }
 
   Future<SignatureAuthenticator> getAuthenticator() async {
@@ -85,9 +87,7 @@ class LoginManager extends Initialized<LoginManager> {
 
   @override
   Future<void> onInit() async {
-    final deviceId = _db.getDeviceID();
-    _isLoggedIn = deviceId != null;
-    if (_isLoggedIn) {
+    if (isLoggedIn()) {
       final sigKey = await _db.getSignatureKey();
       final encKey = await _db.getEncryptionKey();
 

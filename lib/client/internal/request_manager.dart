@@ -1,9 +1,14 @@
 import 'dart:convert';
+import 'dart:typed_data';
 
 import 'package:dio/dio.dart' as dio;
 import 'package:flutter_dotenv/flutter_dotenv.dart';
-import 'package:quicksend/client/crypto_utils.dart';
 import 'package:intl/intl.dart';
+
+import '../exceptions.dart';
+import 'crypto_utils.dart';
+import '../models.dart';
+import 'utils.dart';
 
 final isoDateFormat = DateFormat("yyyy-MM-ddThh:mm:ss.SSS'Z'");
 final Codec<String, String> strBase64 = utf8.fuse(base64);
@@ -54,45 +59,34 @@ class SignatureAuthenticator extends Authenticator {
   }
 }
 
-class UserInfo {
+class IncomingMessage {
   final String id;
-  final String username;
-  final String? display;
+  final String chat;
+  final bool incoming;
+  final DateTime sentAt;
+  final Map<String, String> headers;
+  final String key;
+  final String iv;
+  final String body;
 
-  const UserInfo(this.id, this.username, this.display);
-
-  /// Returns the name that should be displayed for this user.
-  ///
-  /// Will return the display name if this user has one, and their username
-  /// otherwise.
-  String getName() {
-    return display ?? username;
-  }
-}
-
-class DeviceInfo {
-  final String id;
-  final String name;
-  final int type;
-  final DateTime lastActivity;
-
-  const DeviceInfo(this.id, this.name, this.type, this.lastActivity);
-}
-
-class RequestException implements Exception {
-  int status;
-  String message;
-
-  RequestException(this.status, this.message);
-
-  @override
-  String toString() {
-    return "[$status] $message";
-  }
+  const IncomingMessage(
+    this.id,
+    this.chat,
+    this.incoming,
+    this.sentAt,
+    this.headers,
+    this.key,
+    this.iv,
+    this.body,
+  );
 }
 
 class RequestManager {
   final _dio = dio.Dio();
+
+  final _userInfo = CachedValue<UserInfo>();
+  final _userInfoId = CachedMap<String, UserInfo?>();
+  final _userInfoName = CachedMap<String, UserInfo?>();
 
   RequestManager() {
     final backendUri = dotenv.env["BACKEND_URI"];
@@ -117,8 +111,85 @@ class RequestManager {
   }
 
   Future<UserInfo> getUserInfo(SignatureAuthenticator auth) async {
-    final res = await _request("GET", "/user/info", auth: auth);
-    return UserInfo(res["id"], res["username"], res["display"]);
+    return _userInfo.get(() async {
+      final res = await _request("GET", "/user/info", auth: auth);
+      return UserInfo(res["id"], res["username"], res["display"]);
+    });
+  }
+
+  Future<UserInfo?> getUserInfoFor(String id) async {
+    return _userInfoId.get(id, (id) async {
+      final res = await _request("GET", "/user/info/$id");
+      if (res == null) return null;
+      return UserInfo(res["id"], res["username"], res["display"]);
+    });
+  }
+
+  Future<UserInfo?> findUser(String name) async {
+    return _userInfoName.get(name, (name) async {
+      final res = await _request("GET", "/user/find/$name");
+      if (res == null) return null;
+      return UserInfo(res["id"], res["username"], res["display"]);
+    });
+  }
+
+  Future<List<IncomingMessage>> pollMessages(
+    SignatureAuthenticator auth,
+  ) async {
+    final List<dynamic> res = await _request(
+      "GET",
+      "/messages/poll",
+      auth: auth,
+    );
+    return List.from(res.map((msg) => IncomingMessage(
+          msg["id"],
+          msg["chat"],
+          msg["incoming"],
+          DateTime.parse(msg["sentAt"]),
+          Map.from(msg["headers"]),
+          msg["key"],
+          msg["iv"],
+          msg["body"],
+        )));
+  }
+
+  Future<Map<String, String>> getMessageTargets(
+    SignatureAuthenticator auth,
+    String userID,
+  ) async {
+    return Map.from(
+      await _request("GET", "/messages/targets/$userID", auth: auth),
+    );
+  }
+
+  Future<String> sendMessage(
+    SignatureAuthenticator auth,
+    String to,
+    DateTime sentAt,
+    Map<String, String> headers,
+    Map<String, String> keys,
+    String iv,
+    String body,
+  ) async {
+    final reqBody = {
+      "to": to,
+      "sentAt": sentAt.toUtc().toIso8601String(),
+      "headers": headers,
+      "keys": keys,
+      "iv": iv,
+      "body": body
+    };
+    final res = await _request(
+      "POST",
+      "/messages/send",
+      auth: auth,
+      body: reqBody,
+    );
+    return res["id"];
+  }
+
+  Future<void> clearMessages(SignatureAuthenticator auth) async {
+    await _request("POST", "/messages/clear", auth: auth);
   }
 
   Future<String> addDevice(
@@ -156,6 +227,11 @@ class RequestManager {
     ));
   }
 
+  Future<Uint8List> getSocketToken(SignatureAuthenticator auth) async {
+    final res = await _request("GET", "/socket", auth: auth);
+    return base64.decode(res["token"]);
+  }
+
   Future<dynamic> _request(
     String method,
     String target, {
@@ -173,6 +249,7 @@ class RequestManager {
       message ??= "(No error message provided)";
       throw RequestException(response.statusCode ?? 0, message);
     }
+    if (response.statusCode == 204) return null;
     final dynamic resBody = response.data["data"];
     return resBody;
   }

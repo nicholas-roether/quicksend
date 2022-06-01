@@ -1,17 +1,32 @@
 import 'package:flutter/material.dart';
+import 'package:quicksend/widgets/message_box.dart';
+
+import '../client/chat.dart';
 
 class ChatScreen extends StatefulWidget {
-  const ChatScreen({Key? key, required this.username}) : super(key: key);
+  const ChatScreen({Key? key, required this.username, required this.chat})
+      : super(key: key);
   final String username;
+  final Chat chat;
 
   @override
   State<ChatScreen> createState() => _ChatScreenState();
 }
 
 class _ChatScreenState extends State<ChatScreen> {
-  final double _radius = 15;
+  final TextEditingController _chatController = TextEditingController();
+
+  void _sendMessage() {
+    if (_chatController.text.isEmpty) return;
+    setState(() {
+      widget.chat.sendTextMessage(_chatController.text);
+      _chatController.text = "";
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
+    widget.chat.loadSavedMessages();
     return Scaffold(
       appBar: AppBar(
         title: Text(
@@ -20,38 +35,60 @@ class _ChatScreenState extends State<ChatScreen> {
         ),
         centerTitle: true,
       ),
-      body: SizedBox(
-        //height: MediaQuery.of(context).size.height,
-        width: MediaQuery.of(context).size.width,
-        child: Stack(
-          children: [
-            SingleChildScrollView(
-              child: Column(
-                children: const [],
+      body: Column(
+        children: [
+          Expanded(
+            flex: 1,
+            child: AnimatedBuilder(
+              animation: widget.chat,
+              builder: (context, _) => Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: ListView.builder(
+                  itemBuilder: (context, index) {
+                    return MessageBox(
+                      message: widget.chat.getMessages().elementAt(index),
+                    );
+                  },
+                  itemCount: widget.chat.getMessages().length,
+                  reverse: true,
+                ),
               ),
             ),
-            Align(
-              alignment: Alignment.bottomCenter,
+          ),
+          SizedBox(
+            width: MediaQuery.of(context).size.width,
+            child: Padding(
+              padding: const EdgeInsets.all(8.0),
               child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 children: [
-                  SizedBox(
-                    width: MediaQuery.of(context).size.width - 55,
-                    height: 40,
-                    child: const Card(child: TextField()),
-                  ),
-                  InkWell(
-                    borderRadius: BorderRadius.circular(_radius),
-                    onTap: () {},
-                    child: CircleAvatar(
-                      radius: _radius,
+                  Expanded(
+                    child: TextField(
+                      style: const TextStyle(
+                        fontSize: 20,
+                      ),
+                      controller: _chatController,
+                      decoration: InputDecoration(
+                        contentPadding: const EdgeInsets.fromLTRB(8, 3, 8, 3),
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(10),
+                        ),
+                      ),
                     ),
-                  )
+                  ),
+                  const SizedBox(
+                    width: 10,
+                  ),
+                  FloatingActionButton.small(
+                    onPressed: _sendMessage,
+                    child: const Icon(Icons.send),
+                    backgroundColor: Theme.of(context).primaryColor,
+                    elevation: 3,
+                  ),
                 ],
               ),
-            )
-          ],
-        ),
+            ),
+          )
+        ],
       ),
     );
   }

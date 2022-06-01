@@ -20,6 +20,13 @@ class MyThemes {
         900: Color(0xffffdc8f),
       },
     ),
+    elevatedButtonTheme: ElevatedButtonThemeData(
+      style: ElevatedButton.styleFrom(
+        textStyle: const TextStyle(
+          fontWeight: FontWeight.w600,
+        ),
+      ),
+    ),
     secondaryHeaderColor: const Color(0xFF84826a),
     scaffoldBackgroundColor: const Color(0xFF0e0f19),
     appBarTheme: const AppBarTheme(
@@ -31,11 +38,11 @@ class MyThemes {
       hintStyle: TextStyle(
         fontWeight: FontWeight.w500,
       ),
-      border: InputBorder.none,
     ),
     textTheme: const TextTheme(
       bodyText1: TextStyle(
-        fontWeight: FontWeight.w400,
+        fontWeight: FontWeight.w500,
+        fontSize: 16,
       ),
       bodyText2: TextStyle(
         fontWeight: FontWeight.w500,
@@ -58,6 +65,9 @@ class MyThemes {
       headline6: TextStyle(
         fontWeight: FontWeight.w500,
       ),
+    ).apply(
+      displayColor: Colors.white,
+      bodyColor: Colors.white,
     ),
   );
 }

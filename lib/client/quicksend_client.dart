@@ -1,18 +1,42 @@
-import 'package:quicksend/client/initialized.dart';
-import 'package:quicksend/client/login_manager.dart';
-import 'package:quicksend/client/request_manager.dart';
+import 'package:quicksend/client/internal/event_manager.dart';
 
-import 'db.dart';
+import 'chat_list.dart';
+import 'internal/chat_manager.dart';
+import 'internal/initialized.dart';
+import 'internal/login_manager.dart';
+import 'internal/request_manager.dart';
 
-class _QuicksendClient extends Initialized<_QuicksendClient> {
+import 'internal/db.dart';
+import 'models.dart';
+
+export 'chat.dart';
+export 'chat_list.dart';
+export 'models.dart';
+export 'provider.dart';
+export 'exceptions.dart';
+
+class QuicksendClient with Initialized<QuicksendClient> {
   final _db = ClientDB();
   final _requestManager = RequestManager();
-  late final _loginManager = LoginManager(_db, _requestManager);
+  late final _loginManager = LoginManager(
+    db: _db,
+    requestManager: _requestManager,
+  );
+  late final _eventManager = EventManager(
+    requestManager: _requestManager,
+    loginManager: _loginManager,
+  );
+  ChatManager? _chatManager;
 
   @override
   Future<void> onInit() async {
     await _db.init();
     await _loginManager.init();
+  }
+
+  @override
+  Future<void> afterInit() async {
+    if (_loginManager.isLoggedIn()) await _onLoggedIn();
   }
 
   /// Creates a new account with the provided [username] and [password], as well
@@ -52,6 +76,8 @@ class _QuicksendClient extends Initialized<_QuicksendClient> {
   ) async {
     assertInit();
     await _loginManager.logIn(deviceName, username, password);
+    await _db.reset();
+    await _onLoggedIn();
   }
 
   /// Removes this device from the currently associated account and logs it out.
@@ -60,6 +86,7 @@ class _QuicksendClient extends Initialized<_QuicksendClient> {
   Future<void> logOut() async {
     assertInit();
     await _loginManager.logOut();
+    await _onLoggedOut();
   }
 
   /// Returns the user info of the currently logged in account. Will throw a
@@ -72,9 +99,46 @@ class _QuicksendClient extends Initialized<_QuicksendClient> {
     SignatureAuthenticator auth = await _loginManager.getAuthenticator();
     return await _requestManager.getUserInfo(auth);
   }
-}
 
-/// The API used for interaction with the quicksend system.
-///
-/// See `/client/quicksend_client.dart` for more details.
-final quicksendClient = _QuicksendClient();
+  /// Returns the user info for the user with the given ID. Returns null if the
+  /// User with the ID does not exist. Throws a [RequestException] if the
+  /// user info request fails.
+  Future<UserInfo?> getUserInfoFor(String id) async {
+    assertInit();
+    return await _requestManager.getUserInfoFor(id);
+  }
+
+  /// Returns the ChatList instance for this client, which contains all open
+  /// chats, which can be used to load and send messages.
+  ChatList getChatList() {
+    return _getChatManager().getChatList();
+  }
+
+  /// Gets all new messages from the server and saves them.
+  Future<void> refreshMessages() {
+    return _getChatManager().refreshMessages();
+  }
+
+  ChatManager _getChatManager() {
+    _loginManager.assertLoggedIn();
+
+    return _chatManager!;
+  }
+
+  Future<void> _onLoggedIn() async {
+    _chatManager = ChatManager(
+      loginManager: _loginManager,
+      eventManager: _eventManager,
+      requestManager: _requestManager,
+      db: _db,
+    );
+    await _eventManager.onLoggedIn();
+  }
+
+  Future<void> _onLoggedOut() async {
+    _chatManager?.close();
+    _chatManager = null;
+    await _db.reset();
+    _eventManager.onLoggedOut();
+  }
+}

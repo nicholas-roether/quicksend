@@ -1,8 +1,14 @@
 import 'package:flutter/material.dart';
+import 'package:quicksend/client/exceptions.dart';
+import 'package:quicksend/client/provider.dart';
 import 'package:quicksend/screens/chat_list.dart';
 import 'package:quicksend/screens/settings_screen.dart';
 import 'package:quicksend/utils/user_search_delegate.dart';
 import 'package:quicksend/widgets/custom_bottom_navbar.dart';
+import 'package:quicksend/widgets/custom_button.dart';
+import 'package:quicksend/widgets/custom_text_form_field.dart';
+
+import '../widgets/custom_error_alert_widget.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({Key? key}) : super(key: key);
@@ -13,6 +19,79 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> {
   int selectedIndex = 0;
+  final TextEditingController _popUpController = TextEditingController();
+
+  void showChatPopup() {
+    showModalBottomSheet(
+      backgroundColor: Colors.transparent,
+      context: context,
+      builder: (context) {
+        return Container(
+          decoration: BoxDecoration(
+            color: Theme.of(context).backgroundColor,
+            borderRadius: const BorderRadius.only(
+              topLeft: Radius.circular(20),
+              topRight: Radius.circular(20),
+            ),
+          ),
+          child: Padding(
+            padding: const EdgeInsets.all(12.0),
+            child: Column(
+              children: [
+                CustomTextFormField(
+                  hintInfo: "",
+                  labelInfo: "Benutzername",
+                  obscure: false,
+                  textController: _popUpController,
+                ),
+                CustomButton(
+                  pressedCallback: () async {
+                    final quicksendClient =
+                        QuicksendClientProvider.get(context);
+                    try {
+                      final userInfo = await quicksendClient.getUserInfo();
+                      if (_popUpController.text == userInfo.username) return;
+                      await quicksendClient
+                          .getChatList()
+                          .createChat(_popUpController.text);
+                      _popUpController.text = "";
+                      Navigator.pop(context);
+                    } on UnknownUserException {
+                      showDialog(
+                        context: context,
+                        builder: (context) {
+                          return const CustomErrorWidget(
+                            message: "User does not exist",
+                          );
+                        },
+                      );
+                    }
+                  },
+                  title: "Open Chat",
+                ),
+              ],
+            ),
+          ),
+        );
+      },
+    );
+  }
+
+  @override
+  void initState() {
+    // Stupid hack to prevent hot reloads from messing up the route stack
+    final quicksendClient = QuicksendClientProvider.get(context);
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (Navigator.canPop(context)) {
+        Navigator.popUntil(context, (route) => route.isFirst);
+        Navigator.popAndPushNamed(context, "/home");
+      }
+      if (!quicksendClient.isLoggedIn()) {
+        Navigator.popAndPushNamed(context, "/");
+      }
+    });
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -25,6 +104,13 @@ class _HomePageState extends State<HomePage> {
           });
         },
       ),
+      floatingActionButton: selectedIndex == 0
+          ? FloatingActionButton(
+              onPressed: showChatPopup,
+              backgroundColor: Theme.of(context).primaryColor,
+              child: const Icon(Icons.add),
+            )
+          : const SizedBox(),
       appBar: AppBar(
         title: Text(
           selectedIndex == 0 ? "Chats" : "Settings",
