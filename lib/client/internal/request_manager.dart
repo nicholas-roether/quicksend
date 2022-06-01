@@ -114,7 +114,11 @@ class RequestManager {
   Future<UserInfo> getUserInfo(SignatureAuthenticator auth) async {
     return _userInfo.get(() async {
       final res = await _request("GET", "/user/info", auth: auth);
-      return UserInfo(res["id"], res["username"], res["display"]);
+      return UserInfo(
+        id: res["id"],
+        username: res["username"],
+        display: res["display"],
+      );
     });
   }
 
@@ -122,7 +126,11 @@ class RequestManager {
     return _userInfoId.get(id, (id) async {
       final res = await _request("GET", "/user/info/$id");
       if (res == null) return null;
-      return UserInfo(res["id"], res["username"], res["display"]);
+      return UserInfo(
+        id: res["id"],
+        username: res["username"],
+        display: res["display"],
+      );
     });
   }
 
@@ -130,7 +138,11 @@ class RequestManager {
     return _userInfoName.get(name, (name) async {
       final res = await _request("GET", "/user/find/$name");
       if (res == null) return null;
-      return UserInfo(res["id"], res["username"], res["display"]);
+      return UserInfo(
+        id: res["id"],
+        username: res["username"],
+        display: res["display"],
+      );
     });
   }
 
@@ -220,10 +232,10 @@ class RequestManager {
     assert(res is List<dynamic>);
     return List.from((res as List<dynamic>).map(
       (e) => DeviceInfo(
-        e["id"],
-        e["name"],
-        e["type"],
-        DateTime.parse(e["lastActivity"]),
+        id: e["id"],
+        name: e["name"],
+        type: e["type"],
+        lastActivity: DateTime.parse(e["lastActivity"]),
       ),
     ));
   }

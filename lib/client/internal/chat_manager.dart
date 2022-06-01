@@ -70,13 +70,14 @@ class ChatManager {
         await _chatList.createChatFromId(message.chat);
     chat.saveMessage(
       Message(
-        message.id,
-        message.headers["type"] ?? "text/plain",
-        message.incoming
+        id: message.id,
+        type: message.headers["type"] ?? "text/plain",
+        state: MessageState.sent,
+        direction: message.incoming
             ? MessageDirection.incoming
             : MessageDirection.outgoing,
-        message.sentAt,
-        await _decryptMessageBody(message),
+        sentAt: message.sentAt,
+        content: await _decryptMessageBody(message),
       ),
     );
   }

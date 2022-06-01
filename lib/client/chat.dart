@@ -3,6 +3,8 @@ import 'dart:convert';
 import 'dart:typed_data';
 
 import 'package:flutter/cupertino.dart';
+import 'package:quicksend/client/exceptions.dart';
+import 'package:uuid/uuid.dart';
 
 import 'internal/utils.dart';
 
@@ -65,23 +67,60 @@ class Chat extends ChangeNotifier {
     Uint8List body, {
     Map<String, String>? headers,
   }) async {
+    const uuid = Uuid();
+    final sendingMsgId = uuid.v1();
     final sentAt = DateTime.now();
+
+    _addMessage(
+      Message(
+        id: sendingMsgId,
+        type: type,
+        sentAt: sentAt,
+        content: body,
+        direction: MessageDirection.outgoing,
+        state: MessageState.sending,
+      ),
+    );
+
     final key = await CryptoUtils.generateKey();
     final iv = await CryptoUtils.generateIV();
     final encryptedBody = await CryptoUtils.encrypt(body, key, iv);
 
-    final msgId = await _requestManager.sendMessage(
-      await _loginManager.getAuthenticator(),
-      recipientId,
-      sentAt,
-      {"type": type, ...(headers ?? {})},
-      await _getEncryptedKeys(key),
-      base64.encode(iv),
-      base64.encode(encryptedBody),
-    );
+    try {
+      final msgId = await _requestManager.sendMessage(
+        await _loginManager.getAuthenticator(),
+        recipientId,
+        sentAt,
+        {"type": type, ...(headers ?? {})},
+        await _getEncryptedKeys(key),
+        base64.encode(iv),
+        base64.encode(encryptedBody),
+      );
 
-    await saveMessage(
-        Message(msgId, type, MessageDirection.outgoing, sentAt, body));
+      _removeMessage(sendingMsgId);
+
+      await saveMessage(
+        Message(
+          id: msgId,
+          type: type,
+          state: MessageState.sent,
+          direction: MessageDirection.outgoing,
+          sentAt: sentAt,
+          content: body,
+        ),
+      );
+    } on RequestException {
+      _addMessage(
+        Message(
+          id: sendingMsgId,
+          type: type,
+          sentAt: sentAt,
+          content: body,
+          direction: MessageDirection.outgoing,
+          state: MessageState.failed,
+        ),
+      );
+    }
   }
 
   /// Saves a message to this device WITHOUT sending it to the server.
@@ -98,7 +137,6 @@ class Chat extends ChangeNotifier {
       message.content,
     );
     _db.addMessage(recipientId, dbMessage);
-    _sortMessages();
     _addMessage(message);
     notifyListeners();
   }
@@ -111,17 +149,24 @@ class Chat extends ChangeNotifier {
     final List<DBMessage> dbMessages = _db.getMessages(recipientId);
     return List.from(dbMessages.map(
       (dbMsg) => Message(
-        dbMsg.id,
-        dbMsg.type,
-        dbMsg.incoming ? MessageDirection.incoming : MessageDirection.outgoing,
-        dbMsg.sentAt,
-        dbMsg.content,
+        id: dbMsg.id,
+        type: dbMsg.type,
+        state: MessageState.sent,
+        direction: dbMsg.incoming
+            ? MessageDirection.incoming
+            : MessageDirection.outgoing,
+        sentAt: dbMsg.sentAt,
+        content: dbMsg.content,
       ),
     ));
   }
 
+  void _removeMessage(String id) {
+    _messages.removeWhere((msg) => msg.id == id);
+  }
+
   void _addMessage(Message message) {
-    _messages.removeWhere((msg) => msg.id == message.id);
+    _removeMessage(message.id);
     _messages.add(message);
     _sortMessages();
   }
