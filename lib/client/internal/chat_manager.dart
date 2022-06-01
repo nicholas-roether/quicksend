@@ -34,6 +34,7 @@ class ChatManager {
         _eventManager = eventManager,
         _db = db {
     _eventManager.on("message", _onMessageEvent);
+    _eventManager.on("connect", _onConnectEvent);
   }
 
   ChatList getChatList() {
@@ -50,6 +51,7 @@ class ChatManager {
 
   void close() {
     _eventManager.removeListener("message", _onMessageEvent);
+    _eventManager.removeListener("connect", _onConnectEvent);
   }
 
   void _onMessageEvent(evt) {
@@ -57,6 +59,10 @@ class ChatManager {
         evt["fromDevice"] != _loginManager.deviceId) {
       refreshMessages();
     }
+  }
+
+  void _onConnectEvent(_) {
+    refreshMessages();
   }
 
   Future<void> _saveIncomingMessage(IncomingMessage message) async {
