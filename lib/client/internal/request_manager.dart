@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:io';
 import 'dart:typed_data';
 
 import 'package:dio/dio.dart' as dio;
@@ -232,15 +233,25 @@ class RequestManager {
     return base64.decode(res["token"]);
   }
 
+  List<int> _compressRequest(String request, dio.RequestOptions options) {
+    final gzip = GZipCodec();
+    options.headers["Content-Encoding"] = "gzip";
+    return gzip.encode(utf8.encode(request));
+  }
+
   Future<dynamic> _request(
     String method,
     String target, {
     Authenticator? auth,
     dynamic body,
     dio.Options? options,
+    bool compress = false,
   }) async {
     options ??= dio.Options();
     options.method = method;
+
+    if (compress) options.requestEncoder = _compressRequest;
+
     await auth?.authenticate(target, options);
     final response = await _dio.request(target, data: body, options: options);
     if (response.statusCode == null) throw Exception("Something broke :(");
