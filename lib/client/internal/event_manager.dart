@@ -8,6 +8,8 @@ import 'package:web_socket_channel/web_socket_channel.dart';
 import 'utils.dart';
 
 class EventManager extends EventSource {
+  static const _reconnectDelay = Duration(seconds: 5);
+
   final LoginManager _loginManager;
   final RequestManager _requestManager;
   late final String _socketUri;
@@ -26,12 +28,22 @@ class EventManager extends EventSource {
     _socketUri = socketUri!;
   }
 
-  Future<void> onLoggedIn() async {
+  Future<void> onLoggedIn() async {}
+
+  Future<void> connectLoop() async {
+    while (_ws == null || _ws!.closeCode == null) {
+      await connect();
+      await Future.delayed(_reconnectDelay);
+    }
+  }
+
+  Future<void> connect() async {
     final auth = await _loginManager.getAuthenticator();
     final token = await _requestManager.getSocketToken(auth);
     _ws = WebSocketChannel.connect(Uri.parse(_socketUri));
     _ws!.sink.add(token);
     _listen();
+    emit("connect");
   }
 
   Future<void> _listen() async {
