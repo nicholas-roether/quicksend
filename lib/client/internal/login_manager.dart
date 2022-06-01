@@ -19,6 +19,12 @@ class LoginManager with Initialized<LoginManager> {
     return _db.getUserID()!;
   }
 
+  String get deviceId {
+    assertInit();
+    assertLoggedIn();
+    return _db.getDeviceID()!;
+  }
+
   Future<void> logIn(
     String deviceName,
     String username,

@@ -52,8 +52,11 @@ class ChatManager {
     _eventManager.removeListener("message", _onMessageEvent);
   }
 
-  void _onMessageEvent(_) {
-    refreshMessages();
+  void _onMessageEvent(evt) {
+    if (evt["from"] != _loginManager.userId ||
+        evt["fromDevice"] != _loginManager.deviceId) {
+      refreshMessages();
+    }
   }
 
   Future<void> _saveIncomingMessage(IncomingMessage message) async {
