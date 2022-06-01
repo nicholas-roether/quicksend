@@ -5,6 +5,24 @@ class MessageBox extends StatelessWidget {
   const MessageBox({Key? key, required this.message}) : super(key: key);
   final Message message;
 
+  Widget messageBoxContent(context) {
+    switch (message.type) {
+      case "text/plain":
+        return Text(
+          message.asString(),
+          style: Theme.of(context)
+              .textTheme
+              .bodyText1
+              ?.copyWith(color: Colors.black),
+        );
+      case "image/jpeg":
+        return Image.memory(message.content);
+      case "image/png":
+        return Image.memory(message.content);
+    }
+    return const Text("message corrupted!");
+  }
+
   @override
   Widget build(BuildContext context) {
     return Align(
@@ -18,13 +36,7 @@ class MessageBox extends StatelessWidget {
             : Theme.of(context).secondaryHeaderColor,
         child: Padding(
           padding: const EdgeInsets.all(8.0),
-          child: Text(
-            message.asString(),
-            style: Theme.of(context)
-                .textTheme
-                .bodyText1
-                ?.copyWith(color: Colors.black),
-          ),
+          child: messageBoxContent(context),
         ),
       ),
     );

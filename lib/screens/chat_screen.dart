@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:image_picker_web/image_picker_web.dart';
+import 'package:mime_type/mime_type.dart';
 import 'package:quicksend/widgets/message_box.dart';
 import 'package:quicksend/widgets/small_fab_widget.dart';
+import 'package:path/path.dart' as path;
 
 import '../client/chat.dart';
 
@@ -23,6 +26,13 @@ class _ChatScreenState extends State<ChatScreen> {
       widget.chat.sendTextMessage(_chatController.text);
       _chatController.text = "";
     });
+  }
+
+  void _sendImage() async {
+    final imageInfo = await ImagePickerWeb.getImageInfo;
+    String? mimeType = mime(path.basename((imageInfo?.fileName)!));
+
+    await widget.chat.sendMessage((mimeType)!, (imageInfo?.data)!);
   }
 
   @override
@@ -62,6 +72,13 @@ class _ChatScreenState extends State<ChatScreen> {
               padding: const EdgeInsets.all(8.0),
               child: Row(
                 children: [
+                  SmallFAB(
+                    onPressedCallback: _sendImage,
+                    icon: Icons.image,
+                  ),
+                  const SizedBox(
+                    width: 10,
+                  ),
                   Expanded(
                     child: TextField(
                       style: const TextStyle(
@@ -79,7 +96,10 @@ class _ChatScreenState extends State<ChatScreen> {
                   const SizedBox(
                     width: 10,
                   ),
-                  SmallFAB(onPressedCallback: _sendMessage),
+                  SmallFAB(
+                    onPressedCallback: _sendMessage,
+                    icon: Icons.send,
+                  ),
                 ],
               ),
             ),
