@@ -28,10 +28,12 @@ class EventManager extends EventSource {
     _socketUri = socketUri!;
   }
 
-  Future<void> onLoggedIn() async {}
+  Future<void> onLoggedIn() async {
+    connectLoop();
+  }
 
   Future<void> connectLoop() async {
-    while (_ws == null || _ws!.closeCode == null) {
+    while (_loginManager.isLoggedIn()) {
       await connect();
       await Future.delayed(_reconnectDelay);
     }
