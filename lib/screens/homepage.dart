@@ -8,6 +8,8 @@ import 'package:quicksend/widgets/custom_bottom_navbar.dart';
 import 'package:quicksend/widgets/custom_button.dart';
 import 'package:quicksend/widgets/custom_text_form_field.dart';
 
+import '../widgets/custom_error_alert_widget.dart';
+
 class HomePage extends StatefulWidget {
   const HomePage({Key? key}) : super(key: key);
 
@@ -58,7 +60,9 @@ class _HomePageState extends State<HomePage> {
                       showDialog(
                         context: context,
                         builder: (context) {
-                          return ErrorWidget("User does not exist");
+                          return const CustomErrorWidget(
+                            message: "User does not exist",
+                          );
                         },
                       );
                     }
