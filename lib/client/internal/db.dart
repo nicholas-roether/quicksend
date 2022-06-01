@@ -47,9 +47,19 @@ class ClientDB with Initialized<ClientDB> {
     return _general.get("device-id");
   }
 
-  void setDeviceID(String? id) {
+  Future<void> setDeviceID(String? id) async {
     assertInit();
-    _general.put("device-id", id);
+    await _general.put("device-id", id);
+  }
+
+  String? getUserID() {
+    assertInit();
+    return _general.get("user-id");
+  }
+
+  Future<void> setUserID(String? val) async {
+    assertInit();
+    await _general.put("user-id", val);
   }
 
   List<String> getChatList() {

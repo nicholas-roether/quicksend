@@ -13,6 +13,12 @@ class LoginManager with Initialized<LoginManager> {
       : _db = db,
         _requestManager = requestManager;
 
+  String get userId {
+    assertInit();
+    assertLoggedIn();
+    return _db.getUserID()!;
+  }
+
   Future<void> logIn(
     String deviceName,
     String username,
@@ -38,7 +44,8 @@ class LoginManager with Initialized<LoginManager> {
       encKeypair.public,
     );
 
-    _db.setDeviceID(deviceID);
+    await _db.setDeviceID(deviceID);
+    await _db.setUserID(userInfo.id);
     await _db.setSignatureKey(sigKeypair.private);
     await _db.setEncryptionKey(encKeypair.private);
   }
@@ -49,7 +56,8 @@ class LoginManager with Initialized<LoginManager> {
     final SignatureAuthenticator auth = await getAuthenticator();
     final String deviceID = _db.getDeviceID() as String;
     await _requestManager.removeDevice(auth, deviceID);
-    _db.setDeviceID(null);
+    await _db.setDeviceID(null);
+    await _db.setUserID(null);
   }
 
   bool isLoggedIn() {
