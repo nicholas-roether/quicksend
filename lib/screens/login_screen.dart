@@ -26,18 +26,7 @@ class _LoginScreenState extends State<LoginScreen> {
   void _showErrorDialog(String message) {
     showDialog(
       context: context,
-      builder: (ctx) => AlertDialog(
-        title: const Text('An error occured!'),
-        content: Text(message),
-        actions: <Widget>[
-          TextButton(
-            onPressed: () {
-              Navigator.of(context).pop();
-            },
-            child: const Text('Okay'),
-          )
-        ],
-      ),
+      builder: (ctx) => ErrorWidget(message),
     );
   }
 
