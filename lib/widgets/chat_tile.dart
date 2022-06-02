@@ -32,9 +32,12 @@ class _ChatTileState extends State<ChatTile> {
     }
     return ListTile(
       leading: const CircleAvatar(),
-      title: Text(
-        userInfo!.getName(),
-        style: Theme.of(context).textTheme.headline6,
+      title: Hero(
+        tag: "username",
+        child: Text(
+          userInfo!.getName(),
+          style: Theme.of(context).textTheme.headline6,
+        ),
       ),
       /*subtitle: Text(
         "Last Message",
