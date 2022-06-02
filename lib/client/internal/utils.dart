@@ -3,7 +3,10 @@ class CachedValue<T> {
   T? cached;
 
   Future<T> get(Future<T> Function() getter) async {
-    if (!loaded) cached = await getter();
+    if (!loaded) {
+      cached = await getter();
+      loaded = true;
+    }
     return cached as T;
   }
 }

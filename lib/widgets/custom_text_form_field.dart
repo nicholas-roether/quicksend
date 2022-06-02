@@ -1,27 +1,32 @@
 import 'package:flutter/material.dart';
 
 class CustomTextFormField extends StatelessWidget {
-  const CustomTextFormField(
-      {Key? key,
-      required this.hintInfo,
-      required this.labelInfo,
-      this.textController,
-      this.inputType,
-      required this.obscure})
-      : super(key: key);
+  const CustomTextFormField({
+    Key? key,
+    required this.hintInfo,
+    required this.labelInfo,
+    this.textController,
+    this.inputType,
+    this.noPadding = false,
+    required this.obscure,
+    this.submitCallback,
+  }) : super(key: key);
   final String hintInfo;
   final String labelInfo;
+  final bool obscure;
+  final bool noPadding;
   final TextEditingController? textController;
   final TextInputType? inputType;
-  final bool obscure;
+  final void Function(String)? submitCallback;
 
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.only(
-        bottom: 20,
+      padding: EdgeInsets.only(
+        bottom: noPadding ? 0 : 20,
       ),
       child: TextFormField(
+        onFieldSubmitted: submitCallback,
         controller: textController,
         decoration: InputDecoration(
           hintText: hintInfo,

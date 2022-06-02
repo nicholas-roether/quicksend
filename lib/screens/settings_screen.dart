@@ -13,6 +13,19 @@ class SettingScreen extends StatefulWidget {
 
 class _SettingScreenState extends State<SettingScreen> {
   UserInfo? userInfo;
+  String? registeredDevices = "berechne...";
+
+  @override
+  void initState() {
+    final quicksendClient = QuicksendClientProvider.get(context);
+    quicksendClient.getRegisteredDevices().then((value) {
+      if (!mounted) return;
+      setState(() {
+        registeredDevices = value.length.toString();
+      });
+    });
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -36,7 +49,9 @@ class _SettingScreenState extends State<SettingScreen> {
                     Navigator.push(
                       context,
                       MaterialPageRoute(
-                        builder: (context) => const UserEditScreen(),
+                        builder: (context) => UserEditScreen(
+                          username: userInfo!.getName(),
+                        ),
                       ),
                     );
                   },
@@ -46,25 +61,34 @@ class _SettingScreenState extends State<SettingScreen> {
                     "Status",
                     style: Theme.of(context).textTheme.bodyText1,
                   ),
-                  leading: const CircleAvatar(
-                    radius: 30,
+                  leading: const Hero(
+                    tag: "profile pic",
+                    child: CircleAvatar(
+                      radius: 30,
+                    ),
                   ),
                 )
               : SkeletonListTile(
                   hasLeading: true,
                   hasSubtitle: true,
+                  leadingStyle: SkeletonAvatarStyle(
+                    borderRadius: BorderRadius.circular(20),
+                  ),
+                  padding: const EdgeInsets.symmetric(horizontal: 15),
                 ),
           const SizedBox(
             height: 20,
           ),
           ListTile(
-            onTap: () {},
+            onTap: () {
+              Navigator.pushNamed(context, "/registered_devices");
+            },
             title: Text(
               "Account Settings",
               style: Theme.of(context).textTheme.headline6,
             ),
             subtitle: Text(
-              "Currently Registered devices: ",
+              "Currently Registered devices: $registeredDevices",
               style: Theme.of(context).textTheme.bodyText1,
             ),
           ),

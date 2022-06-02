@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:flutter/foundation.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:quicksend/client/internal/login_manager.dart';
 import 'package:quicksend/client/internal/request_manager.dart';
@@ -34,7 +35,11 @@ class EventManager extends EventSource {
 
   Future<void> connectLoop() async {
     while (_loginManager.isLoggedIn()) {
-      await connect();
+      try {
+        await connect();
+      } catch (err) {
+        debugPrint("WebSocket connection lost. Reconnecting in 5 seconds...");
+      }
       await Future.delayed(_reconnectDelay);
     }
   }
@@ -44,15 +49,15 @@ class EventManager extends EventSource {
     final token = await _requestManager.getSocketToken(auth);
     _ws = WebSocketChannel.connect(Uri.parse(_socketUri));
     _ws!.sink.add(token);
-    _listen();
     emit("connect");
+    await _listen();
   }
 
   Future<void> _listen() async {
-    _ws!.stream.listen((msgStr) {
+    await for (final msgStr in _ws!.stream) {
       final msg = jsonDecode(msgStr);
       emit(msg["event"], data: msg["data"]);
-    });
+    }
   }
 
   Future<void> onLoggedOut() async {

@@ -119,6 +119,13 @@ class QuicksendClient with Initialized<QuicksendClient> {
     return _getChatManager().refreshMessages();
   }
 
+  /// Gets a list of all devices registered to this account
+  Future<List<DeviceInfo>> getRegisteredDevices() async {
+    assertInit();
+    final auth = await _loginManager.getAuthenticator();
+    return await _requestManager.listDevices(auth);
+  }
+
   ChatManager _getChatManager() {
     _loginManager.assertLoggedIn();
 

@@ -5,8 +5,8 @@ import 'package:quicksend/screens/chat_list.dart';
 import 'package:quicksend/screens/settings_screen.dart';
 import 'package:quicksend/utils/user_search_delegate.dart';
 import 'package:quicksend/widgets/custom_bottom_navbar.dart';
-import 'package:quicksend/widgets/custom_button.dart';
 import 'package:quicksend/widgets/custom_text_form_field.dart';
+import 'package:quicksend/widgets/small_fab_widget.dart';
 
 import '../widgets/custom_error_alert_widget.dart';
 
@@ -21,12 +21,34 @@ class _HomePageState extends State<HomePage> {
   int selectedIndex = 0;
   final TextEditingController _popUpController = TextEditingController();
 
+  void createChat() async {
+    if (_popUpController.text.isEmpty) return;
+    final quicksendClient = QuicksendClientProvider.get(context);
+    try {
+      final userInfo = await quicksendClient.getUserInfo();
+      if (_popUpController.text == userInfo.username) return;
+      await quicksendClient.getChatList().createChat(_popUpController.text);
+      _popUpController.text = "";
+      Navigator.pop(context);
+    } on UnknownUserException {
+      showDialog(
+        context: context,
+        builder: (context) {
+          return const CustomErrorWidget(
+            message: "User does not exist",
+          );
+        },
+      );
+    }
+  }
+
   void showChatPopup() {
     showModalBottomSheet(
       backgroundColor: Colors.transparent,
       context: context,
       builder: (context) {
         return Container(
+          height: MediaQuery.of(context).size.height * (2 / 3),
           decoration: BoxDecoration(
             color: Theme.of(context).backgroundColor,
             borderRadius: const BorderRadius.only(
@@ -36,40 +58,29 @@ class _HomePageState extends State<HomePage> {
           ),
           child: Padding(
             padding: const EdgeInsets.all(12.0),
-            child: Column(
-              children: [
-                CustomTextFormField(
-                  hintInfo: "",
-                  labelInfo: "Benutzername",
-                  obscure: false,
-                  textController: _popUpController,
-                ),
-                CustomButton(
-                  pressedCallback: () async {
-                    final quicksendClient =
-                        QuicksendClientProvider.get(context);
-                    try {
-                      final userInfo = await quicksendClient.getUserInfo();
-                      if (_popUpController.text == userInfo.username) return;
-                      await quicksendClient
-                          .getChatList()
-                          .createChat(_popUpController.text);
-                      _popUpController.text = "";
-                      Navigator.pop(context);
-                    } on UnknownUserException {
-                      showDialog(
-                        context: context,
-                        builder: (context) {
-                          return const CustomErrorWidget(
-                            message: "User does not exist",
-                          );
-                        },
-                      );
-                    }
-                  },
-                  title: "Open Chat",
-                ),
-              ],
+            child: Align(
+              alignment: Alignment.topCenter,
+              child: Row(
+                children: [
+                  Expanded(
+                    child: CustomTextFormField(
+                      hintInfo: "",
+                      labelInfo: "Benutzername",
+                      obscure: false,
+                      textController: _popUpController,
+                      submitCallback: (_) => createChat(),
+                      noPadding: true,
+                    ),
+                  ),
+                  const SizedBox(
+                    width: 10,
+                  ),
+                  SmallFAB(
+                    onPressedCallback: () => createChat(),
+                    icon: Icons.add,
+                  )
+                ],
+              ),
             ),
           ),
         );

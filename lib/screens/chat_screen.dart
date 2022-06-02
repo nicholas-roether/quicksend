@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:image_picker_web/image_picker_web.dart';
 import 'package:mime_type/mime_type.dart';
+import 'package:quicksend/widgets/custom_text_form_field.dart';
 import 'package:quicksend/widgets/message_box.dart';
-import 'package:quicksend/widgets/small_fab_widget.dart';
 import 'package:path/path.dart' as path;
+import 'package:quicksend/widgets/small_fab_widget.dart';
 
 import '../client/chat.dart';
 
@@ -40,11 +41,22 @@ class _ChatScreenState extends State<ChatScreen> {
     widget.chat.loadSavedMessages();
     return Scaffold(
       appBar: AppBar(
-        title: Text(
-          widget.username,
-          style: Theme.of(context).textTheme.bodyText1,
+        title: Hero(
+          tag: "username",
+          child: Text(
+            widget.username,
+            style: Theme.of(context).textTheme.headline5,
+          ),
         ),
         centerTitle: true,
+        actions: const [
+          Padding(
+            padding: EdgeInsets.all(8.0),
+            child: CircleAvatar(
+              radius: 18,
+            ),
+          ), //add profile pic
+        ],
       ),
       body: Column(
         children: [
@@ -66,42 +78,28 @@ class _ChatScreenState extends State<ChatScreen> {
               ),
             ),
           ),
-          SizedBox(
-            width: MediaQuery.of(context).size.width,
-            child: Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: Row(
-                children: [
-                  SmallFAB(
-                    onPressedCallback: _sendImage,
-                    icon: Icons.image,
+          Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: Row(
+              children: [
+                Expanded(
+                  child: CustomTextFormField(
+                    hintInfo: "",
+                    labelInfo: "Enter a Message",
+                    obscure: false,
+                    textController: _chatController,
+                    submitCallback: (_) => _sendMessage(),
+                    noPadding: true,
                   ),
-                  const SizedBox(
-                    width: 10,
-                  ),
-                  Expanded(
-                    child: TextField(
-                      style: const TextStyle(
-                        fontSize: 20,
-                      ),
-                      controller: _chatController,
-                      decoration: InputDecoration(
-                        contentPadding: const EdgeInsets.fromLTRB(8, 3, 8, 3),
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(10),
-                        ),
-                      ),
-                    ),
-                  ),
-                  const SizedBox(
-                    width: 10,
-                  ),
-                  SmallFAB(
-                    onPressedCallback: _sendMessage,
-                    icon: Icons.send,
-                  ),
-                ],
-              ),
+                ),
+                const SizedBox(
+                  width: 10,
+                ),
+                SmallFAB(
+                  onPressedCallback: _sendMessage,
+                  icon: Icons.send,
+                ),
+              ],
             ),
           )
         ],
