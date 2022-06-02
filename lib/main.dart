@@ -3,6 +3,7 @@ import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:quicksend/client/quicksend_client.dart';
 import 'package:quicksend/screens/homepage.dart';
 import 'package:quicksend/screens/login_screen.dart';
+import 'package:quicksend/screens/settings/registered_devices_screen.dart';
 import 'package:quicksend/utils/my_themes.dart';
 
 final quicksendClient = QuicksendClient();
@@ -30,6 +31,7 @@ class MyApp extends StatelessWidget {
         routes: {
           "/": (context) => const LoginScreen(),
           "/home": (context) => const HomePage(),
+          "/registered_devices": (context) => const RegisteredDevices(),
         },
       ),
     );

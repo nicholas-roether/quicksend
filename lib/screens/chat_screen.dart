@@ -33,9 +33,12 @@ class _ChatScreenState extends State<ChatScreen> {
       appBar: AppBar(
         title: Text(
           widget.username,
-          style: Theme.of(context).textTheme.bodyText1,
+          style: Theme.of(context).textTheme.headline5,
         ),
         centerTitle: true,
+        actions: const [
+          CircleAvatar(), //add profile pic
+        ],
       ),
       body: Column(
         children: [
