@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:quicksend/widgets/custom_text_form_field.dart';
 import 'package:quicksend/widgets/message_box.dart';
 import 'package:quicksend/widgets/small_fab_widget.dart';
 
@@ -63,24 +64,22 @@ class _ChatScreenState extends State<ChatScreen> {
               child: Row(
                 children: [
                   Expanded(
-                    child: TextField(
-                      onSubmitted: (_) => _sendMessage,
-                      style: const TextStyle(
-                        fontSize: 20,
-                      ),
-                      controller: _chatController,
-                      decoration: InputDecoration(
-                        contentPadding: const EdgeInsets.fromLTRB(8, 3, 8, 3),
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(10),
-                        ),
-                      ),
+                    child: CustomTextFormField(
+                      hintInfo: "",
+                      labelInfo: "Enter a Message",
+                      obscure: false,
+                      textController: _chatController,
+                      submitCallback: (_) => _sendMessage(),
+                      noPadding: true,
                     ),
                   ),
                   const SizedBox(
                     width: 10,
                   ),
-                  SmallFAB(onPressedCallback: _sendMessage),
+                  SmallFAB(
+                    onPressedCallback: _sendMessage,
+                    icon: Icons.send,
+                  ),
                 ],
               ),
             ),

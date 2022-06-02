@@ -85,16 +85,16 @@ class _LoginScreenState extends State<LoginScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return SingleChildScrollView(
-      child: Scaffold(
-        appBar: AppBar(
-          title: Text(
-            mode == LoginMode.login ? "Login" : "Register",
-            style: Theme.of(context).textTheme.headline5,
-          ),
+    return Scaffold(
+      appBar: AppBar(
+        title: Text(
+          mode == LoginMode.login ? "Login" : "Register",
+          style: Theme.of(context).textTheme.headline5,
         ),
-        body: !_isLoading
-            ? Form(
+      ),
+      body: !_isLoading
+          ? SingleChildScrollView(
+              child: Form(
                 key: _formKey,
                 child: Padding(
                   padding: const EdgeInsets.symmetric(
@@ -163,9 +163,9 @@ class _LoginScreenState extends State<LoginScreen> {
                     ],
                   ),
                 ),
-              )
-            : LoadingIndicator(),
-      ),
+              ),
+            )
+          : LoadingIndicator(),
     );
   }
 }
