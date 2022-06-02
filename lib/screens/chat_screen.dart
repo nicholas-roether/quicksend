@@ -64,6 +64,7 @@ class _ChatScreenState extends State<ChatScreen> {
                 children: [
                   Expanded(
                     child: TextField(
+                      onSubmitted: (_) => _sendMessage,
                       style: const TextStyle(
                         fontSize: 20,
                       ),
