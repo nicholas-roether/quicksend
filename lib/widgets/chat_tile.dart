@@ -28,6 +28,10 @@ class _ChatTileState extends State<ChatTile> {
       return SkeletonListTile(
         hasLeading: true,
         hasSubtitle: true,
+        leadingStyle: SkeletonAvatarStyle(
+          borderRadius: BorderRadius.circular(20),
+        ),
+        padding: const EdgeInsets.symmetric(horizontal: 15),
       );
     }
     return ListTile(

@@ -71,6 +71,10 @@ class _SettingScreenState extends State<SettingScreen> {
               : SkeletonListTile(
                   hasLeading: true,
                   hasSubtitle: true,
+                  leadingStyle: SkeletonAvatarStyle(
+                    borderRadius: BorderRadius.circular(20),
+                  ),
+                  padding: const EdgeInsets.symmetric(horizontal: 15),
                 ),
           const SizedBox(
             height: 20,
