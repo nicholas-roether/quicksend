@@ -36,7 +36,9 @@ class _SettingScreenState extends State<SettingScreen> {
                     Navigator.push(
                       context,
                       MaterialPageRoute(
-                        builder: (context) => const UserEditScreen(),
+                        builder: (context) => UserEditScreen(
+                          username: userInfo!.getName(),
+                        ),
                       ),
                     );
                   },
@@ -58,7 +60,9 @@ class _SettingScreenState extends State<SettingScreen> {
             height: 20,
           ),
           ListTile(
-            onTap: () {},
+            onTap: () {
+              Navigator.pushNamed(context, "/registered_devices");
+            },
             title: Text(
               "Account Settings",
               style: Theme.of(context).textTheme.headline6,
