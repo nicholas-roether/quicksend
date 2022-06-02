@@ -4,8 +4,6 @@ import 'package:quicksend/screens/settings/user_edit_screen.dart';
 import 'package:quicksend/widgets/custom_button.dart';
 import 'package:skeletons/skeletons.dart';
 
-// TODO add Skeleton UserEditScreen
-
 class SettingScreen extends StatefulWidget {
   const SettingScreen({Key? key}) : super(key: key);
 
