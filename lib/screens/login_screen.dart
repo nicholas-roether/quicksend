@@ -23,6 +23,7 @@ class _LoginScreenState extends State<LoginScreen> {
   final TextEditingController _displaynameController = TextEditingController();
   LoginMode mode = LoginMode.register;
   bool _isLoading = false;
+  bool _isFirstFrame = true;
 
   void _showErrorDialog(String message) {
     showDialog(
@@ -79,12 +80,15 @@ class _LoginScreenState extends State<LoginScreen> {
       if (quicksendClient.isLoggedIn()) {
         Navigator.popAndPushNamed(context, "/home");
       }
+      _isFirstFrame = false;
     });
     super.initState();
   }
 
   @override
   Widget build(BuildContext context) {
+    // Prevent login screen flash on startup
+    if (_isFirstFrame) return const SizedBox();
     return Scaffold(
       appBar: AppBar(
         title: Text(
