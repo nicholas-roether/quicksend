@@ -160,6 +160,7 @@ class _LoginScreenState extends State<LoginScreen> {
                         pressedCallback: _submit,
                         title: mode == LoginMode.login ? "Login" : "Register",
                       ),
+                      const SizedBox(height: 50),
                     ],
                   ),
                 ),
