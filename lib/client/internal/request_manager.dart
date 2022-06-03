@@ -1,10 +1,10 @@
 import 'dart:convert';
-import 'dart:io';
 import 'dart:typed_data';
 
 import 'package:dio/dio.dart' as dio;
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:intl/intl.dart';
+import 'package:archive/archive.dart';
 
 import '../exceptions.dart';
 import 'crypto_utils.dart';
@@ -149,11 +149,8 @@ class RequestManager {
   Future<List<IncomingMessage>> pollMessages(
     SignatureAuthenticator auth,
   ) async {
-    final List<dynamic> res = await _request(
-      "GET",
-      "/messages/poll",
-      auth: auth,
-    );
+    final List<dynamic> res = await _request("GET", "/messages/poll",
+        auth: auth, acceptCompressed: true);
     return List.from(res.map((msg) => IncomingMessage(
           msg["id"],
           msg["chat"],
@@ -192,12 +189,8 @@ class RequestManager {
       "iv": iv,
       "body": body
     };
-    final res = await _request(
-      "POST",
-      "/messages/send",
-      auth: auth,
-      body: reqBody,
-    );
+    final res = await _request("POST", "/messages/send",
+        auth: auth, body: reqBody, compress: true);
     return res["id"];
   }
 
@@ -246,27 +239,44 @@ class RequestManager {
   }
 
   List<int> _compressRequest(String request, dio.RequestOptions options) {
-    final gzip = GZipCodec();
+    final gzip = GZipEncoder();
     options.headers["Content-Encoding"] = "gzip";
-    return gzip.encode(utf8.encode(request));
+    final compressed = gzip.encode(utf8.encode(request));
+    if (compressed == null) {
+      throw Exception("Request compression failed");
+    }
+    return compressed;
   }
 
-  Future<dynamic> _request(
-    String method,
-    String target, {
-    Authenticator? auth,
-    dynamic body,
-    dio.Options? options,
-    bool compress = false,
-  }) async {
+  dynamic _decompressResponse(String body) {
+    final gzip = GZipDecoder();
+    final decompressedStr = utf8.decode(gzip.decodeBytes(utf8.encode(body)));
+    return jsonDecode(decompressedStr);
+  }
+
+  Future<dynamic> _request(String method, String target,
+      {Authenticator? auth,
+      dynamic body,
+      dio.Options? options,
+      bool compress = false,
+      bool acceptCompressed = false}) async {
     options ??= dio.Options();
     options.method = method;
 
     if (compress) options.requestEncoder = _compressRequest;
+    if (acceptCompressed) {
+      options.headers ??= {};
+      options.headers!["Accept-Encoding"] = "gzip";
+    }
 
     await auth?.authenticate(target, options);
     final response = await _dio.request(target, data: body, options: options);
     if (response.statusCode == null) throw Exception("Something broke :(");
+
+    if (response.headers.value(dio.Headers.contentEncodingHeader) == "gzip") {
+      response.data = _decompressResponse(response.data);
+    }
+
     if ((response.statusCode as int) ~/ 100 != 2) {
       String? message = response.data["error"]?.toString();
       message ??= "(No error message provided)";
