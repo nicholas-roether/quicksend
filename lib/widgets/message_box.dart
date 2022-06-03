@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:quicksend/client/models.dart';
-import 'package:skeletons/skeletons.dart';
 
 class MessageBox extends StatelessWidget {
   const MessageBox({Key? key, required this.message}) : super(key: key);
@@ -9,13 +8,17 @@ class MessageBox extends StatelessWidget {
   Widget messageBoxContent(context) {
     switch (message.type) {
       case "text/plain":
-        if (message.state == MessageState.sending) {
+        /*if (message.state == MessageState.sending) {
           return SkeletonParagraph(
-            style: const SkeletonParagraphStyle(
+            style: SkeletonParagraphStyle(
               lines: 1,
+              lineStyle: SkeletonLineStyle(
+                width: message.asString().length.toDouble(),
+                alignment: Alignment.bottomRight,
+              ),
             ),
           );
-        }
+        }*/
         if (message.state == MessageState.sent) {
           return Text(
             message.asString(),
@@ -47,7 +50,29 @@ class MessageBox extends StatelessWidget {
           },
         );
     }
-    return const Text("message corrupted!");
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.end,
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        Text(
+          message.asString(),
+          style: Theme.of(context).textTheme.bodyText1?.copyWith(
+                color: Colors.black,
+              ),
+        ),
+        const Padding(
+          padding: EdgeInsets.only(left: 8.0),
+          child: SizedBox(
+            height: 10,
+            width: 10,
+            child: CircularProgressIndicator(
+              color: Colors.black,
+              strokeWidth: 1,
+            ),
+          ),
+        ),
+      ],
+    );
   }
 
   @override
