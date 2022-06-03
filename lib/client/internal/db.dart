@@ -86,6 +86,12 @@ class ClientDB with Initialized<ClientDB> {
     return List.from(box.values);
   }
 
+  DBMessage? getLatestMessage(String chatId) {
+    assertInit();
+    final box = _getChatBox(chatId);
+    return box.get(box.length - 1);
+  }
+
   void addMessage(String chatId, DBMessage message) {
     assertInit();
     final box = _getChatBox(chatId);

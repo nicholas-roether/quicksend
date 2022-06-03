@@ -1,4 +1,3 @@
-import 'dart:async';
 import 'dart:convert';
 import 'dart:typed_data';
 
@@ -39,6 +38,14 @@ class Chat extends ChangeNotifier {
     final messages = _loadMessagesFromDB();
     messages.forEach(_addMessage);
     notifyListeners();
+  }
+
+  /// Returns the latest message sent in this chat, without loading any other
+  /// messages, or notifying this chat's listeners.
+  Message? getLatestMessage() {
+    final dbMessage = _db.getLatestMessage(recipientId);
+    if (dbMessage == null) return null;
+    return _parseDBMessage(dbMessage);
   }
 
   /// Get the user info for the user this chat is with.
@@ -147,18 +154,20 @@ class Chat extends ChangeNotifier {
 
   List<Message> _loadMessagesFromDB() {
     final List<DBMessage> dbMessages = _db.getMessages(recipientId);
-    return List.from(dbMessages.map(
-      (dbMsg) => Message(
-        id: dbMsg.id,
-        type: dbMsg.type,
-        state: MessageState.sent,
-        direction: dbMsg.incoming
-            ? MessageDirection.incoming
-            : MessageDirection.outgoing,
-        sentAt: dbMsg.sentAt,
-        content: dbMsg.content,
-      ),
-    ));
+    return List.from(dbMessages.map(_parseDBMessage));
+  }
+
+  Message _parseDBMessage(DBMessage dbMsg) {
+    return Message(
+      id: dbMsg.id,
+      type: dbMsg.type,
+      state: MessageState.sent,
+      direction: dbMsg.incoming
+          ? MessageDirection.incoming
+          : MessageDirection.outgoing,
+      sentAt: dbMsg.sentAt,
+      content: dbMsg.content,
+    );
   }
 
   void _removeMessage(String id) {
