@@ -31,13 +31,21 @@ class _ChatScreenState extends State<ChatScreen> {
     widget.chat.loadSavedMessages();
     return Scaffold(
       appBar: AppBar(
-        title: Text(
-          widget.username,
-          style: Theme.of(context).textTheme.headline5,
+        title: Hero(
+          tag: "username",
+          child: Text(
+            widget.username,
+            style: Theme.of(context).textTheme.headline5,
+          ),
         ),
         centerTitle: true,
         actions: const [
-          CircleAvatar(), //add profile pic
+          Padding(
+            padding: EdgeInsets.all(8.0),
+            child: CircleAvatar(
+              radius: 18,
+            ),
+          ), //add profile pic
         ],
       ),
       body: Column(
@@ -60,31 +68,28 @@ class _ChatScreenState extends State<ChatScreen> {
               ),
             ),
           ),
-          SizedBox(
-            width: MediaQuery.of(context).size.width,
-            child: Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: Row(
-                children: [
-                  Expanded(
-                    child: CustomTextFormField(
-                      hintInfo: "",
-                      labelInfo: "Enter a Message",
-                      obscure: false,
-                      textController: _chatController,
-                      submitCallback: (_) => _sendMessage(),
-                      noPadding: true,
-                    ),
+          Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: Row(
+              children: [
+                Expanded(
+                  child: CustomTextFormField(
+                    hintInfo: "",
+                    labelInfo: "Enter a Message",
+                    obscure: false,
+                    textController: _chatController,
+                    submitCallback: (_) => _sendMessage(),
+                    noPadding: true,
                   ),
-                  const SizedBox(
-                    width: 10,
-                  ),
-                  SmallFAB(
-                    onPressedCallback: _sendMessage,
-                    icon: Icons.send,
-                  ),
-                ],
-              ),
+                ),
+                const SizedBox(
+                  width: 10,
+                ),
+                SmallFAB(
+                  onPressedCallback: _sendMessage,
+                  icon: Icons.send,
+                ),
+              ],
             ),
           )
         ],
