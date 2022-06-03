@@ -1,4 +1,8 @@
+import 'dart:typed_data';
+
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:image_picker_web/image_picker_web.dart';
 import 'package:mime_type/mime_type.dart';
 import 'package:quicksend/widgets/custom_text_form_field.dart';
@@ -29,11 +33,25 @@ class _ChatScreenState extends State<ChatScreen> {
     });
   }
 
-  void _sendImage() async {
+  void _sendImageForWeb() async {
     final imageInfo = await ImagePickerWeb.getImageInfo;
     String? mimeType = mime(path.basename((imageInfo?.fileName)!));
 
     await widget.chat.sendMessage((mimeType)!, (imageInfo?.data)!);
+  }
+
+  void _sendImageForMobile() async {
+    final _picker = ImagePicker();
+    XFile? pickedImage;
+    Uint8List? byteImageData;
+    String? mimeType = pickedImage?.mimeType;
+
+    await _picker
+        .pickImage(source: ImageSource.gallery)
+        .then((value) => pickedImage = value);
+    await pickedImage?.readAsBytes().then((value) => byteImageData = value);
+
+    await widget.chat.sendMessage(mimeType!, byteImageData!);
   }
 
   @override
@@ -82,6 +100,19 @@ class _ChatScreenState extends State<ChatScreen> {
             padding: const EdgeInsets.all(8.0),
             child: Row(
               children: [
+                SmallFAB(
+                  onPressedCallback: () {
+                    if (kIsWeb) {
+                      _sendImageForWeb();
+                    } else {
+                      _sendImageForMobile();
+                    }
+                  },
+                  icon: Icons.image,
+                ),
+                const SizedBox(
+                  width: 10,
+                ),
                 Expanded(
                   child: CustomTextFormField(
                     hintInfo: "",
