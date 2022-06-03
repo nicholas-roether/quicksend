@@ -1,13 +1,12 @@
-import 'dart:typed_data';
+import 'dart:io';
 
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:image_picker_web/image_picker_web.dart';
 import 'package:mime_type/mime_type.dart';
+import 'package:quicksend/widgets/custom_error_alert_widget.dart';
 import 'package:quicksend/widgets/custom_text_form_field.dart';
 import 'package:quicksend/widgets/message_box.dart';
-import 'package:path/path.dart' as path;
 import 'package:quicksend/widgets/small_fab_widget.dart';
 
 import '../client/chat.dart';
@@ -33,25 +32,31 @@ class _ChatScreenState extends State<ChatScreen> {
     });
   }
 
-  void _sendImageForWeb() async {
+  /*void _sendImageForWeb() async {
     final imageInfo = await ImagePickerWeb.getImageInfo;
     String? mimeType = mime(path.basename((imageInfo?.fileName)!));
 
     await widget.chat.sendMessage((mimeType)!, (imageInfo?.data)!);
-  }
+  }*/
 
   void _sendImageForMobile() async {
+    File? pickedImage;
     final _picker = ImagePicker();
-    XFile? pickedImage;
-    Uint8List? byteImageData;
-    String? mimeType = pickedImage?.mimeType;
+    try {
+      final image = await _picker.pickImage(source: ImageSource.gallery);
+      if (image == null) return;
 
-    await _picker
-        .pickImage(source: ImageSource.gallery)
-        .then((value) => pickedImage = value);
-    await pickedImage?.readAsBytes().then((value) => byteImageData = value);
-
-    await widget.chat.sendMessage(mimeType!, byteImageData!);
+      pickedImage = File(image.path);
+      await widget.chat
+          .sendMessage(mime(pickedImage.path)!, pickedImage.readAsBytesSync());
+    } on PlatformException catch (_) {
+      showDialog(
+        context: context,
+        builder: (context) {
+          return const CustomErrorWidget(message: "Could not send image!");
+        },
+      );
+    }
   }
 
   @override
@@ -101,13 +106,7 @@ class _ChatScreenState extends State<ChatScreen> {
             child: Row(
               children: [
                 SmallFAB(
-                  onPressedCallback: () {
-                    if (kIsWeb) {
-                      _sendImageForWeb();
-                    } else {
-                      _sendImageForMobile();
-                    }
-                  },
+                  onPressedCallback: _sendImageForMobile,
                   icon: Icons.image,
                 ),
                 const SizedBox(
