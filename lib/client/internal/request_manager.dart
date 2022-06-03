@@ -118,6 +118,8 @@ class RequestManager {
         id: res["id"],
         username: res["username"],
         display: res["display"],
+        status: res["status"],
+        pfpAssetId: res["profilePicture"],
       );
     });
   }
@@ -130,6 +132,8 @@ class RequestManager {
         id: res["id"],
         username: res["username"],
         display: res["display"],
+        status: res["status"],
+        pfpAssetId: res["profilePicture"],
       );
     });
   }
@@ -142,8 +146,36 @@ class RequestManager {
         id: res["id"],
         username: res["username"],
         display: res["display"],
+        status: res["status"],
+        pfpAssetId: res["profilePicture"],
       );
     });
+  }
+
+  Future<void> updateUser(
+    SignatureAuthenticator auth, {
+    String? display,
+    String? status,
+    String? password,
+  }) async {
+    await _request("POST", "/user/update", auth: auth, body: {
+      "display": display,
+      "status": status,
+      "password": password,
+    });
+  }
+
+  Future<String> setUserPfp(
+    SignatureAuthenticator auth,
+    String mimeType,
+    Uint8List imageData,
+  ) async {
+    final res = await _request("POST", "/user/set-pfp",
+        auth: auth,
+        body: imageData,
+        compress: true,
+        options: dio.Options(headers: {"Content-Type": mimeType}));
+    return res["id"];
   }
 
   Future<List<IncomingMessage>> pollMessages(
@@ -254,12 +286,15 @@ class RequestManager {
     return jsonDecode(decompressedStr);
   }
 
-  Future<dynamic> _request(String method, String target,
-      {Authenticator? auth,
-      dynamic body,
-      dio.Options? options,
-      bool compress = false,
-      bool acceptCompressed = false}) async {
+  Future<dynamic> _request(
+    String method,
+    String target, {
+    Authenticator? auth,
+    dynamic body,
+    dio.Options? options,
+    bool compress = false,
+    bool acceptCompressed = false,
+  }) async {
     options ??= dio.Options();
     options.method = method;
 
