@@ -1,7 +1,7 @@
 import 'dart:convert';
 import 'dart:typed_data';
 
-import 'package:flutter_dotenv/flutter_dotenv.dart';
+import '../config.dart';
 
 class UserInfo {
   /// The unique ID of this user
@@ -30,8 +30,7 @@ class UserInfo {
 
   String? get pfpUrl {
     if (pfpAssetId == null) return null;
-    final backendUri = dotenv.env["BACKEND_URI"]!;
-    return "$backendUri/asset/$pfpAssetId";
+    return "${Config.backendUri}/asset/$pfpAssetId";
   }
 
   /// Returns the name that should be displayed for this user.

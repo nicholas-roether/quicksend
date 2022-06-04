@@ -2,9 +2,9 @@ import 'dart:convert';
 import 'dart:typed_data';
 
 import 'package:dio/dio.dart' as dio;
-import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:intl/intl.dart';
 import 'package:archive/archive.dart';
+import 'package:quicksend/config.dart';
 
 import '../exceptions.dart';
 import 'crypto_utils.dart';
@@ -90,9 +90,7 @@ class RequestManager {
   final _userInfoName = CachedMap<String, UserInfo?>();
 
   RequestManager() {
-    final backendUri = dotenv.env["BACKEND_URI"];
-    assert(backendUri != null, "A URI to the backend server must be provided");
-    _dio.options.baseUrl = backendUri as String;
+    _dio.options.baseUrl = Config.backendUri;
     _dio.options.headers["Accept"] = "application/json";
     _dio.options.validateStatus = (status) => true;
   }
