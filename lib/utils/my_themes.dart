@@ -33,7 +33,7 @@ class MyThemes {
       backgroundColor: Color(0xFF0e0f19),
       shadowColor: Colors.transparent,
     ),
-    fontFamily: 'QuickSand',
+    fontFamily: 'Quicksand',
     inputDecorationTheme: const InputDecorationTheme(
       hintStyle: TextStyle(
         fontWeight: FontWeight.w500,
