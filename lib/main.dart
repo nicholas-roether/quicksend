@@ -5,13 +5,16 @@ import 'package:quicksend/screens/homepage.dart';
 import 'package:quicksend/screens/login_screen.dart';
 import 'package:quicksend/screens/settings/registered_devices_screen.dart';
 import 'package:quicksend/utils/my_themes.dart';
+import 'package:flutter_native_splash/flutter_native_splash.dart';
 
 final quicksendClient = QuicksendClient();
 
 void main() async {
   await dotenv.load();
 
-  WidgetsFlutterBinding.ensureInitialized();
+  final widgetsBinding = WidgetsFlutterBinding.ensureInitialized();
+
+  FlutterNativeSplash.preserve(widgetsBinding: widgetsBinding);
   await quicksendClient.init();
 
   runApp(const MyApp());

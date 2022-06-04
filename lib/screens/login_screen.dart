@@ -3,6 +3,7 @@ import 'package:quicksend/client/quicksend_client.dart';
 import 'package:quicksend/widgets/custom_button.dart';
 import 'package:quicksend/widgets/custom_error_alert_widget.dart';
 import 'package:uuid/uuid.dart';
+import 'package:flutter_native_splash/flutter_native_splash.dart';
 
 import '../widgets/custom_text_form_field.dart';
 import '../widgets/loading_indicator.dart';
@@ -23,7 +24,7 @@ class _LoginScreenState extends State<LoginScreen> {
   final TextEditingController _displaynameController = TextEditingController();
   LoginMode mode = LoginMode.register;
   bool _isLoading = false;
-  bool _isFirstFrame = true;
+  final bool _isFirstFrame = true;
 
   void _showErrorDialog(String message) {
     showDialog(
@@ -80,15 +81,13 @@ class _LoginScreenState extends State<LoginScreen> {
       if (quicksendClient.isLoggedIn()) {
         Navigator.popAndPushNamed(context, "/home");
       }
-      _isFirstFrame = false;
+      FlutterNativeSplash.remove();
     });
     super.initState();
   }
 
   @override
   Widget build(BuildContext context) {
-    // Prevent login screen flash on startup
-    if (_isFirstFrame) return const SizedBox();
     return Scaffold(
       appBar: AppBar(
         title: Text(
