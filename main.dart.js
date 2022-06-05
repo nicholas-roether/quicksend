@@ -77956,7 +77956,7 @@ A.Ku.prototype={
 H(a,b){var s,r=$.arT(),q=$.aAe()
 if(!r.bz$)A.t(new A.aV(A.o(r).i("aV<bC.T>")))
 s=r.ghg().a.eW()!=null?"home":"login"
-return new A.LC(new A.zD(A.aL(["/login",new A.a5E(),"/home",new A.a5F(),"/registered_devices",new A.a5G()],t.N,t.Ab),s,"Quicksend",q,!1,null),r,null)}}
+return new A.LC(new A.zD(A.aL(["login",new A.a5E(),"home",new A.a5F(),"/registered_devices",new A.a5G()],t.N,t.Ab),s,"Quicksend",q,!1,null),r,null)}}
 A.a5E.prototype={
 $1(a){return B.TQ},
 $S:585}
