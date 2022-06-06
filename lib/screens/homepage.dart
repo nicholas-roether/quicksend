@@ -3,7 +3,6 @@ import 'package:quicksend/client/exceptions.dart';
 import 'package:quicksend/client/provider.dart';
 import 'package:quicksend/screens/chat_list.dart';
 import 'package:quicksend/screens/settings_screen.dart';
-import 'package:quicksend/utils/user_search_delegate.dart';
 import 'package:quicksend/widgets/custom_bottom_navbar.dart';
 import 'package:quicksend/widgets/custom_text_form_field.dart';
 import 'package:quicksend/widgets/small_fab_widget.dart';
@@ -47,40 +46,42 @@ class _HomePageState extends State<HomePage> {
       backgroundColor: Colors.transparent,
       context: context,
       builder: (context) {
-        return Container(
-          height: MediaQuery.of(context).size.height * (2 / 3),
-          decoration: BoxDecoration(
-            color: Theme.of(context).backgroundColor,
-            borderRadius: const BorderRadius.only(
-              topLeft: Radius.circular(20),
-              topRight: Radius.circular(20),
+        return SingleChildScrollView(
+          child: Container(
+            height: MediaQuery.of(context).size.height * (2 / 3),
+            decoration: BoxDecoration(
+              color: Theme.of(context).backgroundColor,
+              borderRadius: const BorderRadius.only(
+                topLeft: Radius.circular(20),
+                topRight: Radius.circular(20),
+              ),
             ),
-          ),
-          child: Padding(
-            padding: const EdgeInsets.all(12.0),
-            child: Align(
-              alignment: Alignment.topCenter,
-              child: Row(
-                children: [
-                  Expanded(
-                    child: CustomTextFormField(
-                      hintInfo: "",
-                      labelInfo: "Benutzername",
-                      obscure: false,
-                      autocorrect: false,
-                      textController: _popUpController,
-                      submitCallback: (_) => createChat(),
-                      noPadding: true,
+            child: Padding(
+              padding: const EdgeInsets.all(12.0),
+              child: Align(
+                alignment: Alignment.topCenter,
+                child: Row(
+                  children: [
+                    Expanded(
+                      child: CustomTextFormField(
+                        hintInfo: "",
+                        labelInfo: "Benutzername",
+                        obscure: false,
+                        autocorrect: false,
+                        textController: _popUpController,
+                        submitCallback: (_) => createChat(),
+                        noPadding: true,
+                      ),
                     ),
-                  ),
-                  const SizedBox(
-                    width: 10,
-                  ),
-                  SmallFAB(
-                    onPressedCallback: () => createChat(),
-                    icon: Icons.add,
-                  )
-                ],
+                    const SizedBox(
+                      width: 10,
+                    ),
+                    SmallFAB(
+                      onPressedCallback: () => createChat(),
+                      icon: Icons.add,
+                    )
+                  ],
+                ),
               ),
             ),
           ),
@@ -113,7 +114,7 @@ class _HomePageState extends State<HomePage> {
             selectedIndex == 0 ? "Chats" : "Settings",
             style: Theme.of(context).textTheme.headline5,
           ),
-          actions: [
+          /*actions: [
             selectedIndex == 0
                 ? Padding(
                     padding: const EdgeInsets.only(right: 8.0),
@@ -131,7 +132,7 @@ class _HomePageState extends State<HomePage> {
                     height: 0,
                     width: 0,
                   ),
-          ],
+          ],*/
         ),
         body: selectedIndex == 0 ? const ChatList() : const SettingScreen(),
       ),
