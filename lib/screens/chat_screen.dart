@@ -149,6 +149,7 @@ class _ChatScreenState extends State<ChatScreen> {
                     hintInfo: "",
                     labelInfo: "Enter a Message",
                     obscure: false,
+                    inputType: TextInputType.multiline,
                     textController: _chatController,
                     submitCallback: (_) => _sendMessage(),
                     noPadding: true,

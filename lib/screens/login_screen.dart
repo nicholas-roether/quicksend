@@ -3,7 +3,6 @@ import 'package:quicksend/client/quicksend_client.dart';
 import 'package:quicksend/widgets/custom_button.dart';
 import 'package:quicksend/widgets/custom_error_alert_widget.dart';
 import 'package:uuid/uuid.dart';
-import 'package:flutter_native_splash/flutter_native_splash.dart';
 
 import '../widgets/custom_text_form_field.dart';
 import '../widgets/loading_indicator.dart';
@@ -74,18 +73,6 @@ class _LoginScreenState extends State<LoginScreen> {
   }
 
   @override
-  void initState() {
-    final quicksendClient = QuicksendClientProvider.get(context);
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      if (quicksendClient.isLoggedIn()) {
-        Navigator.popAndPushNamed(context, "/home");
-      }
-      FlutterNativeSplash.remove();
-    });
-    super.initState();
-  }
-
-  @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
@@ -121,12 +108,15 @@ class _LoginScreenState extends State<LoginScreen> {
                         hintInfo: "Enter a Username",
                         labelInfo: "Username",
                         obscure: false,
+                        autocorrect: false,
                         textController: _usernameController,
                       ),
                       CustomTextFormField(
                         hintInfo: "Enter a password",
                         labelInfo: "Password",
                         obscure: true,
+                        autocorrect: false,
+                        inputType: TextInputType.visiblePassword,
                         textController: _passwordController,
                       ),
                       mode == LoginMode.register
@@ -134,6 +124,7 @@ class _LoginScreenState extends State<LoginScreen> {
                               hintInfo: "Enter a Display Name",
                               labelInfo: "Display Name",
                               obscure: false,
+                              autocorrect: false,
                               textController: _displaynameController,
                             )
                           : const SizedBox(

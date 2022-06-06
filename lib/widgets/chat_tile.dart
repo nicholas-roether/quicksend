@@ -17,10 +17,10 @@ class _ChatTileState extends State<ChatTile> {
   UserInfo? userInfo;
 
   String getLastMessage() {
-    if (widget.chat.getMessages().isNotEmpty) {
-      switch (widget.chat.getMessages()[0].type) {
+    if (widget.chat.getLatestMessage() != null) {
+      switch (widget.chat.getLatestMessage()!.type) {
         case "text/plain":
-          return widget.chat.getMessages()[0].asString();
+          return widget.chat.getLatestMessage()!.asString();
         case "image/jpeg":
           return "Image";
         case "image/png":
