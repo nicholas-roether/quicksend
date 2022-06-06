@@ -127,6 +127,7 @@ class QuicksendClient with Initialized<QuicksendClient> {
     );
   }
 
+  /// Sets the logged in user's profile picture
   Future<void> setUserPfp(String mimeType, Uint8List image) async {
     assertInit();
     final auth = await _loginManager.getAuthenticator();
