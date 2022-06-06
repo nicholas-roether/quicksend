@@ -91,48 +91,50 @@ class _HomePageState extends State<HomePage> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      bottomNavigationBar: CustomBottomNavbar(
-        currentIndex: selectedIndex,
-        setIndex: (int index) {
-          setState(() {
-            selectedIndex = index;
-          });
-        },
-      ),
-      floatingActionButton: selectedIndex == 0
-          ? FloatingActionButton(
-              onPressed: showChatPopup,
-              backgroundColor: Theme.of(context).primaryColor,
-              child: const Icon(Icons.add),
-            )
-          : const SizedBox(),
-      appBar: AppBar(
-        title: Text(
-          selectedIndex == 0 ? "Chats" : "Settings",
-          style: Theme.of(context).textTheme.headline5,
+    return SafeArea(
+      child: Scaffold(
+        bottomNavigationBar: CustomBottomNavbar(
+          currentIndex: selectedIndex,
+          setIndex: (int index) {
+            setState(() {
+              selectedIndex = index;
+            });
+          },
         ),
-        actions: [
-          selectedIndex == 0
-              ? Padding(
-                  padding: const EdgeInsets.only(right: 8.0),
-                  child: IconButton(
-                    splashRadius: 18,
-                    iconSize: 30,
-                    onPressed: () => showSearch(
-                        context: context, delegate: UserSearchDelegate()),
-                    icon: const Icon(
-                      Icons.search,
+        floatingActionButton: selectedIndex == 0
+            ? FloatingActionButton(
+                onPressed: showChatPopup,
+                backgroundColor: Theme.of(context).primaryColor,
+                child: const Icon(Icons.add),
+              )
+            : const SizedBox(),
+        appBar: AppBar(
+          title: Text(
+            selectedIndex == 0 ? "Chats" : "Settings",
+            style: Theme.of(context).textTheme.headline5,
+          ),
+          actions: [
+            selectedIndex == 0
+                ? Padding(
+                    padding: const EdgeInsets.only(right: 8.0),
+                    child: IconButton(
+                      splashRadius: 18,
+                      iconSize: 30,
+                      onPressed: () => showSearch(
+                          context: context, delegate: UserSearchDelegate()),
+                      icon: const Icon(
+                        Icons.search,
+                      ),
                     ),
+                  )
+                : const SizedBox(
+                    height: 0,
+                    width: 0,
                   ),
-                )
-              : const SizedBox(
-                  height: 0,
-                  width: 0,
-                ),
-        ],
+          ],
+        ),
+        body: selectedIndex == 0 ? const ChatList() : const SettingScreen(),
       ),
-      body: selectedIndex == 0 ? const ChatList() : const SettingScreen(),
     );
   }
 }
