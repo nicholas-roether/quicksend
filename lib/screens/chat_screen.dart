@@ -63,109 +63,112 @@ class _ChatScreenState extends State<ChatScreen> {
   @override
   Widget build(BuildContext context) {
     widget.chat.loadSavedMessages();
-    return Scaffold(
-      appBar: AppBar(
-        title: Hero(
-          tag: "username",
-          child: Text(
-            widget.username,
-            style: Theme.of(context).textTheme.headline5,
-          ),
-        ),
-        centerTitle: true,
-        actions: const [
-          Padding(
-            padding: EdgeInsets.all(8.0),
-            child: CircleAvatar(
-              radius: 18,
+    return SafeArea(
+      child: Scaffold(
+        appBar: AppBar(
+          title: Hero(
+            tag: "username",
+            child: Text(
+              widget.username,
+              style: Theme.of(context).textTheme.headline5,
             ),
-          ), //add profile pic
-        ],
-      ),
-      body: Column(
-        children: [
-          Expanded(
-            flex: 1,
-            child: AnimatedBuilder(
-              animation: widget.chat,
-              builder: (context, _) => Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: ListView.builder(
-                  itemBuilder: (context, index) {
-                    return MessageBox(
-                      message: widget.chat.getMessages().elementAt(index),
-                    );
-                  },
-                  itemCount: widget.chat.getMessages().length,
-                  reverse: true,
+          ),
+          centerTitle: true,
+          actions: const [
+            Padding(
+              padding: EdgeInsets.all(8.0),
+              child: CircleAvatar(
+                radius: 18,
+              ),
+            ), //add profile pic
+          ],
+        ),
+        body: Column(
+          children: [
+            Expanded(
+              flex: 1,
+              child: AnimatedBuilder(
+                animation: widget.chat,
+                builder: (context, _) => Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: ListView.builder(
+                    itemBuilder: (context, index) {
+                      return MessageBox(
+                        message: widget.chat.getMessages().elementAt(index),
+                      );
+                    },
+                    itemCount: widget.chat.getMessages().length,
+                    reverse: true,
+                  ),
                 ),
               ),
             ),
-          ),
-          Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: Row(
-              children: [
-                SmallFAB(
-                  onPressedCallback: () {
-                    showDialog(
-                      context: context,
-                      builder: (context) {
-                        return Dialog(
-                          child: SizedBox(
-                            height: 110,
-                            width: 60,
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                              children: [
-                                DialogIconButton(
-                                  title: "Camera",
-                                  onPressedCallback: () =>
-                                      _sendImage(ImageSource.camera),
-                                  icon: Icons.camera,
-                                  tooltip: "Take a picture",
-                                ),
-                                DialogIconButton(
-                                  icon: Icons.image,
-                                  onPressedCallback: () =>
-                                      _sendImage(ImageSource.gallery),
-                                  title: "Gallery",
-                                  tooltip: "Pick an image",
-                                ),
-                              ],
+            Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: Row(
+                children: [
+                  SmallFAB(
+                    onPressedCallback: () {
+                      showDialog(
+                        context: context,
+                        builder: (context) {
+                          return Dialog(
+                            child: SizedBox(
+                              height: 110,
+                              width: 60,
+                              child: Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceEvenly,
+                                children: [
+                                  DialogIconButton(
+                                    title: "Camera",
+                                    onPressedCallback: () =>
+                                        _sendImage(ImageSource.camera),
+                                    icon: Icons.camera,
+                                    tooltip: "Take a picture",
+                                  ),
+                                  DialogIconButton(
+                                    icon: Icons.image,
+                                    onPressedCallback: () =>
+                                        _sendImage(ImageSource.gallery),
+                                    title: "Gallery",
+                                    tooltip: "Pick an image",
+                                  ),
+                                ],
+                              ),
                             ),
-                          ),
-                        );
-                      },
-                    );
-                  },
-                  icon: Icons.image,
-                ),
-                const SizedBox(
-                  width: 10,
-                ),
-                Expanded(
-                  child: CustomTextFormField(
-                    hintInfo: "",
-                    labelInfo: "Enter a Message",
-                    obscure: false,
-                    inputType: TextInputType.multiline,
-                    textController: _chatController,
-                    submitCallback: (_) => _sendMessage(),
-                    noPadding: true,
+                          );
+                        },
+                      );
+                    },
+                    icon: Icons.image,
                   ),
-                ),
-                const SizedBox(
-                  width: 10,
-                ),
-                SmallFAB(
-                  onPressedCallback: _sendMessage,
-                  icon: Icons.send,
-                ),
-              ],
-            ),
-          )
-        ],
+                  const SizedBox(
+                    width: 10,
+                  ),
+                  Expanded(
+                    child: CustomTextFormField(
+                      hintInfo: "",
+                      labelInfo: "Enter a Message",
+                      obscure: false,
+                      inputType: TextInputType.multiline,
+                      textController: _chatController,
+                      submitCallback: (_) => _sendMessage(),
+                      noPadding: true,
+                    ),
+                  ),
+                  const SizedBox(
+                    width: 10,
+                  ),
+                  SmallFAB(
+                    onPressedCallback: _sendMessage,
+                    icon: Icons.send,
+                  ),
+                ],
+              ),
+            )
+          ],
+        ),
       ),
     );
   }
