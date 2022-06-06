@@ -278,9 +278,9 @@ class RequestManager {
     return compressed;
   }
 
-  dynamic _decompressResponse(String body) {
+  dynamic _decompressResponse(List<int> body) {
     final gzip = GZipDecoder();
-    final decompressedStr = utf8.decode(gzip.decodeBytes(utf8.encode(body)));
+    final decompressedStr = utf8.decode(gzip.decodeBytes(body));
     return jsonDecode(decompressedStr);
   }
 
@@ -300,6 +300,7 @@ class RequestManager {
     if (acceptCompressed) {
       options.headers ??= {};
       options.headers!["Accept-Encoding"] = "gzip";
+      options.responseType = dio.ResponseType.bytes;
     }
 
     await auth?.authenticate(target, options);
