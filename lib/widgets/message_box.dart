@@ -78,14 +78,19 @@ class MessageBox extends StatelessWidget {
       alignment: message.direction == MessageDirection.outgoing
           ? const Alignment(1.0, 1.0)
           : const Alignment(-1.0, 1.0),
-      child: Card(
-        elevation: 2,
-        color: message.direction == MessageDirection.outgoing
-            ? Theme.of(context).primaryColor
-            : Theme.of(context).secondaryHeaderColor,
-        child: Padding(
-          padding: const EdgeInsets.all(8.0),
-          child: messageBoxContent(context),
+      child: ConstrainedBox(
+        constraints: BoxConstraints(
+          maxWidth: MediaQuery.of(context).size.width * 0.9,
+        ),
+        child: Card(
+          elevation: 2,
+          color: message.direction == MessageDirection.outgoing
+              ? Theme.of(context).primaryColor
+              : Theme.of(context).secondaryHeaderColor,
+          child: Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: messageBoxContent(context),
+          ),
         ),
       ),
     );
