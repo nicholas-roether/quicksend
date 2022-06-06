@@ -1,6 +1,8 @@
 import 'dart:convert';
 import 'dart:typed_data';
 
+import '../config.dart';
+
 class UserInfo {
   /// The unique ID of this user
   final String id;
@@ -11,11 +13,25 @@ class UserInfo {
   /// This user's display name
   final String? display;
 
+  /// This user's current status
+  final String? status;
+
+  /// The Asset ID of this user's profile picture. Use [pfpUrl] to get a URL
+  /// that points to the associated image.
+  final String? pfpAssetId;
+
   const UserInfo({
     required this.id,
     required this.username,
-    required this.display,
+    this.display,
+    this.status,
+    this.pfpAssetId,
   });
+
+  String? get pfpUrl {
+    if (pfpAssetId == null) return null;
+    return "${Config.backendUri}/asset/$pfpAssetId";
+  }
 
   /// Returns the name that should be displayed for this user.
   ///

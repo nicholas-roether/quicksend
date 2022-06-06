@@ -1,10 +1,10 @@
 import 'dart:convert';
-import 'dart:io';
 import 'dart:typed_data';
 
 import 'package:dio/dio.dart' as dio;
-import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:intl/intl.dart';
+import 'package:archive/archive.dart';
+import 'package:quicksend/config.dart';
 
 import '../exceptions.dart';
 import 'crypto_utils.dart';
@@ -90,9 +90,7 @@ class RequestManager {
   final _userInfoName = CachedMap<String, UserInfo?>();
 
   RequestManager() {
-    final backendUri = dotenv.env["BACKEND_URI"];
-    assert(backendUri != null, "A URI to the backend server must be provided");
-    _dio.options.baseUrl = backendUri as String;
+    _dio.options.baseUrl = Config.backendUri;
     _dio.options.headers["Accept"] = "application/json";
     _dio.options.validateStatus = (status) => true;
   }
@@ -118,6 +116,8 @@ class RequestManager {
         id: res["id"],
         username: res["username"],
         display: res["display"],
+        status: res["status"],
+        pfpAssetId: res["profilePicture"],
       );
     });
   }
@@ -130,6 +130,8 @@ class RequestManager {
         id: res["id"],
         username: res["username"],
         display: res["display"],
+        status: res["status"],
+        pfpAssetId: res["profilePicture"],
       );
     });
   }
@@ -142,18 +144,43 @@ class RequestManager {
         id: res["id"],
         username: res["username"],
         display: res["display"],
+        status: res["status"],
+        pfpAssetId: res["profilePicture"],
       );
     });
+  }
+
+  Future<void> updateUser(
+    SignatureAuthenticator auth, {
+    String? display,
+    String? status,
+    String? password,
+  }) async {
+    await _request("POST", "/user/update", auth: auth, body: {
+      "display": display,
+      "status": status,
+      "password": password,
+    });
+  }
+
+  Future<String> setUserPfp(
+    SignatureAuthenticator auth,
+    String mimeType,
+    Uint8List imageData,
+  ) async {
+    final res = await _request("POST", "/user/set-pfp",
+        auth: auth,
+        body: imageData,
+        compress: true,
+        options: dio.Options(headers: {"Content-Type": mimeType}));
+    return res["id"];
   }
 
   Future<List<IncomingMessage>> pollMessages(
     SignatureAuthenticator auth,
   ) async {
-    final List<dynamic> res = await _request(
-      "GET",
-      "/messages/poll",
-      auth: auth,
-    );
+    final List<dynamic> res = await _request("GET", "/messages/poll",
+        auth: auth, acceptCompressed: true);
     return List.from(res.map((msg) => IncomingMessage(
           msg["id"],
           msg["chat"],
@@ -192,12 +219,8 @@ class RequestManager {
       "iv": iv,
       "body": body
     };
-    final res = await _request(
-      "POST",
-      "/messages/send",
-      auth: auth,
-      body: reqBody,
-    );
+    final res = await _request("POST", "/messages/send",
+        auth: auth, body: reqBody, compress: true);
     return res["id"];
   }
 
@@ -246,9 +269,19 @@ class RequestManager {
   }
 
   List<int> _compressRequest(String request, dio.RequestOptions options) {
-    final gzip = GZipCodec();
+    final gzip = GZipEncoder();
     options.headers["Content-Encoding"] = "gzip";
-    return gzip.encode(utf8.encode(request));
+    final compressed = gzip.encode(utf8.encode(request));
+    if (compressed == null) {
+      throw Exception("Request compression failed");
+    }
+    return compressed;
+  }
+
+  dynamic _decompressResponse(String body) {
+    final gzip = GZipDecoder();
+    final decompressedStr = utf8.decode(gzip.decodeBytes(utf8.encode(body)));
+    return jsonDecode(decompressedStr);
   }
 
   Future<dynamic> _request(
@@ -258,15 +291,25 @@ class RequestManager {
     dynamic body,
     dio.Options? options,
     bool compress = false,
+    bool acceptCompressed = false,
   }) async {
     options ??= dio.Options();
     options.method = method;
 
     if (compress) options.requestEncoder = _compressRequest;
+    if (acceptCompressed) {
+      options.headers ??= {};
+      options.headers!["Accept-Encoding"] = "gzip";
+    }
 
     await auth?.authenticate(target, options);
     final response = await _dio.request(target, data: body, options: options);
     if (response.statusCode == null) throw Exception("Something broke :(");
+
+    if (response.headers.value(dio.Headers.contentEncodingHeader) == "gzip") {
+      response.data = _decompressResponse(response.data);
+    }
+
     if ((response.statusCode as int) ~/ 100 != 2) {
       String? message = response.data["error"]?.toString();
       message ??= "(No error message provided)";

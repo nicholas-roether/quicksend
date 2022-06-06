@@ -1,3 +1,5 @@
+import 'dart:typed_data';
+
 import 'package:quicksend/client/internal/event_manager.dart';
 
 import 'chat_list.dart';
@@ -106,6 +108,29 @@ class QuicksendClient with Initialized<QuicksendClient> {
   Future<UserInfo?> getUserInfoFor(String id) async {
     assertInit();
     return await _requestManager.getUserInfoFor(id);
+  }
+
+  /// Update data for the current user. This method can be used to change the
+  /// current user's status, display name, and/or password.
+  Future<void> updateUser({
+    String? status,
+    String? display,
+    String? password,
+  }) async {
+    assertInit();
+    final auth = await _loginManager.getAuthenticator();
+    await _requestManager.updateUser(
+      auth,
+      status: status,
+      display: display,
+      password: password,
+    );
+  }
+
+  Future<void> setUserPfp(String mimeType, Uint8List image) async {
+    assertInit();
+    final auth = await _loginManager.getAuthenticator();
+    await _requestManager.setUserPfp(auth, mimeType, image);
   }
 
   /// Returns the ChatList instance for this client, which contains all open
