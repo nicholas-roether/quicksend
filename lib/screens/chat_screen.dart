@@ -109,35 +109,35 @@ class _ChatScreenState extends State<ChatScreen> {
                 SmallFAB(
                   onPressedCallback: () {
                     showDialog(
-                        context: context,
-                        builder: (context) {
-                          return Dialog(
-                            child: SizedBox(
-                              height: 110,
-                              width: 60,
-                              child: Row(
-                                mainAxisAlignment:
-                                    MainAxisAlignment.spaceEvenly,
-                                children: [
-                                  DialogIconButton(
-                                    title: "Camera",
-                                    onPressedCallback: () =>
-                                        _sendImage(ImageSource.camera),
-                                    icon: Icons.camera,
-                                    tooltip: "Take a picture",
-                                  ),
-                                  DialogIconButton(
-                                    icon: Icons.image,
-                                    onPressedCallback: () =>
-                                        _sendImage(ImageSource.gallery),
-                                    title: "Gallery",
-                                    tooltip: "Pick an image",
-                                  ),
-                                ],
-                              ),
+                      context: context,
+                      builder: (context) {
+                        return Dialog(
+                          child: SizedBox(
+                            height: 110,
+                            width: 60,
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                              children: [
+                                DialogIconButton(
+                                  title: "Camera",
+                                  onPressedCallback: () =>
+                                      _sendImage(ImageSource.camera),
+                                  icon: Icons.camera,
+                                  tooltip: "Take a picture",
+                                ),
+                                DialogIconButton(
+                                  icon: Icons.image,
+                                  onPressedCallback: () =>
+                                      _sendImage(ImageSource.gallery),
+                                  title: "Gallery",
+                                  tooltip: "Pick an image",
+                                ),
+                              ],
                             ),
-                          );
-                        });
+                          ),
+                        );
+                      },
+                    );
                   },
                   icon: Icons.image,
                 ),
