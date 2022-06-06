@@ -6,6 +6,7 @@ import 'package:image_picker/image_picker.dart';
 import 'package:mime_type/mime_type.dart';
 import 'package:quicksend/widgets/custom_error_alert_widget.dart';
 import 'package:quicksend/widgets/custom_text_form_field.dart';
+import 'package:quicksend/widgets/dialog_icon_button.dart';
 import 'package:quicksend/widgets/message_box.dart';
 import 'package:quicksend/widgets/small_fab_widget.dart';
 
@@ -39,11 +40,11 @@ class _ChatScreenState extends State<ChatScreen> {
     await widget.chat.sendMessage((mimeType)!, (imageInfo?.data)!);
   }*/
 
-  void _sendImageForMobile() async {
+  void _sendImage(ImageSource source) async {
     File? pickedImage;
     final _picker = ImagePicker();
     try {
-      final image = await _picker.pickImage(source: ImageSource.gallery);
+      final image = await _picker.pickImage(source: source);
       if (image == null) return;
 
       pickedImage = File(image.path);
@@ -106,7 +107,38 @@ class _ChatScreenState extends State<ChatScreen> {
             child: Row(
               children: [
                 SmallFAB(
-                  onPressedCallback: _sendImageForMobile,
+                  onPressedCallback: () {
+                    showDialog(
+                        context: context,
+                        builder: (context) {
+                          return Dialog(
+                            child: SizedBox(
+                              height: 110,
+                              width: 60,
+                              child: Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceEvenly,
+                                children: [
+                                  DialogIconButton(
+                                    title: "Camera",
+                                    onPressedCallback: () =>
+                                        _sendImage(ImageSource.camera),
+                                    icon: Icons.camera,
+                                    tooltip: "Take a picture",
+                                  ),
+                                  DialogIconButton(
+                                    icon: Icons.image,
+                                    onPressedCallback: () =>
+                                        _sendImage(ImageSource.gallery),
+                                    title: "Gallery",
+                                    tooltip: "Pick an image",
+                                  ),
+                                ],
+                              ),
+                            ),
+                          );
+                        });
+                  },
                   icon: Icons.image,
                 ),
                 const SizedBox(
