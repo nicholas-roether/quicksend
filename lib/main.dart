@@ -13,6 +13,7 @@ void main() async {
 
   FlutterNativeSplash.preserve(widgetsBinding: widgetsBinding);
   await quicksendClient.init();
+  FlutterNativeSplash.remove();
 
   runApp(const MyApp());
 }
@@ -29,8 +30,12 @@ class MyApp extends StatelessWidget {
         debugShowCheckedModeBanner: false,
         theme: MyThemes.mainTheme,
         routes: {
-          "/": (context) => const LoginScreen(),
-          "/home": (context) => const HomePage(),
+          "/": (context) {
+            final quicksendClient = QuicksendClientProvider.get(context);
+            return quicksendClient.isLoggedIn()
+                ? const HomePage()
+                : const LoginScreen();
+          },
           "/registered_devices": (context) => const RegisteredDevices(),
         },
       ),

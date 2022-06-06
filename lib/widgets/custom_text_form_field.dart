@@ -10,6 +10,7 @@ class CustomTextFormField extends StatelessWidget {
     this.noPadding = false,
     required this.obscure,
     this.submitCallback,
+    this.autocorrect = true,
   }) : super(key: key);
   final String hintInfo;
   final String labelInfo;
@@ -18,6 +19,7 @@ class CustomTextFormField extends StatelessWidget {
   final TextEditingController? textController;
   final TextInputType? inputType;
   final void Function(String)? submitCallback;
+  final bool autocorrect;
 
   @override
   Widget build(BuildContext context) {
@@ -44,6 +46,7 @@ class CustomTextFormField extends StatelessWidget {
         },
         keyboardType: inputType,
         obscureText: obscure,
+        autocorrect: autocorrect,
       ),
     );
   }
