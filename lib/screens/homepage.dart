@@ -67,6 +67,7 @@ class _HomePageState extends State<HomePage> {
                       hintInfo: "",
                       labelInfo: "Benutzername",
                       obscure: false,
+                      autocorrect: false,
                       textController: _popUpController,
                       submitCallback: (_) => createChat(),
                       noPadding: true,
@@ -86,22 +87,6 @@ class _HomePageState extends State<HomePage> {
         );
       },
     );
-  }
-
-  @override
-  void initState() {
-    // Stupid hack to prevent hot reloads from messing up the route stack
-    final quicksendClient = QuicksendClientProvider.get(context);
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      if (Navigator.canPop(context)) {
-        Navigator.popUntil(context, (route) => route.isFirst);
-        Navigator.popAndPushNamed(context, "/home");
-      }
-      if (!quicksendClient.isLoggedIn()) {
-        Navigator.popAndPushNamed(context, "/");
-      }
-    });
-    super.initState();
   }
 
   @override
