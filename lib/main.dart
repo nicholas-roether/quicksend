@@ -24,15 +24,17 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return QuicksendClientProvider(
       client: quicksendClient,
-      child: MaterialApp(
-        title: 'Quicksend',
-        debugShowCheckedModeBanner: false,
-        theme: MyThemes.mainTheme,
-        routes: {
-          "/": (context) => const LoginScreen(),
-          "/home": (context) => const HomePage(),
-          "/registered_devices": (context) => const RegisteredDevices(),
-        },
+      child: SafeArea(
+        child: MaterialApp(
+          title: 'Quicksend',
+          debugShowCheckedModeBanner: false,
+          theme: MyThemes.mainTheme,
+          routes: {
+            "/": (context) => const LoginScreen(),
+            "/home": (context) => const HomePage(),
+            "/registered_devices": (context) => const RegisteredDevices(),
+          },
+        ),
       ),
     );
   }
