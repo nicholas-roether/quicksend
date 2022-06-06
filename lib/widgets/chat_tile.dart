@@ -16,6 +16,20 @@ class ChatTile extends StatefulWidget {
 class _ChatTileState extends State<ChatTile> {
   UserInfo? userInfo;
 
+  String getLastMessage() {
+    if (widget.chat.getLatestMessage() != null) {
+      switch (widget.chat.getLatestMessage()!.type) {
+        case "text/plain":
+          return widget.chat.getLatestMessage()!.asString();
+        case "image/jpeg":
+          return "Image";
+        case "image/png":
+          return "Image";
+      }
+    }
+    return "message...";
+  }
+
   @override
   Widget build(BuildContext context) {
     widget.chat.getRecipient().then((value) {
@@ -43,10 +57,13 @@ class _ChatTileState extends State<ChatTile> {
           style: Theme.of(context).textTheme.headline6,
         ),
       ),
-      /*subtitle: Text(
-        "Last Message",
-        style: Theme.of(context).textTheme.bodyText1,
-      ),*/
+      subtitle: Text(
+        getLastMessage(),
+        style: Theme.of(context)
+            .textTheme
+            .bodyText1
+            ?.copyWith(color: Theme.of(context).secondaryHeaderColor),
+      ),
       onTap: () => Navigator.push(
         context,
         MaterialPageRoute(
