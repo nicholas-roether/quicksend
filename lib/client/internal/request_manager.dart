@@ -280,8 +280,7 @@ class RequestManager {
 
   dynamic _decompressResponse(List<int> body) {
     final gzip = GZipDecoder();
-    final decompressedStr = utf8.decode(gzip.decodeBytes(body));
-    return jsonDecode(decompressedStr);
+    final decompressedStr = gzip.decodeBytes(body);
   }
 
   Future<dynamic> _request(
@@ -295,12 +294,12 @@ class RequestManager {
   }) async {
     options ??= dio.Options();
     options.method = method;
+    options.responseType = dio.ResponseType.bytes;
 
     if (compress) options.requestEncoder = _compressRequest;
     if (acceptCompressed) {
       options.headers ??= {};
       options.headers!["Accept-Encoding"] = "gzip";
-      options.responseType = dio.ResponseType.bytes;
     }
 
     await auth?.authenticate(target, options);
@@ -311,13 +310,16 @@ class RequestManager {
       response.data = _decompressResponse(response.data);
     }
 
+    if (response.statusCode == 204) return null;
+    final resObject = jsonDecode(utf8.decode(response.data));
+
     if ((response.statusCode as int) ~/ 100 != 2) {
-      String? message = response.data["error"]?.toString();
+      String? message = resObject["error"]?.toString();
       message ??= "(No error message provided)";
       throw RequestException(response.statusCode ?? 0, message);
     }
-    if (response.statusCode == 204) return null;
-    final dynamic resBody = response.data["data"];
+
+    final dynamic resBody = resObject["data"];
     return resBody;
   }
 }
