@@ -156,11 +156,11 @@ class RequestManager {
     String? status,
     String? password,
   }) async {
-    await _request("POST", "/user/update", auth: auth, body: {
-      "display": display,
-      "status": status,
-      "password": password,
-    });
+    Map<String, String> body = {};
+    if (display != null) body["display"] = display;
+    if (status != null) body["status"] = status;
+    if (password != null) body["password"] = password;
+    await _request("POST", "/user/update", auth: auth, body: body);
   }
 
   Future<String> setUserPfp(
