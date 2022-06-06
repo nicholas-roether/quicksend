@@ -24,7 +24,6 @@ class _LoginScreenState extends State<LoginScreen> {
   final TextEditingController _displaynameController = TextEditingController();
   LoginMode mode = LoginMode.register;
   bool _isLoading = false;
-  final bool _isFirstFrame = true;
 
   void _showErrorDialog(String message) {
     showDialog(
