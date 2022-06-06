@@ -33,8 +33,8 @@ class MyApp extends StatelessWidget {
           "/": (context) {
             final quicksendClient = QuicksendClientProvider.get(context);
             return quicksendClient.isLoggedIn()
-                ? const SafeArea(child: HomePage())
-                : const SafeArea(child: LoginScreen());
+                ? const HomePage()
+                : const LoginScreen();
           },
           "/registered_devices": (context) => const RegisteredDevices(),
         },
