@@ -91,6 +91,17 @@ class QuicksendClient with Initialized<QuicksendClient> {
     await _onLoggedOut();
   }
 
+  /// Removes the device with the provided [id] from this account. Throws
+  /// an exception when attempting to remove the device that is currently logged
+  /// in.
+  Future<void> removeDevice(String id) async {
+    if (id == _loginManager.deviceId) {
+      throw Exception("Cannot remove the device that is currently in use");
+    }
+    final auth = await _loginManager.getAuthenticator();
+    await _requestManager.removeDevice(auth, id);
+  }
+
   /// Returns the user info of the currently logged in account. Will throw a
   /// [LoginStateException] if this device is not logged into any account
   /// (use `quicksendClient.isLoggedIn()` to check beforehand), and throws a
