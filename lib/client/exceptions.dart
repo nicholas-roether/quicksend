@@ -36,7 +36,7 @@ class RequestException implements Exception {
   }
 }
 
-/// Thrown when trying to create a chat with a user that doesn't exist
+/// Thrown when attempting to interact with a non-existent user
 class UnknownUserException {
   /// The username that was provided
   String user;
