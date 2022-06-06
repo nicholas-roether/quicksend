@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:quicksend/client/models.dart';
+import 'package:quicksend/widgets/profile_picture.dart';
 import 'package:skeletons/skeletons.dart';
 
 import '../client/chat.dart';
@@ -49,7 +50,7 @@ class _ChatTileState extends State<ChatTile> {
       );
     }
     return ListTile(
-      leading: const CircleAvatar(),
+      leading: ProfilePicture(userInfo: userInfo!),
       title: Hero(
         tag: "username",
         child: Text(
@@ -69,7 +70,7 @@ class _ChatTileState extends State<ChatTile> {
         MaterialPageRoute(
           builder: (context) {
             return ChatScreen(
-              username: userInfo!.getName(),
+              userInfo: userInfo!,
               chat: widget.chat,
             );
           },

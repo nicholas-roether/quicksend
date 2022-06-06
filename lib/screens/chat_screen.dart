@@ -4,18 +4,20 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:mime_type/mime_type.dart';
+import 'package:quicksend/client/models.dart';
 import 'package:quicksend/widgets/custom_error_alert_widget.dart';
 import 'package:quicksend/widgets/custom_text_form_field.dart';
 import 'package:quicksend/widgets/dialog_icon_button.dart';
 import 'package:quicksend/widgets/message_box.dart';
+import 'package:quicksend/widgets/profile_picture.dart';
 import 'package:quicksend/widgets/small_fab_widget.dart';
 
 import '../client/chat.dart';
 
 class ChatScreen extends StatefulWidget {
-  const ChatScreen({Key? key, required this.username, required this.chat})
+  const ChatScreen({Key? key, required this.userInfo, required this.chat})
       : super(key: key);
-  final String username;
+  final UserInfo userInfo;
   final Chat chat;
 
   @override
@@ -26,7 +28,7 @@ class _ChatScreenState extends State<ChatScreen> {
   final TextEditingController _chatController = TextEditingController();
 
   void _sendMessage() {
-    if (_chatController.text.isEmpty) return;
+    if (_chatController.text.trim().isEmpty) return;
     setState(() {
       widget.chat.sendTextMessage(_chatController.text);
       _chatController.text = "";
@@ -69,17 +71,15 @@ class _ChatScreenState extends State<ChatScreen> {
           title: Hero(
             tag: "username",
             child: Text(
-              widget.username,
+              widget.userInfo.username,
               style: Theme.of(context).textTheme.headline5,
             ),
           ),
           centerTitle: true,
-          actions: const [
+          actions: [
             Padding(
-              padding: EdgeInsets.all(8.0),
-              child: CircleAvatar(
-                radius: 18,
-              ),
+              padding: const EdgeInsets.all(8.0),
+              child: ProfilePicture(userInfo: widget.userInfo),
             ), //add profile pic
           ],
         ),

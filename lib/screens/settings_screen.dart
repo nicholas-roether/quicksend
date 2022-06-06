@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:quicksend/client/quicksend_client.dart';
 import 'package:quicksend/screens/settings/user_edit_screen.dart';
 import 'package:quicksend/widgets/custom_button.dart';
+import 'package:quicksend/widgets/profile_picture.dart';
 import 'package:skeletons/skeletons.dart';
 
 class SettingScreen extends StatefulWidget {
@@ -13,7 +14,7 @@ class SettingScreen extends StatefulWidget {
 
 class _SettingScreenState extends State<SettingScreen> {
   UserInfo? userInfo;
-  String? registeredDevices = "berechne...";
+  String? registeredDevices = "...";
 
   @override
   void initState() {
@@ -50,7 +51,7 @@ class _SettingScreenState extends State<SettingScreen> {
                       context,
                       MaterialPageRoute(
                         builder: (context) => UserEditScreen(
-                          username: userInfo!.getName(),
+                          userInfo: userInfo!,
                         ),
                       ),
                     );
@@ -58,14 +59,12 @@ class _SettingScreenState extends State<SettingScreen> {
                   title: Text(userInfo!.getName(),
                       style: Theme.of(context).textTheme.headline6),
                   subtitle: Text(
-                    "Status",
+                    userInfo!.status ?? "",
                     style: Theme.of(context).textTheme.bodyText1,
                   ),
-                  leading: const Hero(
+                  leading: Hero(
                     tag: "profile pic",
-                    child: CircleAvatar(
-                      radius: 30,
-                    ),
+                    child: ProfilePicture(radius: 30, userInfo: userInfo!),
                   ),
                 )
               : SkeletonListTile(
