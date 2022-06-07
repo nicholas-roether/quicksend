@@ -1,22 +1,28 @@
 class CachedValue<T> {
-  bool loaded = false;
+  static const defaultLifetime = 300000; // 5 minutes
+
+  final int lifetime;
+  int? lastUpdate;
   T? cached;
 
+  CachedValue({this.lifetime = defaultLifetime});
+
   Future<T> get(Future<T> Function() getter) async {
-    if (!loaded) {
+    if (lastUpdate == null ||
+        lastUpdate! - DateTime.now().millisecondsSinceEpoch > lifetime) {
       cached = await getter();
-      loaded = true;
+      lastUpdate = DateTime.now().millisecondsSinceEpoch;
     }
     return cached as T;
   }
 }
 
 class CachedMap<K, V> {
-  final Map<K, V> _values = {};
+  final Map<K, CachedValue<V>> _values = {};
 
   Future<V> get(K key, Future<V> Function(K key) getter) async {
-    if (!_values.containsKey(key)) _values[key] = await getter(key);
-    return _values[key] as V;
+    if (!_values.containsKey(key)) _values[key] = CachedValue();
+    return _values[key]!.get(() => getter(key));
   }
 }
 
