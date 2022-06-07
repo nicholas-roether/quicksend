@@ -78,6 +78,10 @@ class LoginManager with Initialized<LoginManager> {
   Future<SignatureAuthenticator> getAuthenticator() async {
     assertInit();
     assertLoggedIn();
+    return await _getAuthenticatorUnchecked();
+  }
+
+  Future<SignatureAuthenticator> _getAuthenticatorUnchecked() async {
     final sigKey = await _db.getSignatureKey();
     final deviceID = _db.getDeviceID();
     assert(sigKey != null);
@@ -94,7 +98,7 @@ class LoginManager with Initialized<LoginManager> {
   Future<void> onInit() async {
     if (_db.getDeviceID() != null) {
       try {
-        final auth = await getAuthenticator();
+        final auth = await _getAuthenticatorUnchecked();
         await _requestManager.getUserInfo(auth);
         _loggedIn = true;
       } on RequestException catch (err) {
