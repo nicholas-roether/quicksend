@@ -93,7 +93,6 @@ class LoginManager with Initialized<LoginManager> {
   @override
   Future<void> onInit() async {
     if (_db.getDeviceID() != null && _db.getUserID() != null) {
-      final auth = await getAuthenticator();
       final userInfo = await _requestManager.getUserInfoFor(_db.getUserID()!);
       if (userInfo != null) _loggedIn = true;
     } else {
