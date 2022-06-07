@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:quicksend/client/quicksend_client.dart';
 import 'package:quicksend/widgets/custom_button.dart';
+import 'package:quicksend/widgets/custom_error_alert_widget.dart';
 import 'package:quicksend/widgets/custom_text_form_field.dart';
 import 'package:quicksend/widgets/profile_picture.dart';
 
@@ -21,6 +22,7 @@ class _UserEditScreenState extends State<UserEditScreen> {
   void initState() {
     _displayController.text = widget.userInfo.username;
     _statusController.text = widget.userInfo.status ?? "";
+    _passwordController.text = "";
     super.initState();
   }
 
@@ -104,7 +106,11 @@ class _UserEditScreenState extends State<UserEditScreen> {
                             ? _statusController.text
                             : null);
                   } catch (error) {
-                    print(error.toString());
+                    showDialog(
+                        context: context,
+                        builder: (context) {
+                          return CustomErrorWidget(message: error.toString());
+                        });
                   }
                 },
                 title: "Save changes",
