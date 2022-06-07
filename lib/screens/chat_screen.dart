@@ -7,7 +7,7 @@ import 'package:mime_type/mime_type.dart';
 import 'package:quicksend/client/models.dart';
 import 'package:quicksend/widgets/custom_error_alert_widget.dart';
 import 'package:quicksend/widgets/custom_text_form_field.dart';
-import 'package:quicksend/widgets/dialog_icon_button.dart';
+import 'package:quicksend/widgets/image_source_dialog.dart';
 import 'package:quicksend/widgets/message_box.dart';
 import 'package:quicksend/widgets/profile_picture.dart';
 import 'package:quicksend/widgets/small_fab_widget.dart';
@@ -80,7 +80,7 @@ class _ChatScreenState extends State<ChatScreen> {
             Padding(
               padding: const EdgeInsets.all(8.0),
               child: ProfilePicture(userInfo: widget.userInfo),
-            ), //add profile pic
+            ),
           ],
         ),
         body: Column(
@@ -112,32 +112,8 @@ class _ChatScreenState extends State<ChatScreen> {
                       showDialog(
                         context: context,
                         builder: (context) {
-                          return Dialog(
-                            child: SizedBox(
-                              height: 110,
-                              width: 60,
-                              child: Row(
-                                mainAxisAlignment:
-                                    MainAxisAlignment.spaceEvenly,
-                                children: [
-                                  DialogIconButton(
-                                    title: "Camera",
-                                    onPressedCallback: () =>
-                                        _sendImage(ImageSource.camera),
-                                    icon: Icons.camera,
-                                    tooltip: "Take a picture",
-                                  ),
-                                  DialogIconButton(
-                                    icon: Icons.image,
-                                    onPressedCallback: () =>
-                                        _sendImage(ImageSource.gallery),
-                                    title: "Gallery",
-                                    tooltip: "Pick an image",
-                                  ),
-                                ],
-                              ),
-                            ),
-                          );
+                          return ImageSourceDialog(
+                              iconButtonCallback: _sendImage);
                         },
                       );
                     },
