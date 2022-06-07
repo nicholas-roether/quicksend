@@ -15,6 +15,10 @@ class CachedValue<T> {
     }
     return cached as T;
   }
+
+  void clear() {
+    lastUpdate = null;
+  }
 }
 
 class CachedMap<K, V> {
@@ -23,6 +27,10 @@ class CachedMap<K, V> {
   Future<V> get(K key, Future<V> Function(K key) getter) async {
     if (!_values.containsKey(key)) _values[key] = CachedValue();
     return _values[key]!.get(() => getter(key));
+  }
+
+  void clear() {
+    _values.clear();
   }
 }
 

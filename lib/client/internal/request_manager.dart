@@ -268,6 +268,15 @@ class RequestManager {
     return base64.decode(res["token"]);
   }
 
+  void clearOwnUserInfoCache() {
+    _userInfoId.clear();
+  }
+
+  void clearOtherUserInfoCache() {
+    _userInfoId.clear();
+    _userInfoName.clear();
+  }
+
   List<int> _compressRequest(String request, dio.RequestOptions options) {
     final gzip = GZipEncoder();
     options.headers["Content-Encoding"] = "gzip";
