@@ -278,9 +278,10 @@ class RequestManager {
     return compressed;
   }
 
-  dynamic _decompressResponse(List<int> body) {
+  List<int> _decompressResponse(List<int> body) {
     final gzip = GZipDecoder();
-    final decompressedStr = gzip.decodeBytes(body);
+    final decompressed = gzip.decodeBytes(body);
+    return decompressed;
   }
 
   Future<dynamic> _request(
