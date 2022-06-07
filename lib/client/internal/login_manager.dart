@@ -8,6 +8,7 @@ import '../exceptions.dart';
 class LoginManager with Initialized<LoginManager> {
   final ClientDB _db;
   final RequestManager _requestManager;
+  bool _loggedIn = false;
 
   LoginManager({required ClientDB db, required RequestManager requestManager})
       : _db = db,
@@ -62,8 +63,7 @@ class LoginManager with Initialized<LoginManager> {
     final SignatureAuthenticator auth = await getAuthenticator();
     final String deviceID = _db.getDeviceID() as String;
     await _requestManager.removeDevice(auth, deviceID);
-    await _db.setDeviceID(null);
-    await _db.setUserID(null);
+    await _localLogout();
   }
 
   bool isLoggedIn() {
@@ -85,8 +85,20 @@ class LoginManager with Initialized<LoginManager> {
     return SignatureAuthenticator(sigKey as String, deviceID as String);
   }
 
+  Future<void> _localLogout() async {
+    await _db.setDeviceID(null);
+    await _db.setUserID(null);
+  }
+
   @override
   Future<void> onInit() async {
+    if (_db.getDeviceID() != null && _db.getUserID() != null) {
+      final auth = await getAuthenticator();
+      final userInfo = await _requestManager.getUserInfoFor(_db.getUserID()!);
+      if (userInfo != null) _loggedIn = true;
+    } else {
+      await _localLogout();
+    }
     if (isLoggedIn()) {
       final sigKey = await _db.getSignatureKey();
       final encKey = await _db.getEncryptionKey();
