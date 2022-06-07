@@ -71,7 +71,7 @@ class _ChatScreenState extends State<ChatScreen> {
           title: Hero(
             tag: "username",
             child: Text(
-              widget.userInfo.username,
+              widget.userInfo.getName(),
               style: Theme.of(context).textTheme.headline5,
             ),
           ),
