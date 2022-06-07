@@ -67,7 +67,7 @@ class _UserEditScreenState extends State<UserEditScreen> {
               const Padding(
                 padding: EdgeInsets.only(bottom: 8.0),
                 child: Text(
-                  "Change status message",
+                  "Change display name",
                 ),
               ),
               CustomTextFormField(
@@ -79,7 +79,7 @@ class _UserEditScreenState extends State<UserEditScreen> {
               const Padding(
                 padding: EdgeInsets.only(bottom: 8.0),
                 child: Text(
-                  "Change status message",
+                  "Change password",
                 ),
               ),
               CustomTextFormField(
