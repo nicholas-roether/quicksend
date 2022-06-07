@@ -60,6 +60,7 @@ class _ChatScreenState extends State<ChatScreen> {
         },
       );
     }
+    Navigator.pop(context);
   }
 
   @override
