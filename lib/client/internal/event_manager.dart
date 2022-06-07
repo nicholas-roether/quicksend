@@ -26,13 +26,15 @@ class EventManager extends EventSource {
   }
 
   Future<void> connectLoop() async {
+    await connect();
     while (_loginManager.isLoggedIn()) {
+      debugPrint("WebSocket connection lost. Reconnecting in 5 seconds...");
+      await Future.delayed(_reconnectDelay);
       try {
         await connect();
       } catch (err) {
-        debugPrint("WebSocket connection lost. Reconnecting in 5 seconds...");
+        debugPrint("WebSocket error: $err");
       }
-      await Future.delayed(_reconnectDelay);
     }
   }
 
