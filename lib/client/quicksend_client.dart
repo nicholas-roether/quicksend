@@ -136,6 +136,7 @@ class QuicksendClient with Initialized<QuicksendClient> {
       display: display,
       password: password,
     );
+    _requestManager.clearOwnUserInfoCache();
   }
 
   /// Sets the logged in user's profile picture
