@@ -51,6 +51,7 @@ class _UserEditScreenState extends State<UserEditScreen> {
         },
       );
     }
+    Navigator.pop(context);
   }
 
   @override
