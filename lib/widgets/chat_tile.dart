@@ -52,7 +52,7 @@ class _ChatTileState extends State<ChatTile> {
     return ListTile(
       leading: ProfilePicture(userInfo: userInfo!),
       title: Hero(
-        tag: "username",
+        tag: "username" + userInfo!.username,
         child: Text(
           userInfo!.getName(),
           style: Theme.of(context).textTheme.headline6,
