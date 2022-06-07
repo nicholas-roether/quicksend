@@ -268,6 +268,15 @@ class RequestManager {
     return base64.decode(res["token"]);
   }
 
+  void clearOwnUserInfoCache() {
+    _userInfoId.clear();
+  }
+
+  void clearOtherUserInfoCache() {
+    _userInfoId.clear();
+    _userInfoName.clear();
+  }
+
   List<int> _compressRequest(String request, dio.RequestOptions options) {
     final gzip = GZipEncoder();
     options.headers["Content-Encoding"] = "gzip";
@@ -278,9 +287,10 @@ class RequestManager {
     return compressed;
   }
 
-  dynamic _decompressResponse(List<int> body) {
+  List<int> _decompressResponse(List<int> body) {
     final gzip = GZipDecoder();
-    final decompressedStr = gzip.decodeBytes(body);
+    final decompressed = gzip.decodeBytes(body);
+    return decompressed;
   }
 
   Future<dynamic> _request(
