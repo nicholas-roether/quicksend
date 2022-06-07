@@ -8,6 +8,7 @@ import '../exceptions.dart';
 class LoginManager with Initialized<LoginManager> {
   final ClientDB _db;
   final RequestManager _requestManager;
+  bool _loggedIn = false;
 
   LoginManager({required ClientDB db, required RequestManager requestManager})
       : _db = db,
@@ -62,8 +63,7 @@ class LoginManager with Initialized<LoginManager> {
     final SignatureAuthenticator auth = await getAuthenticator();
     final String deviceID = _db.getDeviceID() as String;
     await _requestManager.removeDevice(auth, deviceID);
-    await _db.setDeviceID(null);
-    await _db.setUserID(null);
+    await _localLogout();
   }
 
   bool isLoggedIn() {
@@ -78,6 +78,10 @@ class LoginManager with Initialized<LoginManager> {
   Future<SignatureAuthenticator> getAuthenticator() async {
     assertInit();
     assertLoggedIn();
+    return await _getAuthenticatorUnchecked();
+  }
+
+  Future<SignatureAuthenticator> _getAuthenticatorUnchecked() async {
     final sigKey = await _db.getSignatureKey();
     final deviceID = _db.getDeviceID();
     assert(sigKey != null);
@@ -85,8 +89,28 @@ class LoginManager with Initialized<LoginManager> {
     return SignatureAuthenticator(sigKey as String, deviceID as String);
   }
 
+  Future<void> _localLogout() async {
+    await _db.setDeviceID(null);
+    await _db.setUserID(null);
+  }
+
   @override
   Future<void> onInit() async {
+    if (_db.getDeviceID() != null) {
+      try {
+        final auth = await _getAuthenticatorUnchecked();
+        await _requestManager.getUserInfo(auth);
+        _loggedIn = true;
+      } on RequestException catch (err) {
+        if (err.status == 401) {
+          await _localLogout();
+        } else {
+          rethrow;
+        }
+      }
+    } else {
+      await _localLogout();
+    }
     if (isLoggedIn()) {
       final sigKey = await _db.getSignatureKey();
       final encKey = await _db.getEncryptionKey();
