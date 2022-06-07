@@ -45,5 +45,9 @@
 		<false/>
 		<key>UIStatusBarHidden</key>
 		<false/>
+		<key>NSPhotoLibraryUsageDescription</key>
+		<string>Permission needed to send images and use profile pictures</string>
+		<key>NSCameraUsageDescription</key>
+		<string>Permission needed to send images and use profile pictures</string>
 	</dict>
 </plist>
