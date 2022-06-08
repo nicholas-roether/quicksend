@@ -49,31 +49,35 @@ class _ChatTileState extends State<ChatTile> {
         padding: const EdgeInsets.symmetric(horizontal: 15),
       );
     }
-    return ListTile(
-      leading: ProfilePicture(userInfo: userInfo!),
-      title: Hero(
-        tag: "username" + userInfo!.username,
-        child: Text(
-          userInfo!.getName(),
-          style: Theme.of(context).textTheme.headline6,
+    return Dismissible(
+      key: Key(userInfo!.username),
+      // add removeChat function
+      child: ListTile(
+        leading: ProfilePicture(userInfo: userInfo!),
+        title: Hero(
+          tag: "username" + userInfo!.username,
+          child: Text(
+            userInfo!.getName(),
+            style: Theme.of(context).textTheme.headline6,
+          ),
         ),
-      ),
-      subtitle: Text(
-        getLastMessage(),
-        style: Theme.of(context)
-            .textTheme
-            .bodyText1
-            ?.copyWith(color: Theme.of(context).secondaryHeaderColor),
-      ),
-      onTap: () => Navigator.push(
-        context,
-        MaterialPageRoute(
-          builder: (context) {
-            return ChatScreen(
-              userInfo: userInfo!,
-              chat: widget.chat,
-            );
-          },
+        subtitle: Text(
+          getLastMessage(),
+          style: Theme.of(context)
+              .textTheme
+              .bodyText1
+              ?.copyWith(color: Theme.of(context).secondaryHeaderColor),
+        ),
+        onTap: () => Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) {
+              return ChatScreen(
+                userInfo: userInfo!,
+                chat: widget.chat,
+              );
+            },
+          ),
         ),
       ),
     );
