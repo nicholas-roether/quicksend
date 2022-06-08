@@ -74,9 +74,13 @@ class ClientDB with Initialized<ClientDB> {
     await _openChatBox(id);
   }
 
+  void removeChat(String id) async {
+    _chatList.deleteAt(_chatList.values.singleWhere((val) => val == id));
+  }
+
   Future<void> deleteChat(String id) async {
     assertInit();
-    _chatList.deleteAt(_chatList.values.singleWhere((val) => val == id));
+    removeChat(id);
     await Hive.deleteBoxFromDisk(_getChatBoxName(id));
   }
 
