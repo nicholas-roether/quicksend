@@ -14,11 +14,12 @@ class ChatList extends StatelessWidget {
         final chats = quicksendClient.getChatList().getChats();
         if (chats.isEmpty) {
           return Center(
-              child: Text(
-            'Press the "+" button to add a chat',
-            style: Theme.of(context).textTheme.headline4,
-            textAlign: TextAlign.center,
-          ));
+            child: Text(
+              'Press the "+" button to add a chat',
+              style: Theme.of(context).textTheme.headline4,
+              textAlign: TextAlign.center,
+            ),
+          );
         }
         return ListView.builder(
           itemBuilder: (context, index) => ChatTile(chat: chats[index]),
