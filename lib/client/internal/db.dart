@@ -75,6 +75,7 @@ class ClientDB with Initialized<ClientDB> {
   }
 
   void removeChat(String id) async {
+    assertInit();
     _chatList.deleteAt(_chatList.values.singleWhere((val) => val == id));
   }
 
