@@ -8,7 +8,7 @@ class DBChat extends HiveObject {
   final String id;
 
   @HiveField(1)
-  final bool hasUnreadMessages;
+  bool hasUnreadMessages;
 
   DBChat(this.id, this.hasUnreadMessages) : super();
 }

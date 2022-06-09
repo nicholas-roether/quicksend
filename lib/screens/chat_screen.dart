@@ -66,7 +66,10 @@ class _ChatScreenState extends State<ChatScreen> {
   @override
   Widget build(BuildContext context) {
     widget.chat.loadSavedMessages();
-    widget.chat.markAsRead();
+    widget.chat.markAsRead().then((value) {
+      if (!mounted) return;
+      setState(() {});
+    });
     return SafeArea(
       child: Scaffold(
         appBar: AppBar(
