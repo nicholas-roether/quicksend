@@ -60,7 +60,9 @@ class ClientDB with Initialized<ClientDB> {
     await Hive.openBox("general");
     final _chatList = await Hive.openBox<DBChat>("chat-list");
     await Future.wait(
-      List.from(_chatList.values).map((chatId) => _openChatBox(chatId)),
+      List<DBChat>.from(_chatList.values).map(
+        (dbChat) => _openChatBox(dbChat.id),
+      ),
     );
     await _applyVersionTransitions();
   }
