@@ -2,7 +2,7 @@ import 'package:hive_flutter/hive_flutter.dart';
 
 part 'db_chat.g.dart';
 
-@HiveType(typeId: 3)
+@HiveType(typeId: 2)
 class DBChat extends HiveObject {
   @HiveField(0)
   final String id;
