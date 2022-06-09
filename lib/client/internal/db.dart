@@ -48,7 +48,7 @@ class ClientDB with Initialized<ClientDB> {
   }
 
   Box<DBChat> get _chatList {
-    return Hive.box("chat-list");
+    return Hive.box<DBChat>("chat-list");
   }
 
   @override
@@ -57,7 +57,7 @@ class ClientDB with Initialized<ClientDB> {
     Hive.registerAdapter(DateTimeAdapter(), internal: true);
     Hive.registerAdapter(DBMessageAdapter());
     await Hive.openBox("general");
-    final _chatList = await Hive.openBox("chat-list");
+    final _chatList = await Hive.openBox<DBChat>("chat-list");
     await Future.wait(
       List.from(_chatList.values).map((chatId) => _openChatBox(chatId)),
     );
