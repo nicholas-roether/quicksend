@@ -49,6 +49,7 @@ class Chat extends ChangeNotifier {
   /// Returns the latest message sent in this chat, without loading any other
   /// messages, or notifying this chat's listeners.
   Message? getLatestMessage() {
+    if (!_dbChat.isInBox) return null;
     final dbMessage = _db.getLatestMessage(recipientId);
     if (dbMessage == null) return null;
     return _parseDBMessage(dbMessage);
@@ -171,6 +172,7 @@ class Chat extends ChangeNotifier {
   }
 
   List<Message> _loadMessagesFromDB() {
+    if (!_dbChat.isInBox) return [];
     final List<DBMessage> dbMessages = _db.getMessages(recipientId);
     return List.from(dbMessages.map(_parseDBMessage));
   }

@@ -45,14 +45,14 @@ class ChatList extends ChangeNotifier {
   /// re-added
   void removeChat(String id) async {
     _db.removeChat(id);
-    _chats.remove(id);
+    _hideChat(id);
   }
 
   /// Removes the chat with [id] from the chat list, and deletes any
   /// stored messages from within it.
   Future<void> deleteChat(String id) async {
     await _db.deleteChat(id);
-    _chats.remove(id);
+    _hideChat(id);
   }
 
   /// Create a new chat with the user with [id].
@@ -74,5 +74,9 @@ class ChatList extends ChangeNotifier {
     _chats[dbChat.id] = chat;
     notifyListeners();
     return chat;
+  }
+
+  void _hideChat(String id) {
+    _chats.remove(id);
   }
 }

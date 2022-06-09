@@ -70,8 +70,7 @@ class ClientDB with Initialized<ClientDB> {
   Future<void> reset() async {
     await Future.wait(
       List.from(_chatList.values).map((chatId) async {
-        await _getChatBox(chatId).clear();
-        await _secureStorage.delete(key: "$chatId-key");
+        await _deleteChat(chatId);
       }),
     );
     await _chatList.clear();
@@ -119,7 +118,7 @@ class ClientDB with Initialized<ClientDB> {
   Future<void> deleteChat(String id) async {
     assertInit();
     removeChat(id);
-    await Hive.deleteBoxFromDisk(_getChatBoxName(id));
+    await _deleteChat(id);
   }
 
   List<DBMessage> getMessages(String chatId) {
@@ -158,6 +157,11 @@ class ClientDB with Initialized<ClientDB> {
   Future<void> setEncryptionKey(String key) async {
     assertInit();
     await _secureStorage.write(key: "encryption-key", value: key);
+  }
+
+  Future<void> _deleteChat(String chatId) async {
+    await _getChatBox(chatId).clear();
+    await _secureStorage.delete(key: "$chatId-key");
   }
 
   Future<Uint8List?> _getChatBoxKey(String name) async {
