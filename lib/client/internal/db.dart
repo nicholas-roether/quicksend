@@ -26,12 +26,12 @@ class V1Transition extends VersionTransition {
   Future<void> apply() async {
     final general = await Hive.openBox("general");
     final chatList = await Hive.openBox<DBChat>("chatList");
-    general.put("version", 1);
     final chatListValues = List.from(chatList.values);
     await chatList.clear();
     for (final id in chatListValues) {
       chatList.put(id, DBChat(id, false));
     }
+    general.put("version", 1);
   }
 }
 
