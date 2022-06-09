@@ -24,6 +24,7 @@ class Chat extends ChangeNotifier {
   final ClientDB _db;
   final LoginManager _loginManager;
   final RequestManager _requestManager;
+  bool _hasUnreadMessages = false;
 
   Chat(this.recipientId,
       {required ClientDB db,
@@ -46,6 +47,14 @@ class Chat extends ChangeNotifier {
     final dbMessage = _db.getLatestMessage(recipientId);
     if (dbMessage == null) return null;
     return _parseDBMessage(dbMessage);
+  }
+
+  bool hasUnreadMessages() {
+    return _hasUnreadMessages;
+  }
+
+  void markAsRead() {
+    _hasUnreadMessages = false;
   }
 
   /// Get the user info for the user this chat is with.
@@ -145,6 +154,8 @@ class Chat extends ChangeNotifier {
     );
     _db.addMessage(recipientId, dbMessage);
     _addMessage(message);
+
+    _hasUnreadMessages = true;
     notifyListeners();
   }
 
