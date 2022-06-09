@@ -8,7 +8,7 @@ part of 'db_chat.dart';
 
 class DBChatAdapter extends TypeAdapter<DBChat> {
   @override
-  final int typeId = 3;
+  final int typeId = 2;
 
   @override
   DBChat read(BinaryReader reader) {
