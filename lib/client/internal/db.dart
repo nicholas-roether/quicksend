@@ -69,7 +69,7 @@ class ClientDB with Initialized<ClientDB> {
 
   Future<void> reset() async {
     await Future.wait(
-      List.from(_chatList.values).map((chatId) async {
+      List.from(_chatList.keys).map((chatId) async {
         await _deleteChat(chatId);
       }),
     );
