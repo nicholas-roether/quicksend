@@ -12,7 +12,6 @@ class MessageBox extends StatelessWidget {
         if (message.state == MessageState.sent) {
           return Text(
             message.asString(),
-            softWrap: true,
             style: Theme.of(context)
                 .textTheme
                 .bodyText1
@@ -25,7 +24,6 @@ class MessageBox extends StatelessWidget {
             children: [
               Text(
                 message.asString(),
-                softWrap: true,
                 style: Theme.of(context).textTheme.bodyText1?.copyWith(
                       color: Colors.black,
                     ),

@@ -51,12 +51,9 @@ class _ChatTileState extends State<ChatTile> {
     return ListTile(
       leading: ProfilePicture(userInfo: userInfo!),
       trailing: widget.chat.hasUnreadMessages()
-          ? SizedBox(
-              height: 10,
-              width: 10,
-              child: CircleAvatar(
-                backgroundColor: Theme.of(context).primaryColor,
-              ),
+          ? CircleAvatar(
+              backgroundColor: Theme.of(context).primaryColor,
+              radius: 5,
             )
           : null,
       title: Hero(

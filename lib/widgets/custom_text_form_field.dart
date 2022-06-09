@@ -37,6 +37,7 @@ class CustomTextFormField extends StatelessWidget {
         onFieldSubmitted: submitCallback,
         controller: textController,
         decoration: InputDecoration(
+          isDense: true,
           hintText: hintInfo,
           labelText: labelInfo,
           border: OutlineInputBorder(

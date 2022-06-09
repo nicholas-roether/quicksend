@@ -65,6 +65,8 @@ class _HomePageState extends State<HomePage> {
                     Expanded(
                       child: CustomTextFormField(
                         hintInfo: "",
+                        minLines: 1,
+                        maxLines: 1,
                         labelInfo: "Benutzername",
                         obscure: false,
                         autocorrect: false,

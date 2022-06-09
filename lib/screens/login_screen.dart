@@ -106,6 +106,8 @@ class _LoginScreenState extends State<LoginScreen> {
                         ),
                         const SizedBox(height: 50),
                         CustomTextFormField(
+                          maxLines: 1,
+                          minLines: 1,
                           hintInfo: "Enter a Username",
                           labelInfo: "Username",
                           obscure: false,
@@ -122,6 +124,8 @@ class _LoginScreenState extends State<LoginScreen> {
                         ),
                         mode == LoginMode.register
                             ? CustomTextFormField(
+                                minLines: 1,
+                                maxLines: 1,
                                 hintInfo: "Enter a Display Name",
                                 labelInfo: "Display Name",
                                 obscure: false,

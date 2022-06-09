@@ -109,6 +109,8 @@ class _UserEditScreenState extends State<UserEditScreen> {
                 ),
               ),
               CustomTextFormField(
+                minLines: 1,
+                maxLines: 1,
                 hintInfo: "",
                 labelInfo: "",
                 obscure: false,
@@ -122,6 +124,8 @@ class _UserEditScreenState extends State<UserEditScreen> {
               ),
               CustomTextFormField(
                 hintInfo: "",
+                maxLines: 1,
+                minLines: 1,
                 labelInfo: "",
                 obscure: false,
                 textController: _displayController,
@@ -133,6 +137,8 @@ class _UserEditScreenState extends State<UserEditScreen> {
                 ),
               ),
               CustomTextFormField(
+                minLines: 1,
+                maxLines: 1,
                 hintInfo: "",
                 labelInfo: "",
                 obscure: true,
