@@ -3,6 +3,7 @@ import 'dart:typed_data';
 
 import 'package:flutter/cupertino.dart';
 import 'package:quicksend/client/exceptions.dart';
+import 'package:quicksend/client/internal/db_models/db_chat.dart';
 import 'package:uuid/uuid.dart';
 
 import 'internal/utils.dart';
@@ -17,7 +18,7 @@ import 'models.dart';
 /// An object that represents an open chat with a certain user.
 class Chat extends ChangeNotifier {
   /// The ID of the user this chat is with
-  final String recipientId;
+  final DBChat _dbChat;
 
   final _recipientInfo = CachedValue<UserInfo?>();
   final List<Message> _messages = [];
@@ -25,13 +26,18 @@ class Chat extends ChangeNotifier {
   final LoginManager _loginManager;
   final RequestManager _requestManager;
 
-  Chat(this.recipientId,
+  Chat(DBChat dbChat,
       {required ClientDB db,
       required LoginManager loginManager,
       required RequestManager requestManager})
-      : _db = db,
+      : _dbChat = dbChat,
+        _db = db,
         _loginManager = loginManager,
         _requestManager = requestManager;
+
+  String get recipientId {
+    return _dbChat.id;
+  }
 
   /// Loads all saved messages for this chat and broadcasts them.
   void loadSavedMessages() {
