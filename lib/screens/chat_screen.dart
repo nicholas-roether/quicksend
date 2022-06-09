@@ -66,6 +66,7 @@ class _ChatScreenState extends State<ChatScreen> {
   @override
   Widget build(BuildContext context) {
     widget.chat.loadSavedMessages();
+    widget.chat.markAsRead();
     return SafeArea(
       child: Scaffold(
         appBar: AppBar(
@@ -126,6 +127,8 @@ class _ChatScreenState extends State<ChatScreen> {
                   Expanded(
                     child: CustomTextFormField(
                       hintInfo: "",
+                      minLines: 1,
+                      maxLines: 5,
                       labelInfo: "Enter a Message",
                       obscure: false,
                       inputType: TextInputType.multiline,

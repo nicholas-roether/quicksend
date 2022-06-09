@@ -11,11 +11,15 @@ class CustomTextFormField extends StatelessWidget {
     required this.obscure,
     this.submitCallback,
     this.autocorrect = true,
+    this.minLines,
+    this.maxLines,
   }) : super(key: key);
   final String hintInfo;
   final String labelInfo;
   final bool obscure;
   final bool noPadding;
+  final int? minLines;
+  final int? maxLines;
   final TextEditingController? textController;
   final TextInputType? inputType;
   final void Function(String)? submitCallback;
@@ -28,6 +32,8 @@ class CustomTextFormField extends StatelessWidget {
         bottom: noPadding ? 0 : 20,
       ),
       child: TextFormField(
+        minLines: obscure ? 1 : minLines,
+        maxLines: obscure ? 1 : maxLines,
         onFieldSubmitted: submitCallback,
         controller: textController,
         decoration: InputDecoration(

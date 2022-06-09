@@ -1,9 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:quicksend/client/models.dart';
+import 'package:quicksend/client/quicksend_client.dart';
 import 'package:quicksend/widgets/profile_picture.dart';
 import 'package:skeletons/skeletons.dart';
 
-import '../client/chat.dart';
 import '../screens/chat_screen.dart';
 
 class ChatTile extends StatefulWidget {
@@ -49,35 +48,41 @@ class _ChatTileState extends State<ChatTile> {
         padding: const EdgeInsets.symmetric(horizontal: 15),
       );
     }
-    return Dismissible(
-      key: Key(userInfo!.username),
-      // add removeChat function
-      child: ListTile(
-        leading: ProfilePicture(userInfo: userInfo!),
-        title: Hero(
-          tag: "username" + userInfo!.username,
-          child: Text(
-            userInfo!.getName(),
-            style: Theme.of(context).textTheme.headline6,
-          ),
+    return ListTile(
+      leading: ProfilePicture(userInfo: userInfo!),
+      trailing: widget.chat.hasUnreadMessages()
+          ? SizedBox(
+              height: 10,
+              width: 10,
+              child: CircleAvatar(
+                backgroundColor: Theme.of(context).primaryColor,
+              ),
+            )
+          : null,
+      title: Hero(
+        tag: "username" + userInfo!.username,
+        child: Text(
+          userInfo!.getName(),
+          style: Theme.of(context).textTheme.headline6,
         ),
-        subtitle: Text(
-          getLastMessage(),
-          style: Theme.of(context)
-              .textTheme
-              .bodyText1
-              ?.copyWith(color: Theme.of(context).secondaryHeaderColor),
-        ),
-        onTap: () => Navigator.push(
-          context,
-          MaterialPageRoute(
-            builder: (context) {
-              return ChatScreen(
-                userInfo: userInfo!,
-                chat: widget.chat,
-              );
-            },
-          ),
+      ),
+      subtitle: Text(
+        getLastMessage(),
+        maxLines: 1,
+        style: Theme.of(context)
+            .textTheme
+            .bodyText1
+            ?.copyWith(color: Theme.of(context).secondaryHeaderColor),
+      ),
+      onTap: () => Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) {
+            return ChatScreen(
+              userInfo: userInfo!,
+              chat: widget.chat,
+            );
+          },
         ),
       ),
     );
