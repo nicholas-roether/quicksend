@@ -17,7 +17,6 @@ import 'models.dart';
 
 /// An object that represents an open chat with a certain user.
 class Chat extends ChangeNotifier {
-  /// The ID of the user this chat is with
   final DBChat _dbChat;
 
   final _recipientInfo = CachedValue<UserInfo?>();
@@ -36,6 +35,7 @@ class Chat extends ChangeNotifier {
         _loginManager = loginManager,
         _requestManager = requestManager;
 
+  /// The ID of the user this chat is with
   String get recipientId {
     return _dbChat.id;
   }
