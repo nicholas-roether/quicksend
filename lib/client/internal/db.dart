@@ -25,13 +25,15 @@ class V1Transition extends VersionTransition {
   @override
   Future<void> apply() async {
     final general = await Hive.openBox("general");
-    final chatList = await Hive.openBox<DBChat>("chatList");
+    final chatList = await Hive.openBox<dynamic>("chatList");
     final chatListValues = List.from(chatList.values);
     await chatList.clear();
     for (final id in chatListValues) {
       chatList.put(id, DBChat(id, false));
     }
     general.put("version", 1);
+    await general.close();
+    await chatList.close();
   }
 }
 
@@ -57,6 +59,8 @@ class ClientDB with Initialized<ClientDB> {
     Hive.registerAdapter(DateTimeAdapter(), internal: true);
     Hive.registerAdapter(DBMessageAdapter());
     Hive.registerAdapter(DBChatAdapter());
+    await _applyVersionTransitions();
+
     await Hive.openBox("general");
     final _chatList = await Hive.openBox<DBChat>("chat-list");
     await Future.wait(
@@ -64,7 +68,6 @@ class ClientDB with Initialized<ClientDB> {
         (dbChat) => _openChatBox(dbChat.id),
       ),
     );
-    await _applyVersionTransitions();
   }
 
   Future<void> reset() async {
