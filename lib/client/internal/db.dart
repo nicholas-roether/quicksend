@@ -11,20 +11,19 @@ import 'db_models/db_message.dart';
 import 'initialized.dart';
 
 abstract class VersionTransition {
-  Future<void> apply();
+  Future<void> apply(Box general);
 }
 
 class V0Transition extends VersionTransition {
   @override
-  Future<void> apply() {
+  Future<void> apply(Box general) {
     return Future.value();
   }
 }
 
 class V1Transition extends VersionTransition {
   @override
-  Future<void> apply() async {
-    final general = await Hive.openBox("general");
+  Future<void> apply(Box general) async {
     final chatList = await Hive.openBox<dynamic>("chat-list");
     final chatListValues = List.from(chatList.values);
     await chatList.clear();
@@ -32,7 +31,6 @@ class V1Transition extends VersionTransition {
       chatList.put(id, DBChat(id, false));
     }
     general.put("version", 1);
-    await general.close();
     await chatList.close();
   }
 }
@@ -202,7 +200,7 @@ class ClientDB with Initialized<ClientDB> {
     final int version = _general.get("version") ?? 0;
     if (versionTransitions.length - 1 == version) return;
     for (final transition in versionTransitions.sublist(version + 1)) {
-      await transition.apply();
+      await transition.apply(_general);
     }
   }
 }
