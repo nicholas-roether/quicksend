@@ -44,7 +44,6 @@ dependencies:
   encrypt: ^5.0.1
   archive: ^3.3.0
   intl: ^0.17.0
-  uuid:
   loading_animation_widget: 1.2.0+1
   skeletons: ^0.0.3
   # image_picker_web: ^2.1.1

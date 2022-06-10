@@ -72,12 +72,11 @@ class QuicksendClient with Initialized<QuicksendClient> {
   /// Note that this function generates RSA keypairs for this device, and can
   /// therefore take quite a long time to execute.
   Future<void> logIn(
-    String deviceName,
     String username,
     String password,
   ) async {
     assertInit();
-    await _loginManager.logIn(deviceName, username, password);
+    await _loginManager.logIn(username, password);
     await _db.reset();
     await _onLoggedIn();
   }

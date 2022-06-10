@@ -1,6 +1,7 @@
 import 'package:quicksend/client/internal/crypto_utils.dart';
 import 'package:quicksend/client/internal/db.dart';
 import 'package:quicksend/client/internal/initialized.dart';
+import 'package:quicksend/client/internal/platform_utils.dart';
 import 'package:quicksend/client/internal/request_manager.dart';
 
 import '../exceptions.dart';
@@ -27,7 +28,6 @@ class LoginManager with Initialized<LoginManager> {
   }
 
   Future<void> logIn(
-    String deviceName,
     String username,
     String password,
   ) async {
@@ -43,10 +43,11 @@ class LoginManager with Initialized<LoginManager> {
     final sigKeypair = keypairs[0];
     final encKeypair = keypairs[1];
 
+    final platformInfo = await getPlatformInfo();
     final deviceID = await _requestManager.addDevice(
       basicAuth,
-      deviceName,
-      1,
+      platformInfo.deviceDescriptor,
+      platformInfo.platformCode,
       sigKeypair.public,
       encKeypair.public,
     );

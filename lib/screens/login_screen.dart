@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:quicksend/client/quicksend_client.dart';
 import 'package:quicksend/widgets/custom_button.dart';
 import 'package:quicksend/widgets/custom_error_alert_widget.dart';
-import 'package:uuid/uuid.dart';
 
 import '../widgets/custom_text_form_field.dart';
 import '../widgets/loading_indicator.dart';
@@ -37,7 +36,6 @@ class _LoginScreenState extends State<LoginScreen> {
     if (!_formKey.currentState!.validate()) {
       return;
     }
-    var uuid = const Uuid();
     setState(() {
       _isLoading = true;
     });
@@ -50,7 +48,6 @@ class _LoginScreenState extends State<LoginScreen> {
         );
       }
       await quicksendClient.logIn(
-        uuid.v1().substring(0, 15),
         _usernameController.text,
         _passwordController.text,
       );
