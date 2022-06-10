@@ -25,7 +25,7 @@ class V1Transition extends VersionTransition {
   @override
   Future<void> apply() async {
     final general = await Hive.openBox("general");
-    final chatList = await Hive.openBox<dynamic>("chatList");
+    final chatList = await Hive.openBox<dynamic>("chat-list");
     final chatListValues = List.from(chatList.values);
     await chatList.clear();
     for (final id in chatListValues) {
