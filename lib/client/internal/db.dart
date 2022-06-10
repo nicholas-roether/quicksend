@@ -59,9 +59,9 @@ class ClientDB with Initialized<ClientDB> {
     Hive.registerAdapter(DateTimeAdapter(), internal: true);
     Hive.registerAdapter(DBMessageAdapter());
     Hive.registerAdapter(DBChatAdapter());
+    await Hive.openBox("general");
     await _applyVersionTransitions();
 
-    await Hive.openBox("general");
     final _chatList = await Hive.openBox<DBChat>("chat-list");
     await Future.wait(
       List<DBChat>.from(_chatList.values).map(
