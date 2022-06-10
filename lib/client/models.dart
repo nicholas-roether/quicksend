@@ -57,6 +57,7 @@ class DeviceInfo {
   /// |             1 | Mobile device          |
   /// |             2 | Desktop device         |
   /// |             3 | Command line interface |
+  /// |             4 | Web Browser            |
   final int type;
 
   /// The last time this device was used.
