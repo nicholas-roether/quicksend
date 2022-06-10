@@ -1,6 +1,4 @@
-import 'dart:convert';
 import 'dart:io';
-import 'dart:math';
 
 import 'package:device_info_plus/device_info_plus.dart';
 import 'package:flutter/foundation.dart';
@@ -13,12 +11,6 @@ class PlatformInfo {
     required this.deviceDescriptor,
     required this.platformCode,
   });
-}
-
-String _uuid() {
-  final random = Random();
-  final bytes = List.generate(12, (_) => random.nextInt(8));
-  return base64Encode(bytes);
 }
 
 String _prettyBrowserName(BrowserName browserName) {
@@ -44,7 +36,7 @@ String _prettyBrowserName(BrowserName browserName) {
 
 String _browserDescriptor(WebBrowserInfo browserInfo) {
   String desc = _prettyBrowserName(browserInfo.browserName);
-  if (browserInfo.platform != null) desc += "(${browserInfo.platform})";
+  if (browserInfo.platform != null) desc += " (${browserInfo.platform})";
   return desc;
 }
 
