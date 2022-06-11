@@ -143,6 +143,7 @@ class QuicksendClient with Initialized<QuicksendClient> {
     assertInit();
     final auth = await _loginManager.getAuthenticator();
     await _requestManager.setUserPfp(auth, mimeType, image);
+    _requestManager.clearOtherUserInfoCache();
   }
 
   /// Returns the ChatList instance for this client, which contains all open
