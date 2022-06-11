@@ -63,6 +63,7 @@ class _SettingScreenState extends State<SettingScreen> {
                     style: Theme.of(context).textTheme.bodyText1,
                   ),
                   leading: Hero(
+                    transitionOnUserGestures: true,
                     tag: "profile pic",
                     child: ProfilePicture(radius: 30, userInfo: userInfo!),
                   ),
