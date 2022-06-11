@@ -174,7 +174,10 @@ class RequestManager {
       auth: auth,
       body: Stream.fromIterable(imageData),
       compress: true,
-      options: dio.Options(contentType: mimeType),
+      options: dio.Options(
+        contentType: mimeType,
+        headers: {"Content-Length": imageData.length},
+      ),
     );
     return res["id"];
   }
