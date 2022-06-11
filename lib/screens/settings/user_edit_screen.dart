@@ -1,8 +1,11 @@
 import 'dart:io';
 
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:image_picker_web/image_picker_web.dart';
+import 'package:path/path.dart' as path;
 import 'package:mime_type/mime_type.dart';
 import 'package:quicksend/client/quicksend_client.dart';
 import 'package:quicksend/widgets/custom_button.dart';
@@ -54,6 +57,24 @@ class _UserEditScreenState extends State<UserEditScreen> {
     Navigator.pop(context);
   }
 
+  void _setProfilePictureWeb() async {
+    final quicksendClient = QuicksendClientProvider.get(context);
+    try {
+      final imageInfo = await ImagePickerWeb.getImageInfo;
+      if (imageInfo == null) return;
+      await quicksendClient.setUserPfp(
+          mime(path.basename(imageInfo.fileName!))!, imageInfo.data!);
+      setState(() {});
+    } on PlatformException catch (_) {
+      showDialog(
+        context: context,
+        builder: (context) {
+          return const CustomErrorWidget(message: "Could not send image!");
+        },
+      );
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -76,13 +97,17 @@ class _UserEditScreenState extends State<UserEditScreen> {
                 tag: "profile pic",
                 child: GestureDetector(
                   onTap: () {
-                    showDialog(
-                      context: context,
-                      builder: (context) {
-                        return ImageSourceDialog(
-                            iconButtonCallback: _setProfilePicture);
-                      },
-                    );
+                    if (kIsWeb) {
+                      _setProfilePictureWeb();
+                    } else {
+                      showDialog(
+                        context: context,
+                        builder: (context) {
+                          return ImageSourceDialog(
+                              iconButtonCallback: _setProfilePicture);
+                        },
+                      );
+                    }
                   },
                   child: ProfilePicture(
                     radius: 70,
