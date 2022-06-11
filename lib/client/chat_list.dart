@@ -78,5 +78,6 @@ class ChatList extends ChangeNotifier {
 
   void _hideChat(String id) {
     _chats.remove(id);
+    notifyListeners();
   }
 }
