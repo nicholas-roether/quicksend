@@ -56,11 +56,14 @@ class _ChatTileState extends State<ChatTile> {
               radius: 5,
             )
           : null,
-      title: Hero(
-        tag: "username" + userInfo!.username,
-        child: Text(
-          userInfo!.getName(),
-          style: Theme.of(context).textTheme.headline6,
+      title: SizedBox(
+        height: Theme.of(context).textTheme.headline6?.fontSize,
+        child: Hero(
+          tag: "username" + userInfo!.username,
+          child: Text(
+            userInfo!.getName(),
+            style: Theme.of(context).textTheme.headline6,
+          ),
         ),
       ),
       subtitle: Text(
