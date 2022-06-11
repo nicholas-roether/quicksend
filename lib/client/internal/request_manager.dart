@@ -172,9 +172,12 @@ class RequestManager {
       "POST",
       "/user/set-pfp",
       auth: auth,
-      body: imageData,
+      body: Stream.fromIterable(imageData),
       compress: true,
-      options: dio.Options(contentType: mimeType),
+      options: dio.Options(
+        contentType: mimeType,
+        headers: {"Content-Length": imageData.length},
+      ),
     );
     return res["id"];
   }
