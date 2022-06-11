@@ -78,6 +78,7 @@ class _ChatScreenState extends State<ChatScreen> {
       child: Scaffold(
         appBar: AppBar(
           title: Hero(
+            transitionOnUserGestures: true,
             tag: "username" + widget.userInfo.username,
             child: Text(
               widget.userInfo.getName(),

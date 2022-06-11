@@ -94,6 +94,7 @@ class _UserEditScreenState extends State<UserEditScreen> {
                 height: 50,
               ),
               Hero(
+                transitionOnUserGestures: true,
                 tag: "profile pic",
                 child: GestureDetector(
                   onTap: () {
