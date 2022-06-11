@@ -39,6 +39,22 @@ class Chat extends ChangeNotifier {
     return _dbChat.id;
   }
 
+  bool get isArchived {
+    return _dbChat.isArchived;
+  }
+
+  /// Archives this chat
+  Future<void> archive() async {
+    _dbChat.isArchived = true;
+    await _dbChat.save();
+  }
+
+  /// Restores this chat if it was archived
+  Future<void> restore() async {
+    _dbChat.isArchived = false;
+    await _dbChat.save();
+  }
+
   /// Loads all saved messages for this chat and broadcasts them.
   void loadSavedMessages() {
     final messages = _loadMessagesFromDB();

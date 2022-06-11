@@ -111,15 +111,10 @@ class ClientDB with Initialized<ClientDB> {
     return dbChat;
   }
 
-  void removeChat(String id) async {
-    assertInit();
-    _chatList.delete(id);
-  }
-
   Future<void> deleteChat(String id) async {
     assertInit();
-    removeChat(id);
     await _deleteChat(id);
+    await _chatList.delete(id);
   }
 
   List<DBMessage> getMessages(String chatId) {

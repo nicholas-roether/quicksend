@@ -19,17 +19,19 @@ class DBChatAdapter extends TypeAdapter<DBChat> {
     return DBChat(
       fields[0] as String,
       fields[1] as bool,
-    );
+    )..isArchived = fields[2] as bool;
   }
 
   @override
   void write(BinaryWriter writer, DBChat obj) {
     writer
-      ..writeByte(2)
+      ..writeByte(3)
       ..writeByte(0)
       ..write(obj.id)
       ..writeByte(1)
-      ..write(obj.hasUnreadMessages);
+      ..write(obj.hasUnreadMessages)
+      ..writeByte(2)
+      ..write(obj.isArchived);
   }
 
   @override
