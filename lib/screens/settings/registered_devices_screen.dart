@@ -9,18 +9,20 @@ import 'package:quicksend/widgets/loading_indicator.dart';
 class RegisteredDevices extends StatelessWidget {
   const RegisteredDevices({Key? key}) : super(key: key);
 
-  String getDevice(int type) {
+  IconData getDevice(int type) {
     switch (type) {
       case 0:
-        return "unknown device";
+        return Icons.device_unknown;
       case 1:
-        return "mobile device";
+        return Icons.smartphone;
       case 2:
-        return "desktop device";
+        return Icons.computer;
       case 3:
-        return "command line interface";
+        return Icons.terminal;
+      case 4:
+        return Icons.language;
     }
-    return type.toString();
+    return Icons.device_unknown_outlined;
   }
 
   @override
@@ -72,11 +74,15 @@ class RegisteredDevices extends StatelessWidget {
                 direction: DismissDirection.endToStart,
                 child: ListTile(
                   title: Text(
-                    "${snapshot.data![index].name} - ${getDevice(snapshot.data![index].type)}",
+                    snapshot.data![index].name,
                     style: Theme.of(context).textTheme.bodyText1,
                   ),
                   subtitle: Text(
                     "last activity: ${DateFormat('dd.MM.yyyy EEEE', 'de').format(snapshot.data![index].lastActivity)}",
+                  ),
+                  leading: Icon(
+                    getDevice(snapshot.data![index].type),
+                    color: Theme.of(context).primaryColor,
                   ),
                 ),
               );
