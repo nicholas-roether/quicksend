@@ -1,8 +1,11 @@
 import 'dart:io';
 
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:image_picker_web/image_picker_web.dart';
+import 'package:path/path.dart' as path;
 import 'package:mime_type/mime_type.dart';
 import 'package:quicksend/client/models.dart';
 import 'package:quicksend/widgets/custom_error_alert_widget.dart';
@@ -35,12 +38,13 @@ class _ChatScreenState extends State<ChatScreen> {
     });
   }
 
-  /*void _sendImageForWeb() async {
+  void _sendImageForWeb() async {
     final imageInfo = await ImagePickerWeb.getImageInfo;
-    String? mimeType = mime(path.basename((imageInfo?.fileName)!));
+    if (imageInfo == null) return;
+    String? mimeType = mime(path.basename((imageInfo.fileName)!));
 
-    await widget.chat.sendMessage((mimeType)!, (imageInfo?.data)!);
-  }*/
+    await widget.chat.sendMessage((mimeType)!, (imageInfo.data)!);
+  }
 
   void _sendImage(ImageSource source) async {
     File? pickedImage;
@@ -112,15 +116,20 @@ class _ChatScreenState extends State<ChatScreen> {
               padding: const EdgeInsets.all(8.0),
               child: Row(
                 children: [
+                  //image sender
                   SmallFAB(
                     onPressedCallback: () {
-                      showDialog(
-                        context: context,
-                        builder: (context) {
-                          return ImageSourceDialog(
-                              iconButtonCallback: _sendImage);
-                        },
-                      );
+                      if (kIsWeb) {
+                        _sendImageForWeb();
+                      } else {
+                        showDialog(
+                          context: context,
+                          builder: (context) {
+                            return ImageSourceDialog(
+                                iconButtonCallback: _sendImage);
+                          },
+                        );
+                      }
                     },
                     icon: Icons.image,
                   ),
@@ -143,6 +152,7 @@ class _ChatScreenState extends State<ChatScreen> {
                   const SizedBox(
                     width: 10,
                   ),
+                  //message sender
                   SmallFAB(
                     onPressedCallback: _sendMessage,
                     icon: Icons.send,
