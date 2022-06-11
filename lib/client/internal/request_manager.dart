@@ -168,11 +168,14 @@ class RequestManager {
     String mimeType,
     Uint8List imageData,
   ) async {
-    final res = await _request("POST", "/user/set-pfp",
-        auth: auth,
-        body: imageData,
-        compress: true,
-        options: dio.Options(headers: {"Content-Type": mimeType}));
+    final res = await _request(
+      "POST",
+      "/user/set-pfp",
+      auth: auth,
+      body: imageData,
+      compress: true,
+      options: dio.Options(contentType: mimeType),
+    );
     return res["id"];
   }
 
