@@ -306,7 +306,9 @@ class RequestManager {
     options.method = method;
     options.responseType = dio.ResponseType.bytes;
 
-    if (compress) options.requestEncoder = _compressRequest;
+    if (Config.compressRequests && compress) {
+      options.requestEncoder = _compressRequest;
+    }
     if (acceptCompressed) {
       options.headers ??= {};
       options.headers!["Accept-Encoding"] = "gzip";

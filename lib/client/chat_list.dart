@@ -22,9 +22,14 @@ class ChatList extends ChangeNotifier {
     _db.getChatList().forEach((dbChat) => _createChatFromDB(dbChat));
   }
 
-  /// Get all chats that currently exist
+  /// Gets all chats that currently exist
   List<Chat> getChats() {
-    return List.from(_chats.values);
+    return List.from(_chats.values.where((chat) => !chat.isArchived));
+  }
+
+  /// Gets all chats that are currently archived
+  List<Chat> getArchivedChats() {
+    return List.from(_chats.values.where((chat) => chat.isArchived));
   }
 
   /// Get an existing chat from a user id
@@ -34,6 +39,8 @@ class ChatList extends ChangeNotifier {
 
   /// Create a new chat with a user with the provided [username]
   /// Throws an [UnknownUserException] if no such user exists.
+  ///
+  /// If the chat with the given user is currenty archived, it will be restored.
   Future<Chat> createChat(String username) async {
     final userInfo = await _requestManager.findUser(username);
     if (userInfo == null) throw UnknownUserException(username);
@@ -43,23 +50,32 @@ class ChatList extends ChangeNotifier {
   /// Removes the chat with [id] from the chat list, but doesn't delete any
   /// stored messages in the chat, so that they will reappear if the chat is
   /// re-added
-  void removeChat(String id) async {
-    _db.removeChat(id);
-    _hideChat(id);
+  Future<void> archiveChat(String id) async {
+    final chat = getChatFromId(id);
+    if (chat == null) return;
+    await chat.archive();
+    notifyListeners();
   }
 
   /// Removes the chat with [id] from the chat list, and deletes any
   /// stored messages from within it.
   Future<void> deleteChat(String id) async {
     await _db.deleteChat(id);
-    _hideChat(id);
+    _chats.remove(id);
+    notifyListeners();
   }
 
   /// Create a new chat with the user with [id].
   /// This method will not check whether that user actually exists.
+  ///
+  /// If the chat with the given user is currenty archived, it will be restored.
   Future<Chat> createChatFromId(String id) async {
     final existing = getChatFromId(id);
-    if (existing != null) return existing;
+    if (existing != null) {
+      if (existing.isArchived) await existing.restore();
+      notifyListeners();
+      return existing;
+    }
     final dbChat = await _db.createChat(id);
     return _createChatFromDB(dbChat);
   }
@@ -74,10 +90,5 @@ class ChatList extends ChangeNotifier {
     _chats[dbChat.id] = chat;
     notifyListeners();
     return chat;
-  }
-
-  void _hideChat(String id) {
-    _chats.remove(id);
-    notifyListeners();
   }
 }

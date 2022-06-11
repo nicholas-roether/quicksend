@@ -65,9 +65,9 @@ class ChatList extends StatelessWidget {
                   }
                   if (dismissDirection == DismissDirection.startToEnd) {
                     try {
-                      quicksendClient
+                      await quicksendClient
                           .getChatList()
-                          .removeChat(chats[index].recipientId);
+                          .archiveChat(chats[index].recipientId);
                       ScaffoldMessenger.of(context).showSnackBar(
                         SnackBar(
                           backgroundColor: Theme.of(context).primaryColor,

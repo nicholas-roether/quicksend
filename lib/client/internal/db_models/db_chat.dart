@@ -10,5 +10,8 @@ class DBChat extends HiveObject {
   @HiveField(1)
   bool hasUnreadMessages;
 
+  @HiveField(2)
+  bool isArchived = false;
+
   DBChat(this.id, this.hasUnreadMessages) : super();
 }
