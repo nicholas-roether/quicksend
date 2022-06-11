@@ -28,7 +28,9 @@ class EventManager extends EventSource {
   Future<void> connectLoop() async {
     await connect();
     while (_loginManager.isLoggedIn()) {
-      debugPrint("WebSocket connection lost. Reconnecting in 5 seconds...");
+      if (Config.logWebSocketConnectionLoss) {
+        debugPrint("WebSocket connection lost. Reconnecting in 5 seconds...");
+      }
       await Future.delayed(_reconnectDelay);
       try {
         await connect();
