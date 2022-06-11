@@ -275,7 +275,7 @@ class RequestManager {
   }
 
   void clearOwnUserInfoCache() {
-    _userInfoId.clear();
+    _userInfo.clear();
   }
 
   void clearOtherUserInfoCache() {
