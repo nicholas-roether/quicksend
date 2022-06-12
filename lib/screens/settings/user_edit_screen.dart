@@ -179,9 +179,10 @@ class _UserEditScreenState extends State<UserEditScreen> {
                         display: _displayController.text.isEmpty
                             ? _displayController.text
                             : null,
-                        password: _passwordController.text.isEmpty
-                            ? _passwordController.text
-                            : null,
+                        // FIXME this option no longer exists.
+                        // password: _passwordController.text.isEmpty
+                        //     ? _passwordController.text
+                        //     : null,
                         status: _statusController.text.isEmpty
                             ? _statusController.text
                             : null);

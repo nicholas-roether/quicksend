@@ -121,11 +121,10 @@ class QuicksendClient with Initialized<QuicksendClient> {
   }
 
   /// Update data for the current user. This method can be used to change the
-  /// current user's status, display name, and/or password.
+  /// current user's status and/or display name.
   Future<void> updateUser({
     String? status,
     String? display,
-    String? password,
   }) async {
     assertInit();
     final auth = await _loginManager.getAuthenticator();
@@ -133,9 +132,19 @@ class QuicksendClient with Initialized<QuicksendClient> {
       auth,
       status: status,
       display: display,
-      password: password,
     );
     _requestManager.clearOwnUserInfoCache();
+  }
+
+  /// Update the current user's password. It is required to provide the current
+  /// password to perform this action.
+  Future<void> updatePassword(
+    String currentPassword,
+    String newPassword,
+  ) async {
+    final userInfo = await getUserInfo();
+    final auth = BasicAuthenticator(userInfo.username, currentPassword);
+    await _requestManager.updatePassword(auth, newPassword);
   }
 
   /// Sets the logged in user's profile picture

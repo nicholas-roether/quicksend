@@ -154,13 +154,19 @@ class RequestManager {
     SignatureAuthenticator auth, {
     String? display,
     String? status,
-    String? password,
   }) async {
     Map<String, String> body = {};
     if (display != null) body["display"] = display;
     if (status != null) body["status"] = status;
-    if (password != null) body["password"] = password;
     await _request("POST", "/user/update", auth: auth, body: body);
+  }
+
+  Future<void> updatePassword(
+    BasicAuthenticator auth,
+    String newPassword,
+  ) async {
+    final body = {"newPassword": newPassword};
+    await _request("POST", "/user/change-pwd", auth: auth, body: body);
   }
 
   Future<String> setUserPfp(
