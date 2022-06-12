@@ -1,3 +1,4 @@
+import 'package:easy_image_viewer/easy_image_viewer.dart';
 import 'package:flutter/material.dart';
 import 'package:quicksend/client/models.dart';
 
@@ -9,11 +10,16 @@ class ProfilePicture extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return CircleAvatar(
-      radius: radius,
-      backgroundImage: const AssetImage("assets/img/profile-pic.png"),
-      foregroundImage:
-          userInfo.pfpUrl != null ? NetworkImage(userInfo.pfpUrl!) : null,
+    ImageProvider profileimage = NetworkImage(userInfo.pfpUrl!);
+    return GestureDetector(
+      onTap: () {
+        showImageViewer(context, profileimage);
+      },
+      child: CircleAvatar(
+        radius: radius,
+        backgroundImage: const AssetImage("assets/img/profile-pic.png"),
+        foregroundImage: userInfo.pfpUrl != null ? profileimage : null,
+      ),
     );
   }
 }
