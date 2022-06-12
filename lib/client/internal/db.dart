@@ -5,6 +5,8 @@ import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 // ignore: implementation_imports
 import 'package:hive/src/adapters/date_time_adapter.dart';
+// ignore: implementation_imports
+import 'package:hive/src/adapters/ignored_type_adapter.dart';
 import 'package:quicksend/client/internal/crypto_utils.dart';
 import 'package:quicksend/client/internal/db_models/db_chat.dart';
 import 'db_models/db_message.dart';
@@ -27,6 +29,7 @@ class V1Transition extends VersionTransition {
     final chatList = await Hive.openBox<dynamic>("chat-list");
     final chatListValues = List.from(chatList.values);
     await chatList.clear();
+    Hive.registerAdapter(DBChatAdapter(), override: true);
     for (final id in chatListValues) {
       chatList.put(id, DBChat(id, false));
     }
@@ -38,16 +41,16 @@ class V1Transition extends VersionTransition {
 class V2Transition extends VersionTransition {
   @override
   Future<void> apply(Box general) async {
-    Hive.ignoreTypeId(2);
+    Hive.registerAdapter(const IgnoredTypeAdapter(2), override: true);
     final chatList = await Hive.openBox<dynamic>("chat-list");
     final chatListKeys = List.from(chatList.keys);
     await chatList.clear();
+    Hive.registerAdapter(DBChatAdapter(), override: true);
     for (final id in chatListKeys) {
       chatList.put(id, DBChat(id, false));
     }
     await general.put("version", 2);
     await chatList.close();
-    Hive.registerAdapter(DBChatAdapter());
   }
 }
 
@@ -72,10 +75,11 @@ class ClientDB with Initialized<ClientDB> {
   Future<void> onInit() async {
     await Hive.initFlutter();
     Hive.registerAdapter(DateTimeAdapter(), internal: true);
-    Hive.registerAdapter(DBMessageAdapter());
-    Hive.registerAdapter(DBChatAdapter());
     await Hive.openBox("general");
     await _applyVersionTransitions();
+
+    Hive.registerAdapter(DBMessageAdapter(), override: true);
+    Hive.registerAdapter(DBChatAdapter(), override: true);
 
     final _chatList = await Hive.openBox<DBChat>("chat-list");
     await Future.wait(
