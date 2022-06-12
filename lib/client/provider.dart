@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:quicksend/client/quicksend_client.dart';
+import 'package:quicksend/utils/my_themes.dart';
 import 'package:quicksend/widgets/loading_indicator.dart';
 
 class InitErrorAlert extends StatelessWidget {
@@ -13,20 +14,25 @@ class InitErrorAlert extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return AlertDialog(
-      title: const Text("Error during intialization"),
-      content: SingleChildScrollView(
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(errInfo.error.toString()),
-            const SizedBox(height: 10),
-            const Text("Stacktrace:"),
-            SingleChildScrollView(
-              scrollDirection: Axis.horizontal,
-              child: Text(errInfo.stackTrace.toString()),
-            ),
-          ],
+    return MaterialApp(
+      title: "Quicksend (Init Error)",
+      theme: MyThemes.mainTheme,
+      debugShowCheckedModeBanner: false,
+      home: AlertDialog(
+        title: const Text("Error during intialization"),
+        content: SingleChildScrollView(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(errInfo.error.toString()),
+              const SizedBox(height: 10),
+              const Text("Stacktrace:"),
+              SingleChildScrollView(
+                scrollDirection: Axis.horizontal,
+                child: Text(errInfo.stackTrace.toString()),
+              ),
+            ],
+          ),
         ),
       ),
     );
@@ -76,7 +82,12 @@ class _QuicksendClientProviderState extends State<QuicksendClientProvider> {
           errorInfo = InitErrorInfo(error, stackTrace);
         });
       });
-      return Scaffold(body: LoadingIndicator());
+      return MaterialApp(
+        title: "Quicksend",
+        theme: MyThemes.mainTheme,
+        debugShowCheckedModeBanner: false,
+        home: Scaffold(body: LoadingIndicator()),
+      );
     }
 
     return Provider.value(

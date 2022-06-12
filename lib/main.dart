@@ -16,20 +16,21 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'Quicksend',
-      builder: (context, child) => QuicksendClientProvider(child: child!),
-      debugShowCheckedModeBanner: false,
-      theme: MyThemes.mainTheme,
-      routes: {
-        "/": (context) {
-          final quicksendClient = QuicksendClientProvider.get(context);
-          return quicksendClient.isLoggedIn()
-              ? const HomePage()
-              : const LoginScreen();
+    return QuicksendClientProvider(
+      child: MaterialApp(
+        title: 'Quicksend',
+        debugShowCheckedModeBanner: false,
+        theme: MyThemes.mainTheme,
+        routes: {
+          "/": (context) {
+            final quicksendClient = QuicksendClientProvider.get(context);
+            return quicksendClient.isLoggedIn()
+                ? const HomePage()
+                : const LoginScreen();
+          },
+          "/registered_devices": (context) => const RegisteredDevices(),
         },
-        "/registered_devices": (context) => const RegisteredDevices(),
-      },
+      ),
     );
   }
 }
