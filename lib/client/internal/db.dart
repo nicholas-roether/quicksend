@@ -35,9 +35,24 @@ class V1Transition extends VersionTransition {
   }
 }
 
+class V2Transition extends VersionTransition {
+  @override
+  Future<void> apply(Box general) async {
+    final chatList = await Hive.openBox<DBChat>("chat-list");
+    final chatListKeys = List.from(chatList.keys);
+    await chatList.clear();
+    for (final id in chatListKeys) {
+      chatList.put(id, DBChat(id, false));
+    }
+    general.put("version", 2);
+    await chatList.close();
+  }
+}
+
 final List<VersionTransition> versionTransitions = [
   V0Transition(),
-  V1Transition()
+  V1Transition(),
+  V2Transition()
 ];
 
 class ClientDB with Initialized<ClientDB> {
