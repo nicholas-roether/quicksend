@@ -34,7 +34,6 @@ class QuicksendClient with Initialized<QuicksendClient> {
   Future<void> onInit() async {
     await _db.init();
     await _loginManager.init();
-    assert(false);
   }
 
   @override
