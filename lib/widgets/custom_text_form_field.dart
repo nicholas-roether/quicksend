@@ -1,29 +1,43 @@
 import 'package:flutter/material.dart';
 
 class CustomTextFormField extends StatelessWidget {
-  const CustomTextFormField(
-      {Key? key,
-      required this.hintInfo,
-      required this.labelInfo,
-      this.textController,
-      this.inputType,
-      required this.obscure})
-      : super(key: key);
+  const CustomTextFormField({
+    Key? key,
+    required this.hintInfo,
+    required this.labelInfo,
+    this.textController,
+    this.inputType,
+    this.noPadding = false,
+    required this.obscure,
+    this.submitCallback,
+    this.autocorrect = true,
+    this.minLines,
+    this.maxLines,
+  }) : super(key: key);
   final String hintInfo;
   final String labelInfo;
+  final bool obscure;
+  final bool noPadding;
+  final int? minLines;
+  final int? maxLines;
   final TextEditingController? textController;
   final TextInputType? inputType;
-  final bool obscure;
+  final void Function(String)? submitCallback;
+  final bool autocorrect;
 
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.only(
-        bottom: 20,
+      padding: EdgeInsets.only(
+        bottom: noPadding ? 0 : 20,
       ),
       child: TextFormField(
+        minLines: obscure ? 1 : minLines,
+        maxLines: obscure ? 1 : maxLines,
+        onFieldSubmitted: submitCallback,
         controller: textController,
         decoration: InputDecoration(
+          isDense: true,
           hintText: hintInfo,
           labelText: labelInfo,
           border: OutlineInputBorder(
@@ -39,6 +53,7 @@ class CustomTextFormField extends StatelessWidget {
         },
         keyboardType: inputType,
         obscureText: obscure,
+        autocorrect: autocorrect,
       ),
     );
   }

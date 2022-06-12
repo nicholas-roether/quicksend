@@ -1,8 +1,10 @@
-import 'dart:async';
 import 'dart:convert';
 import 'dart:typed_data';
 
 import 'package:flutter/cupertino.dart';
+import 'package:quicksend/client/exceptions.dart';
+import 'package:quicksend/client/internal/db_models/db_chat.dart';
+import 'package:uuid/uuid.dart';
 
 import 'internal/utils.dart';
 
@@ -15,8 +17,7 @@ import 'models.dart';
 
 /// An object that represents an open chat with a certain user.
 class Chat extends ChangeNotifier {
-  /// The ID of the user this chat is with
-  final String recipientId;
+  final DBChat _dbChat;
 
   final _recipientInfo = CachedValue<UserInfo?>();
   final List<Message> _messages = [];
@@ -24,19 +25,59 @@ class Chat extends ChangeNotifier {
   final LoginManager _loginManager;
   final RequestManager _requestManager;
 
-  Chat(this.recipientId,
+  Chat(DBChat dbChat,
       {required ClientDB db,
       required LoginManager loginManager,
       required RequestManager requestManager})
-      : _db = db,
+      : _dbChat = dbChat,
+        _db = db,
         _loginManager = loginManager,
         _requestManager = requestManager;
+
+  /// The ID of the user this chat is with
+  String get recipientId {
+    return _dbChat.id;
+  }
+
+  bool get isArchived {
+    return _dbChat.isArchived;
+  }
+
+  /// Archives this chat
+  Future<void> archive() async {
+    _dbChat.isArchived = true;
+    await _dbChat.save();
+  }
+
+  /// Restores this chat if it was archived
+  Future<void> restore() async {
+    _dbChat.isArchived = false;
+    await _dbChat.save();
+  }
 
   /// Loads all saved messages for this chat and broadcasts them.
   void loadSavedMessages() {
     final messages = _loadMessagesFromDB();
     messages.forEach(_addMessage);
     notifyListeners();
+  }
+
+  /// Returns the latest message sent in this chat, without loading any other
+  /// messages, or notifying this chat's listeners.
+  Message? getLatestMessage() {
+    if (!_dbChat.isInBox) return null;
+    final dbMessage = _db.getLatestMessage(recipientId);
+    if (dbMessage == null) return null;
+    return _parseDBMessage(dbMessage);
+  }
+
+  bool hasUnreadMessages() {
+    return _dbChat.hasUnreadMessages;
+  }
+
+  Future<void> markAsRead() async {
+    _dbChat.hasUnreadMessages = false;
+    await _dbChat.save();
   }
 
   /// Get the user info for the user this chat is with.
@@ -65,23 +106,60 @@ class Chat extends ChangeNotifier {
     Uint8List body, {
     Map<String, String>? headers,
   }) async {
+    const uuid = Uuid();
+    final sendingMsgId = uuid.v1();
     final sentAt = DateTime.now();
+
+    _addMessage(
+      Message(
+        id: sendingMsgId,
+        type: type,
+        sentAt: sentAt,
+        content: body,
+        direction: MessageDirection.outgoing,
+        state: MessageState.sending,
+      ),
+    );
+
     final key = await CryptoUtils.generateKey();
     final iv = await CryptoUtils.generateIV();
     final encryptedBody = await CryptoUtils.encrypt(body, key, iv);
 
-    final msgId = await _requestManager.sendMessage(
-      await _loginManager.getAuthenticator(),
-      recipientId,
-      sentAt,
-      {"type": type, ...(headers ?? {})},
-      await _getEncryptedKeys(key),
-      base64.encode(iv),
-      base64.encode(encryptedBody),
-    );
+    try {
+      final msgId = await _requestManager.sendMessage(
+        await _loginManager.getAuthenticator(),
+        recipientId,
+        sentAt,
+        {"type": type, ...(headers ?? {})},
+        await _getEncryptedKeys(key),
+        base64.encode(iv),
+        base64.encode(encryptedBody),
+      );
 
-    await saveMessage(
-        Message(msgId, type, MessageDirection.outgoing, sentAt, body));
+      _removeMessage(sendingMsgId);
+
+      await saveMessage(
+        Message(
+          id: msgId,
+          type: type,
+          state: MessageState.sent,
+          direction: MessageDirection.outgoing,
+          sentAt: sentAt,
+          content: body,
+        ),
+      );
+    } on RequestException {
+      _addMessage(
+        Message(
+          id: sendingMsgId,
+          type: type,
+          sentAt: sentAt,
+          content: body,
+          direction: MessageDirection.outgoing,
+          state: MessageState.failed,
+        ),
+      );
+    }
   }
 
   /// Saves a message to this device WITHOUT sending it to the server.
@@ -98,8 +176,10 @@ class Chat extends ChangeNotifier {
       message.content,
     );
     _db.addMessage(recipientId, dbMessage);
-    _sortMessages();
     _addMessage(message);
+
+    _dbChat.hasUnreadMessages = true;
+    await _dbChat.save();
     notifyListeners();
   }
 
@@ -108,20 +188,30 @@ class Chat extends ChangeNotifier {
   }
 
   List<Message> _loadMessagesFromDB() {
+    if (!_dbChat.isInBox) return [];
     final List<DBMessage> dbMessages = _db.getMessages(recipientId);
-    return List.from(dbMessages.map(
-      (dbMsg) => Message(
-        dbMsg.id,
-        dbMsg.type,
-        dbMsg.incoming ? MessageDirection.incoming : MessageDirection.outgoing,
-        dbMsg.sentAt,
-        dbMsg.content,
-      ),
-    ));
+    return List.from(dbMessages.map(_parseDBMessage));
+  }
+
+  Message _parseDBMessage(DBMessage dbMsg) {
+    return Message(
+      id: dbMsg.id,
+      type: dbMsg.type,
+      state: MessageState.sent,
+      direction: dbMsg.incoming
+          ? MessageDirection.incoming
+          : MessageDirection.outgoing,
+      sentAt: dbMsg.sentAt,
+      content: dbMsg.content,
+    );
+  }
+
+  void _removeMessage(String id) {
+    _messages.removeWhere((msg) => msg.id == id);
   }
 
   void _addMessage(Message message) {
-    _messages.removeWhere((msg) => msg.id == message.id);
+    _removeMessage(message.id);
     _messages.add(message);
     _sortMessages();
   }

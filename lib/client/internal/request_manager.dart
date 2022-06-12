@@ -2,8 +2,9 @@ import 'dart:convert';
 import 'dart:typed_data';
 
 import 'package:dio/dio.dart' as dio;
-import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:intl/intl.dart';
+import 'package:archive/archive.dart';
+import 'package:quicksend/config.dart';
 
 import '../exceptions.dart';
 import 'crypto_utils.dart';
@@ -89,9 +90,7 @@ class RequestManager {
   final _userInfoName = CachedMap<String, UserInfo?>();
 
   RequestManager() {
-    final backendUri = dotenv.env["BACKEND_URI"];
-    assert(backendUri != null, "A URI to the backend server must be provided");
-    _dio.options.baseUrl = backendUri as String;
+    _dio.options.baseUrl = Config.backendUri;
     _dio.options.headers["Accept"] = "application/json";
     _dio.options.validateStatus = (status) => true;
   }
@@ -113,7 +112,13 @@ class RequestManager {
   Future<UserInfo> getUserInfo(SignatureAuthenticator auth) async {
     return _userInfo.get(() async {
       final res = await _request("GET", "/user/info", auth: auth);
-      return UserInfo(res["id"], res["username"], res["display"]);
+      return UserInfo(
+        id: res["id"],
+        username: res["username"],
+        display: res["display"],
+        status: res["status"],
+        pfpAssetId: res["profilePicture"],
+      );
     });
   }
 
@@ -121,7 +126,13 @@ class RequestManager {
     return _userInfoId.get(id, (id) async {
       final res = await _request("GET", "/user/info/$id");
       if (res == null) return null;
-      return UserInfo(res["id"], res["username"], res["display"]);
+      return UserInfo(
+        id: res["id"],
+        username: res["username"],
+        display: res["display"],
+        status: res["status"],
+        pfpAssetId: res["profilePicture"],
+      );
     });
   }
 
@@ -129,18 +140,53 @@ class RequestManager {
     return _userInfoName.get(name, (name) async {
       final res = await _request("GET", "/user/find/$name");
       if (res == null) return null;
-      return UserInfo(res["id"], res["username"], res["display"]);
+      return UserInfo(
+        id: res["id"],
+        username: res["username"],
+        display: res["display"],
+        status: res["status"],
+        pfpAssetId: res["profilePicture"],
+      );
     });
+  }
+
+  Future<void> updateUser(
+    SignatureAuthenticator auth, {
+    String? display,
+    String? status,
+    String? password,
+  }) async {
+    Map<String, String> body = {};
+    if (display != null) body["display"] = display;
+    if (status != null) body["status"] = status;
+    if (password != null) body["password"] = password;
+    await _request("POST", "/user/update", auth: auth, body: body);
+  }
+
+  Future<String> setUserPfp(
+    SignatureAuthenticator auth,
+    String mimeType,
+    Uint8List imageData,
+  ) async {
+    final res = await _request(
+      "POST",
+      "/user/set-pfp",
+      auth: auth,
+      body: Stream<int>.fromIterable(imageData).map<List<int>>((e) => [e]),
+      compress: true,
+      options: dio.Options(
+        contentType: mimeType,
+        headers: {"Content-Length": imageData.length},
+      ),
+    );
+    return res["id"];
   }
 
   Future<List<IncomingMessage>> pollMessages(
     SignatureAuthenticator auth,
   ) async {
-    final List<dynamic> res = await _request(
-      "GET",
-      "/messages/poll",
-      auth: auth,
-    );
+    final List<dynamic> res = await _request("GET", "/messages/poll",
+        auth: auth, acceptCompressed: true);
     return List.from(res.map((msg) => IncomingMessage(
           msg["id"],
           msg["chat"],
@@ -179,12 +225,8 @@ class RequestManager {
       "iv": iv,
       "body": body
     };
-    final res = await _request(
-      "POST",
-      "/messages/send",
-      auth: auth,
-      body: reqBody,
-    );
+    final res = await _request("POST", "/messages/send",
+        auth: auth, body: reqBody, compress: true);
     return res["id"];
   }
 
@@ -219,10 +261,10 @@ class RequestManager {
     assert(res is List<dynamic>);
     return List.from((res as List<dynamic>).map(
       (e) => DeviceInfo(
-        e["id"],
-        e["name"],
-        e["type"],
-        DateTime.parse(e["lastActivity"]),
+        id: e["id"],
+        name: e["name"],
+        type: e["type"],
+        lastActivity: DateTime.parse(e["lastActivity"]),
       ),
     ));
   }
@@ -232,25 +274,70 @@ class RequestManager {
     return base64.decode(res["token"]);
   }
 
+  void clearOwnUserInfoCache() {
+    _userInfo.clear();
+  }
+
+  void clearOtherUserInfoCache() {
+    _userInfoId.clear();
+    _userInfoName.clear();
+  }
+
+  List<int> _compressRequest(String request, dio.RequestOptions options) {
+    final gzip = GZipEncoder();
+    options.headers["Content-Encoding"] = "gzip";
+    final compressed = gzip.encode(utf8.encode(request));
+    if (compressed == null) {
+      throw Exception("Request compression failed");
+    }
+    return compressed;
+  }
+
+  List<int> _decompressResponse(List<int> body) {
+    final gzip = GZipDecoder();
+    final decompressed = gzip.decodeBytes(body);
+    return decompressed;
+  }
+
   Future<dynamic> _request(
     String method,
     String target, {
     Authenticator? auth,
     dynamic body,
     dio.Options? options,
+    bool compress = false,
+    bool acceptCompressed = false,
   }) async {
     options ??= dio.Options();
     options.method = method;
+    options.responseType = dio.ResponseType.bytes;
+
+    if (Config.compressRequests && compress) {
+      options.requestEncoder = _compressRequest;
+    }
+    if (acceptCompressed) {
+      options.headers ??= {};
+      options.headers!["Accept-Encoding"] = "gzip";
+    }
+
     await auth?.authenticate(target, options);
     final response = await _dio.request(target, data: body, options: options);
     if (response.statusCode == null) throw Exception("Something broke :(");
+
+    if (response.headers.value(dio.Headers.contentEncodingHeader) == "gzip") {
+      response.data = _decompressResponse(response.data);
+    }
+
+    if (response.statusCode == 204) return null;
+    final resObject = jsonDecode(utf8.decode(response.data));
+
     if ((response.statusCode as int) ~/ 100 != 2) {
-      String? message = response.data["error"]?.toString();
+      String? message = resObject["error"]?.toString();
       message ??= "(No error message provided)";
       throw RequestException(response.statusCode ?? 0, message);
     }
-    if (response.statusCode == 204) return null;
-    final dynamic resBody = response.data["data"];
+
+    final dynamic resBody = resObject["data"];
     return resBody;
   }
 }

@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:quicksend/client/models.dart';
+import 'package:quicksend/client/quicksend_client.dart';
+import 'package:quicksend/widgets/profile_picture.dart';
 import 'package:skeletons/skeletons.dart';
 
-import '../client/chat.dart';
 import '../screens/chat_screen.dart';
 
 class ChatTile extends StatefulWidget {
@@ -16,6 +16,20 @@ class ChatTile extends StatefulWidget {
 class _ChatTileState extends State<ChatTile> {
   UserInfo? userInfo;
 
+  String getLastMessage() {
+    if (widget.chat.getLatestMessage() != null) {
+      switch (widget.chat.getLatestMessage()!.type) {
+        case "text/plain":
+          return widget.chat.getLatestMessage()!.asString();
+        case "image/jpeg":
+          return "Image";
+        case "image/png":
+          return "Image";
+      }
+    }
+    return "message...";
+  }
+
   @override
   Widget build(BuildContext context) {
     widget.chat.getRecipient().then((value) {
@@ -28,24 +42,52 @@ class _ChatTileState extends State<ChatTile> {
       return SkeletonListTile(
         hasLeading: true,
         hasSubtitle: true,
+        leadingStyle: SkeletonAvatarStyle(
+          borderRadius: BorderRadius.circular(20),
+        ),
+        padding: const EdgeInsets.symmetric(horizontal: 15),
       );
     }
     return ListTile(
-      leading: const CircleAvatar(),
-      title: Text(
-        userInfo!.getName(),
-        style: Theme.of(context).textTheme.headline6,
+      leading: ProfilePicture(userInfo: userInfo!),
+      trailing: widget.chat.hasUnreadMessages()
+          ? CircleAvatar(
+              backgroundColor: Theme.of(context).primaryColor,
+              radius: 5,
+            )
+          : null,
+      title: Stack(
+        children: [
+          Text(
+            userInfo!.getName(),
+            style: Theme.of(context)
+                .textTheme
+                .headline6
+                ?.merge(const TextStyle(color: Colors.transparent)),
+          ),
+          Hero(
+            tag: "username" + userInfo!.username,
+            child: Text(
+              userInfo!.getName(),
+              style: Theme.of(context).textTheme.headline6,
+            ),
+          ),
+        ],
       ),
-      /*subtitle: Text(
-        "Last Message",
-        style: Theme.of(context).textTheme.bodyText1,
-      ),*/
+      subtitle: Text(
+        getLastMessage(),
+        maxLines: 1,
+        style: Theme.of(context)
+            .textTheme
+            .bodyText1
+            ?.copyWith(color: Theme.of(context).secondaryHeaderColor),
+      ),
       onTap: () => Navigator.push(
         context,
         MaterialPageRoute(
           builder: (context) {
             return ChatScreen(
-              username: userInfo!.getName(),
+              userInfo: userInfo!,
               chat: widget.chat,
             );
           },

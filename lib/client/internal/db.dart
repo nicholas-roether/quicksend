@@ -6,8 +6,39 @@ import 'package:hive_flutter/hive_flutter.dart';
 // ignore: implementation_imports
 import 'package:hive/src/adapters/date_time_adapter.dart';
 import 'package:quicksend/client/internal/crypto_utils.dart';
+import 'package:quicksend/client/internal/db_models/db_chat.dart';
 import 'db_models/db_message.dart';
 import 'initialized.dart';
+
+abstract class VersionTransition {
+  Future<void> apply(Box general);
+}
+
+class V0Transition extends VersionTransition {
+  @override
+  Future<void> apply(Box general) {
+    return Future.value();
+  }
+}
+
+class V1Transition extends VersionTransition {
+  @override
+  Future<void> apply(Box general) async {
+    final chatList = await Hive.openBox<dynamic>("chat-list");
+    final chatListValues = List.from(chatList.values);
+    await chatList.clear();
+    for (final id in chatListValues) {
+      chatList.put(id, DBChat(id, false));
+    }
+    general.put("version", 1);
+    await chatList.close();
+  }
+}
+
+final List<VersionTransition> versionTransitions = [
+  V0Transition(),
+  V1Transition()
+];
 
 class ClientDB with Initialized<ClientDB> {
   final _secureStorage = const FlutterSecureStorage();
@@ -16,8 +47,8 @@ class ClientDB with Initialized<ClientDB> {
     return Hive.box("general");
   }
 
-  Box get _chatList {
-    return Hive.box("chat-list");
+  Box<DBChat> get _chatList {
+    return Hive.box<DBChat>("chat-list");
   }
 
   @override
@@ -25,18 +56,22 @@ class ClientDB with Initialized<ClientDB> {
     await Hive.initFlutter();
     Hive.registerAdapter(DateTimeAdapter(), internal: true);
     Hive.registerAdapter(DBMessageAdapter());
+    Hive.registerAdapter(DBChatAdapter());
     await Hive.openBox("general");
-    final _chatList = await Hive.openBox("chat-list");
+    await _applyVersionTransitions();
+
+    final _chatList = await Hive.openBox<DBChat>("chat-list");
     await Future.wait(
-      List.from(_chatList.values).map((chatId) => _openChatBox(chatId)),
+      List<DBChat>.from(_chatList.values).map(
+        (dbChat) => _openChatBox(dbChat.id),
+      ),
     );
   }
 
   Future<void> reset() async {
     await Future.wait(
-      List.from(_chatList.values).map((chatId) async {
-        await _getChatBox(chatId).clear();
-        await _secureStorage.delete(key: "$chatId-key");
+      List.from(_chatList.keys).map((chatId) async {
+        await _deleteChat(chatId);
       }),
     );
     await _chatList.clear();
@@ -62,28 +97,36 @@ class ClientDB with Initialized<ClientDB> {
     await _general.put("user-id", val);
   }
 
-  List<String> getChatList() {
+  List<DBChat> getChatList() {
     assertInit();
     return List.from(_chatList.values);
   }
 
-  Future<void> createChat(String id) async {
+  Future<DBChat> createChat(String id) async {
     assertInit();
-    if (_chatList.values.contains(id)) return;
-    _chatList.add(id);
+    if (_chatList.containsKey(id)) return _chatList.get(id)!;
+    final dbChat = DBChat(id, false);
+    _chatList.put(id, dbChat);
     await _openChatBox(id);
+    return dbChat;
   }
 
   Future<void> deleteChat(String id) async {
     assertInit();
-    _chatList.deleteAt(_chatList.values.singleWhere((val) => val == id));
-    await Hive.deleteBoxFromDisk(_getChatBoxName(id));
+    await _deleteChat(id);
+    await _chatList.delete(id);
   }
 
   List<DBMessage> getMessages(String chatId) {
     assertInit();
     final box = _getChatBox(chatId);
     return List.from(box.values);
+  }
+
+  DBMessage? getLatestMessage(String chatId) {
+    assertInit();
+    final box = _getChatBox(chatId);
+    return box.get(box.length - 1);
   }
 
   void addMessage(String chatId, DBMessage message) {
@@ -110,6 +153,11 @@ class ClientDB with Initialized<ClientDB> {
   Future<void> setEncryptionKey(String key) async {
     assertInit();
     await _secureStorage.write(key: "encryption-key", value: key);
+  }
+
+  Future<void> _deleteChat(String chatId) async {
+    await _getChatBox(chatId).clear();
+    await _secureStorage.delete(key: "$chatId-key");
   }
 
   Future<Uint8List?> _getChatBoxKey(String name) async {
@@ -141,5 +189,13 @@ class ClientDB with Initialized<ClientDB> {
 
   Box _getChatBox(String id) {
     return Hive.box(_getChatBoxName(id));
+  }
+
+  Future<void> _applyVersionTransitions() async {
+    final int version = _general.get("version") ?? 0;
+    if (versionTransitions.length - 1 == version) return;
+    for (final transition in versionTransitions.sublist(version + 1)) {
+      await transition.apply(_general);
+    }
   }
 }

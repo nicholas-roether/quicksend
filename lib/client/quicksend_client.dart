@@ -1,3 +1,5 @@
+import 'dart:typed_data';
+
 import 'package:quicksend/client/internal/event_manager.dart';
 
 import 'chat_list.dart';
@@ -70,12 +72,11 @@ class QuicksendClient with Initialized<QuicksendClient> {
   /// Note that this function generates RSA keypairs for this device, and can
   /// therefore take quite a long time to execute.
   Future<void> logIn(
-    String deviceName,
     String username,
     String password,
   ) async {
     assertInit();
-    await _loginManager.logIn(deviceName, username, password);
+    await _loginManager.logIn(username, password);
     await _db.reset();
     await _onLoggedIn();
   }
@@ -87,6 +88,17 @@ class QuicksendClient with Initialized<QuicksendClient> {
     assertInit();
     await _loginManager.logOut();
     await _onLoggedOut();
+  }
+
+  /// Removes the device with the provided [id] from this account. Throws
+  /// an exception when attempting to remove the device that is currently logged
+  /// in.
+  Future<void> removeDevice(String id) async {
+    if (id == _loginManager.deviceId) {
+      throw Exception("Cannot remove the device that is currently in use");
+    }
+    final auth = await _loginManager.getAuthenticator();
+    await _requestManager.removeDevice(auth, id);
   }
 
   /// Returns the user info of the currently logged in account. Will throw a
@@ -108,6 +120,32 @@ class QuicksendClient with Initialized<QuicksendClient> {
     return await _requestManager.getUserInfoFor(id);
   }
 
+  /// Update data for the current user. This method can be used to change the
+  /// current user's status, display name, and/or password.
+  Future<void> updateUser({
+    String? status,
+    String? display,
+    String? password,
+  }) async {
+    assertInit();
+    final auth = await _loginManager.getAuthenticator();
+    await _requestManager.updateUser(
+      auth,
+      status: status,
+      display: display,
+      password: password,
+    );
+    _requestManager.clearOwnUserInfoCache();
+  }
+
+  /// Sets the logged in user's profile picture
+  Future<void> setUserPfp(String mimeType, Uint8List image) async {
+    assertInit();
+    final auth = await _loginManager.getAuthenticator();
+    await _requestManager.setUserPfp(auth, mimeType, image);
+    _requestManager.clearOwnUserInfoCache();
+  }
+
   /// Returns the ChatList instance for this client, which contains all open
   /// chats, which can be used to load and send messages.
   ChatList getChatList() {
@@ -117,6 +155,13 @@ class QuicksendClient with Initialized<QuicksendClient> {
   /// Gets all new messages from the server and saves them.
   Future<void> refreshMessages() {
     return _getChatManager().refreshMessages();
+  }
+
+  /// Gets a list of all devices registered to this account
+  Future<List<DeviceInfo>> getRegisteredDevices() async {
+    assertInit();
+    final auth = await _loginManager.getAuthenticator();
+    return await _requestManager.listDevices(auth);
   }
 
   ChatManager _getChatManager() {
