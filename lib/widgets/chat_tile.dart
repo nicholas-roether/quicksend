@@ -56,23 +56,12 @@ class _ChatTileState extends State<ChatTile> {
               radius: 5,
             )
           : null,
-      title: Stack(
-        children: [
-          Text(
-            userInfo!.getName(),
-            style: Theme.of(context)
-                .textTheme
-                .headline6
-                ?.merge(const TextStyle(color: Colors.transparent)),
-          ),
-          Hero(
-            tag: "username" + userInfo!.username,
-            child: Text(
-              userInfo!.getName(),
-              style: Theme.of(context).textTheme.headline6,
-            ),
-          ),
-        ],
+      title: Hero(
+        tag: "username" + userInfo!.username,
+        child: Text(
+          userInfo!.getName(),
+          style: Theme.of(context).textTheme.headline6,
+        ),
       ),
       subtitle: Text(
         getLastMessage(),
