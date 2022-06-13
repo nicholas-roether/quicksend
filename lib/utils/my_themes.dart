@@ -13,7 +13,10 @@ class MyThemes {
       surface: _backgroundColor,
       shadow: Colors.transparent,
     ),
-    snackBarTheme: const SnackBarThemeData(backgroundColor: _secondaryColor),
+    snackBarTheme: const SnackBarThemeData(
+      backgroundColor: _secondaryColor,
+      contentTextStyle: TextStyle(fontFamily: "Quicksand"),
+    ),
     floatingActionButtonTheme: const FloatingActionButtonThemeData(
       backgroundColor: _primaryColor,
       foregroundColor: Colors.black,
@@ -22,7 +25,9 @@ class MyThemes {
     scaffoldBackgroundColor: const Color(0xff0e0f19),
     bottomAppBarTheme: const BottomAppBarTheme(color: _backgroundColor),
     navigationBarTheme: const NavigationBarThemeData(
-        backgroundColor: _backgroundColor, indicatorColor: _primaryColor),
+      backgroundColor: _backgroundColor,
+      indicatorColor: _primaryColor,
+    ),
     bottomNavigationBarTheme: const BottomNavigationBarThemeData(
       backgroundColor: _backgroundColor,
       selectedItemColor: _primaryColor,
