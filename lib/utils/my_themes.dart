@@ -37,7 +37,6 @@ class MyThemes {
         ),
       ),
     ),
-    // secondaryHeaderColor: const Color(0xFF84826a),
     fontFamily: 'Quicksand',
     inputDecorationTheme: const InputDecorationTheme(
       hintStyle: TextStyle(
