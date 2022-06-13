@@ -24,6 +24,10 @@ class MessageBox extends StatelessWidget {
             children: [
               Text(
                 message.asString(),
+                style: Theme.of(context)
+                    .textTheme
+                    .bodyText1
+                    ?.copyWith(color: Colors.black),
               ),
               const Padding(
                 padding: EdgeInsets.only(left: 8.0),
