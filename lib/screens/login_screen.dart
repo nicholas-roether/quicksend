@@ -76,7 +76,7 @@ class _LoginScreenState extends State<LoginScreen> {
         appBar: AppBar(
           title: Text(
             mode == LoginMode.login ? "Login" : "Register",
-            style: Theme.of(context).textTheme.headline5,
+            style: Theme.of(context).textTheme.headlineSmall,
           ),
         ),
         body: !_isLoading
@@ -98,7 +98,7 @@ class _LoginScreenState extends State<LoginScreen> {
                           mode == LoginMode.login
                               ? "Welcome back!"
                               : "Welcome to Quicksend!",
-                          style: Theme.of(context).textTheme.headline3,
+                          style: Theme.of(context).textTheme.headlineLarge,
                           textAlign: TextAlign.center,
                         ),
                         const SizedBox(height: 50),

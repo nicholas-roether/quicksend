@@ -45,7 +45,7 @@ class UserSearchDelegate extends SearchDelegate {
       itemBuilder: (context, index) => ListTile(
         title: Text(
           suggestions[index],
-          style: Theme.of(context).textTheme.bodyText1,
+          style: Theme.of(context).textTheme.bodyLarge,
         ),
         onTap: () {
           query = suggestions[index];

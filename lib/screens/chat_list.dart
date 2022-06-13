@@ -21,7 +21,7 @@ class ChatList extends StatelessWidget {
             return Center(
               child: Text(
                 'Press the "+" button to add a chat',
-                style: Theme.of(context).textTheme.headline4,
+                style: Theme.of(context).textTheme.displaySmall,
                 textAlign: TextAlign.center,
               ),
             );
@@ -38,16 +38,9 @@ class ChatList extends StatelessWidget {
                           .getChatList()
                           .deleteChat(chats[index].recipientId);
                       ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(
-                          backgroundColor: Theme.of(context).primaryColor,
-                          duration: const Duration(seconds: 2),
-                          content: Text(
-                            "Deleted chat",
-                            style: Theme.of(context)
-                                .textTheme
-                                .bodyText2
-                                ?.copyWith(color: Colors.black),
-                          ),
+                        const SnackBar(
+                          duration: Duration(seconds: 2),
+                          content: Text("Deleted chat"),
                         ),
                       );
                       return true;
@@ -69,16 +62,9 @@ class ChatList extends StatelessWidget {
                           .getChatList()
                           .archiveChat(chats[index].recipientId);
                       ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(
-                          backgroundColor: Theme.of(context).primaryColor,
-                          duration: const Duration(seconds: 2),
-                          content: Text(
-                            "Archived chat",
-                            style: Theme.of(context)
-                                .textTheme
-                                .bodyText2
-                                ?.copyWith(color: Colors.black),
-                          ),
+                        const SnackBar(
+                          duration: Duration(seconds: 2),
+                          content: Text("Archived chat"),
                         ),
                       );
                       return true;
@@ -103,8 +89,9 @@ class ChatList extends StatelessWidget {
                   padding: const EdgeInsets.symmetric(horizontal: 8.0),
                 ),
                 background: Container(
-                  decoration:
-                      BoxDecoration(color: Theme.of(context).primaryColor),
+                  decoration: BoxDecoration(
+                    color: Theme.of(context).colorScheme.secondary,
+                  ),
                   child: const Icon(Icons.archive),
                   alignment: Alignment.centerLeft,
                   padding: const EdgeInsets.symmetric(horizontal: 8.0),

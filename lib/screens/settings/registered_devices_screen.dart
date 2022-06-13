@@ -33,7 +33,7 @@ class RegisteredDevices extends StatelessWidget {
       appBar: AppBar(
         title: Text(
           "Registered devices",
-          style: Theme.of(context).textTheme.headline5,
+          style: Theme.of(context).textTheme.headlineSmall,
         ),
       ),
       body: FutureBuilder<List<DeviceInfo>>(
@@ -73,14 +73,13 @@ class RegisteredDevices extends StatelessWidget {
                 child: ListTile(
                   title: Text(
                     snapshot.data![index].name,
-                    style: Theme.of(context).textTheme.bodyText1,
+                    style: Theme.of(context).textTheme.titleSmall,
                   ),
                   subtitle: Text(
                     "last activity: ${DateFormat('dd.MM.yyyy EEEE').format(snapshot.data![index].lastActivity)}",
                   ),
                   leading: Icon(
                     getDevice(snapshot.data![index].type),
-                    color: Theme.of(context).primaryColor,
                   ),
                 ),
               );

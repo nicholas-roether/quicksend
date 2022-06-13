@@ -50,7 +50,7 @@ class _HomePageState extends State<HomePage> {
           child: Container(
             height: MediaQuery.of(context).size.height * (2 / 3),
             decoration: BoxDecoration(
-              color: Theme.of(context).backgroundColor,
+              color: Theme.of(context).colorScheme.background,
               borderRadius: const BorderRadius.only(
                 topLeft: Radius.circular(20),
                 topRight: Radius.circular(20),
@@ -107,34 +107,14 @@ class _HomePageState extends State<HomePage> {
         floatingActionButton: selectedIndex == 0
             ? FloatingActionButton(
                 onPressed: showChatPopup,
-                backgroundColor: Theme.of(context).primaryColor,
                 child: const Icon(Icons.add),
               )
             : const SizedBox(),
         appBar: AppBar(
           title: Text(
             selectedIndex == 0 ? "Chats" : "Settings",
-            style: Theme.of(context).textTheme.headline5,
+            style: Theme.of(context).textTheme.headlineSmall,
           ),
-          /*actions: [
-            selectedIndex == 0
-                ? Padding(
-                    padding: const EdgeInsets.only(right: 8.0),
-                    child: IconButton(
-                      splashRadius: 18,
-                      iconSize: 30,
-                      onPressed: () => showSearch(
-                          context: context, delegate: UserSearchDelegate()),
-                      icon: const Icon(
-                        Icons.search,
-                      ),
-                    ),
-                  )
-                : const SizedBox(
-                    height: 0,
-                    width: 0,
-                  ),
-          ],*/
         ),
         body: selectedIndex == 0 ? const ChatList() : const SettingScreen(),
       ),

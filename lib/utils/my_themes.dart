@@ -1,25 +1,35 @@
 import 'package:flutter/material.dart';
 
 class MyThemes {
+  static const Color _primaryColor = Color(0xffffcb5c);
+  static const Color _secondaryColor = Color(0xff84826a);
+  static const Color _backgroundColor = Color(0xFF0e0f19);
+
   static ThemeData mainTheme = ThemeData(
-    brightness: Brightness.dark,
-    backgroundColor: const Color(0xFF0e0f19),
-    primaryColor: const Color(0xFFffcb5c),
-    primarySwatch: const MaterialColor(
-      0xFFffcb5c,
-      {
-        50: Color(0xff9f7e39),
-        100: Color(0xffaf8b3f),
-        200: Color(0xffc09945),
-        300: Color(0xffd3a84c),
-        400: Color(0xffe8b954),
-        500: Color(0xFFffcb5c),
-        600: Color(0xffffd06b),
-        700: Color(0xffffd478),
-        800: Color(0xffffd884),
-        900: Color(0xffffdc8f),
-      },
+    colorScheme: const ColorScheme.dark(
+      primary: _primaryColor,
+      secondary: _secondaryColor,
+      background: _backgroundColor,
+      surface: _backgroundColor,
+      shadow: Colors.transparent,
     ),
+    snackBarTheme: const SnackBarThemeData(backgroundColor: _secondaryColor),
+    floatingActionButtonTheme: const FloatingActionButtonThemeData(
+      backgroundColor: _primaryColor,
+      foregroundColor: Colors.black,
+    ),
+    appBarTheme: const AppBarTheme(shadowColor: Colors.transparent),
+    scaffoldBackgroundColor: const Color(0xff0e0f19),
+    bottomAppBarTheme: const BottomAppBarTheme(color: _backgroundColor),
+    navigationBarTheme: const NavigationBarThemeData(
+        backgroundColor: _backgroundColor, indicatorColor: _primaryColor),
+    bottomNavigationBarTheme: const BottomNavigationBarThemeData(
+      backgroundColor: _backgroundColor,
+      selectedItemColor: _primaryColor,
+      unselectedItemColor: _secondaryColor,
+    ),
+    listTileTheme: const ListTileThemeData(iconColor: _primaryColor),
+    iconTheme: const IconThemeData(color: Colors.black),
     elevatedButtonTheme: ElevatedButtonThemeData(
       style: ElevatedButton.styleFrom(
         textStyle: const TextStyle(
@@ -27,44 +37,23 @@ class MyThemes {
         ),
       ),
     ),
-    secondaryHeaderColor: const Color(0xFF84826a),
-    scaffoldBackgroundColor: const Color(0xFF0e0f19),
-    appBarTheme: const AppBarTheme(
-      backgroundColor: Color(0xFF0e0f19),
-      shadowColor: Colors.transparent,
-    ),
+    // secondaryHeaderColor: const Color(0xFF84826a),
     fontFamily: 'Quicksand',
     inputDecorationTheme: const InputDecorationTheme(
       hintStyle: TextStyle(
         fontWeight: FontWeight.w500,
       ),
     ),
-    textTheme: const TextTheme(
-      bodyText1: TextStyle(
-        fontWeight: FontWeight.w500,
-        fontSize: 16,
-      ),
-      bodyText2: TextStyle(
-        fontWeight: FontWeight.w500,
-      ),
-      headline1: TextStyle(
-        fontWeight: FontWeight.w400,
-      ),
-      headline2: TextStyle(
-        fontWeight: FontWeight.w400,
-      ),
-      headline3: TextStyle(
-        fontWeight: FontWeight.w400,
-      ),
-      headline4: TextStyle(
-        fontWeight: FontWeight.w400,
-      ),
-      headline5: TextStyle(
-        fontWeight: FontWeight.w400,
-      ),
-      headline6: TextStyle(
-        fontWeight: FontWeight.w500,
-      ),
+    textTheme: TextTheme(
+      headlineLarge: const TextStyle(fontWeight: FontWeight.w500),
+      headlineMedium: const TextStyle(fontWeight: FontWeight.w500),
+      headlineSmall: const TextStyle(fontWeight: FontWeight.w500),
+      titleLarge: const TextStyle(fontWeight: FontWeight.w500),
+      titleMedium: const TextStyle(fontWeight: FontWeight.w500),
+      titleSmall: const TextStyle(fontWeight: FontWeight.w500),
+      labelLarge: TextStyle(foreground: Paint()..color = _secondaryColor),
+      labelMedium: TextStyle(foreground: Paint()..color = _secondaryColor),
+      labelSmall: TextStyle(foreground: Paint()..color = _secondaryColor),
     ).apply(
       displayColor: Colors.white,
       bodyColor: Colors.white,

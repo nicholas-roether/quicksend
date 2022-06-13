@@ -24,7 +24,7 @@ class DialogIconButton extends StatelessWidget {
           icon: Icon(icon),
           tooltip: tooltip,
           splashRadius: 30,
-          color: Theme.of(context).primaryColor,
+          color: Theme.of(context).colorScheme.primary,
         ),
         Text(
           title,

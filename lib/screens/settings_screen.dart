@@ -56,11 +56,13 @@ class _SettingScreenState extends State<SettingScreen> {
                       ),
                     );
                   },
-                  title: Text(userInfo!.getName(),
-                      style: Theme.of(context).textTheme.headline6),
+                  title: Text(
+                    userInfo!.getName(),
+                    style: Theme.of(context).textTheme.titleLarge,
+                  ),
                   subtitle: Text(
                     userInfo!.status ?? "",
-                    style: Theme.of(context).textTheme.bodyText1,
+                    style: Theme.of(context).textTheme.labelLarge,
                   ),
                   leading: Hero(
                     transitionOnUserGestures: true,
@@ -85,18 +87,18 @@ class _SettingScreenState extends State<SettingScreen> {
             },
             title: Text(
               "Account Settings",
-              style: Theme.of(context).textTheme.headline6,
+              style: Theme.of(context).textTheme.titleLarge,
             ),
             subtitle: Text(
               "Currently Registered devices: $registeredDevices",
-              style: Theme.of(context).textTheme.bodyText1,
+              style: Theme.of(context).textTheme.bodyLarge,
             ),
           ),
           ListTile(
             onTap: () {},
             title: Text(
               "About",
-              style: Theme.of(context).textTheme.headline6,
+              style: Theme.of(context).textTheme.titleLarge,
             ),
           ),
           const SizedBox(

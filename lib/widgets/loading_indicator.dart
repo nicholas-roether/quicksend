@@ -30,7 +30,7 @@ class LoadingIndicator extends StatelessWidget {
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           LoadingAnimationWidget.dotsTriangle(
-            color: Theme.of(context).primaryColor,
+            color: Theme.of(context).colorScheme.primary,
             size: 50,
           ),
           StreamBuilder<String>(
@@ -38,7 +38,7 @@ class LoadingIndicator extends StatelessWidget {
             builder: (context, snapshot) {
               return Text(
                 snapshot.data.toString(),
-                style: Theme.of(context).textTheme.headline5,
+                style: Theme.of(context).textTheme.headlineSmall,
                 textAlign: TextAlign.center,
               );
             },

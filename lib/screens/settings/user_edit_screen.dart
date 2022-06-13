@@ -81,14 +81,13 @@ class _UserEditScreenState extends State<UserEditScreen> {
       appBar: AppBar(
         title: Text(
           widget.userInfo.getName(),
-          style: Theme.of(context).textTheme.headline5,
+          style: Theme.of(context).textTheme.headlineSmall,
         ),
       ),
       body: SingleChildScrollView(
         child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 15.0),
           child: Column(
-            //crossAxisAlignment: CrossAxisAlignment.center,
             children: [
               const SizedBox(
                 height: 50,
@@ -189,16 +188,11 @@ class _UserEditScreenState extends State<UserEditScreen> {
                     Navigator.pop(context);
                     WidgetsBinding.instance.addPostFrameCallback(
                       (_) => ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(
-                          backgroundColor: Theme.of(context).primaryColor,
-                          margin: const EdgeInsets.all(5),
+                        const SnackBar(
+                          margin: EdgeInsets.all(5),
                           behavior: SnackBarBehavior.floating,
                           content: Text(
                             "Edited user information",
-                            style: Theme.of(context)
-                                .textTheme
-                                .bodyText2
-                                ?.copyWith(color: Colors.black),
                           ),
                         ),
                       ),

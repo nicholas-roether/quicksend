@@ -52,7 +52,7 @@ class _ChatTileState extends State<ChatTile> {
       leading: ProfilePicture(userInfo: userInfo!),
       trailing: widget.chat.hasUnreadMessages()
           ? CircleAvatar(
-              backgroundColor: Theme.of(context).primaryColor,
+              backgroundColor: Theme.of(context).colorScheme.primary,
               radius: 5,
             )
           : null,
@@ -60,17 +60,11 @@ class _ChatTileState extends State<ChatTile> {
         tag: "username" + userInfo!.username,
         child: Text(
           userInfo!.getName(),
-          style: Theme.of(context).textTheme.headline6,
+          style: Theme.of(context).textTheme.titleLarge,
         ),
       ),
-      subtitle: Text(
-        getLastMessage(),
-        maxLines: 1,
-        style: Theme.of(context)
-            .textTheme
-            .bodyText1
-            ?.copyWith(color: Theme.of(context).secondaryHeaderColor),
-      ),
+      subtitle: Text(getLastMessage(),
+          maxLines: 1, style: Theme.of(context).textTheme.labelLarge),
       onTap: () => Navigator.push(
         context,
         MaterialPageRoute(
