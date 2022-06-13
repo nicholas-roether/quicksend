@@ -15,7 +15,10 @@ class MyThemes {
     ),
     snackBarTheme: const SnackBarThemeData(
       backgroundColor: _secondaryColor,
-      contentTextStyle: TextStyle(fontFamily: "Quicksand"),
+      contentTextStyle: TextStyle(
+        fontFamily: "Quicksand",
+        color: Colors.black,
+      ),
     ),
     floatingActionButtonTheme: const FloatingActionButtonThemeData(
       backgroundColor: _primaryColor,
