@@ -10,7 +10,9 @@ class ProfilePicture extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    ImageProvider profileimage = NetworkImage(userInfo.pfpUrl!);
+    ImageProvider<Object> profileimage = userInfo.pfpUrl != null
+        ? NetworkImage(userInfo.pfpUrl!)
+        : Image.asset("assets/img/profile-pic.png").image;
     return GestureDetector(
       onTap: () {
         showImageViewer(context, profileimage);
@@ -18,7 +20,7 @@ class ProfilePicture extends StatelessWidget {
       child: CircleAvatar(
         radius: radius,
         backgroundImage: const AssetImage("assets/img/profile-pic.png"),
-        foregroundImage: userInfo.pfpUrl != null ? profileimage : null,
+        foregroundImage: profileimage,
       ),
     );
   }
