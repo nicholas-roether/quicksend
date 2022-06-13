@@ -37,7 +37,7 @@ class MyThemes {
       unselectedItemColor: _secondaryColor,
     ),
     listTileTheme: const ListTileThemeData(iconColor: _primaryColor),
-    iconTheme: const IconThemeData(color: Colors.black),
+    iconTheme: const IconThemeData(color: Colors.black, size: 30),
     elevatedButtonTheme: ElevatedButtonThemeData(
       style: ElevatedButton.styleFrom(
         textStyle: const TextStyle(

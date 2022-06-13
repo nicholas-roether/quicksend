@@ -111,6 +111,7 @@ class _HomePageState extends State<HomePage> {
               )
             : const SizedBox(),
         appBar: AppBar(
+          centerTitle: true,
           title: Text(
             selectedIndex == 0 ? "Chats" : "Settings",
             style: Theme.of(context).textTheme.headlineSmall,

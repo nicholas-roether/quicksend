@@ -79,8 +79,9 @@ class _UserEditScreenState extends State<UserEditScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        centerTitle: true,
         title: Text(
-          widget.userInfo.getName(),
+          "Edit Profile",
           style: Theme.of(context).textTheme.headlineSmall,
         ),
       ),
@@ -88,63 +89,75 @@ class _UserEditScreenState extends State<UserEditScreen> {
         child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 15.0),
           child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               const SizedBox(
                 height: 50,
               ),
-              Hero(
-                transitionOnUserGestures: true,
-                tag: "profile pic",
-                child: GestureDetector(
-                  onTap: () {
-                    if (kIsWeb) {
-                      _setProfilePictureWeb();
-                    } else {
-                      showDialog(
-                        context: context,
-                        builder: (context) {
-                          return ImageSourceDialog(
-                              iconButtonCallback: _setProfilePicture);
+              Center(
+                child: Column(
+                  children: [
+                    Hero(
+                      transitionOnUserGestures: true,
+                      tag: "profile pic",
+                      child: GestureDetector(
+                        onTap: () {
+                          if (kIsWeb) {
+                            _setProfilePictureWeb();
+                          } else {
+                            showDialog(
+                              context: context,
+                              builder: (context) {
+                                return ImageSourceDialog(
+                                    iconButtonCallback: _setProfilePicture);
+                              },
+                            );
+                          }
                         },
-                      );
-                    }
-                  },
-                  child: ProfilePicture(
-                    radius: 70,
-                    userInfo: widget.userInfo,
-                  ),
+                        child: ProfilePicture(
+                          radius: 70,
+                          userInfo: widget.userInfo,
+                        ),
+                      ),
+                    ),
+                    const SizedBox(
+                      height: 10,
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.only(bottom: 8.0),
+                      child: Text(
+                        "Tap to change",
+                        style: Theme.of(context).textTheme.labelLarge,
+                      ),
+                    ),
+                  ],
                 ),
               ),
               const SizedBox(
-                height: 50,
+                height: 10,
               ),
-              const Padding(
-                padding: EdgeInsets.only(bottom: 8.0),
+              Padding(
+                padding: const EdgeInsets.only(bottom: 5.0),
                 child: Text(
-                  "Tap to edit profile picture",
+                  "Account name:",
+                  style: Theme.of(context).textTheme.titleSmall,
+                ),
+              ),
+              Padding(
+                padding: const EdgeInsets.only(bottom: 8.0),
+                child: Text(
+                  widget.userInfo.username,
+                  style: Theme.of(context).textTheme.titleLarge,
                 ),
               ),
               const SizedBox(
-                height: 50,
+                height: 20,
               ),
-              const Padding(
-                padding: EdgeInsets.only(bottom: 8.0),
+              Padding(
+                padding: const EdgeInsets.only(bottom: 8.0),
                 child: Text(
-                  "Change status message",
-                ),
-              ),
-              CustomTextFormField(
-                minLines: 1,
-                maxLines: 1,
-                hintInfo: "",
-                labelInfo: "",
-                obscure: false,
-                textController: _statusController,
-              ),
-              const Padding(
-                padding: EdgeInsets.only(bottom: 8.0),
-                child: Text(
-                  "Change display name",
+                  "Display name:",
+                  style: Theme.of(context).textTheme.titleSmall,
                 ),
               ),
               CustomTextFormField(
@@ -155,23 +168,9 @@ class _UserEditScreenState extends State<UserEditScreen> {
                 obscure: false,
                 textController: _displayController,
               ),
-              const Padding(
-                padding: EdgeInsets.only(bottom: 8.0),
-                child: Text(
-                  "Change password",
-                ),
-              ),
-              CustomTextFormField(
-                minLines: 1,
-                maxLines: 1,
-                hintInfo: "",
-                labelInfo: "",
-                obscure: true,
-                textController: _passwordController,
-              ),
               CustomButton(
                 pressedCallback: () async {
-                  try {
+                  /*try {
                     final quicksendClient =
                         QuicksendClientProvider.get(context);
                     await quicksendClient.updateUser(
@@ -204,7 +203,7 @@ class _UserEditScreenState extends State<UserEditScreen> {
                         return CustomErrorWidget(message: error.toString());
                       },
                     );
-                  }
+                  }*/
                 },
                 title: "Save changes",
               ),

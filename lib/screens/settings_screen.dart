@@ -2,6 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:quicksend/client/quicksend_client.dart';
 import 'package:quicksend/screens/settings/user_edit_screen.dart';
 import 'package:quicksend/widgets/custom_button.dart';
+import 'package:quicksend/widgets/custom_listttile.dart';
+import 'package:quicksend/widgets/custom_text_form_field.dart';
+import 'package:quicksend/widgets/padding_text.dart';
 import 'package:quicksend/widgets/profile_picture.dart';
 import 'package:skeletons/skeletons.dart';
 
@@ -15,6 +18,7 @@ class SettingScreen extends StatefulWidget {
 class _SettingScreenState extends State<SettingScreen> {
   UserInfo? userInfo;
   String? registeredDevices = "...";
+  final TextEditingController _statusController = TextEditingController();
 
   @override
   void initState() {
@@ -25,6 +29,7 @@ class _SettingScreenState extends State<SettingScreen> {
         registeredDevices = value.length.toString();
       });
     });
+    _statusController.text = userInfo?.status ?? "";
     super.initState();
   }
 
@@ -40,34 +45,48 @@ class _SettingScreenState extends State<SettingScreen> {
 
     return SingleChildScrollView(
       child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           const SizedBox(
-            height: 50,
+            height: 20,
+          ),
+          Padding(
+            padding: const EdgeInsets.all(15.0),
+            child: Text(
+              "Profile",
+              style: Theme.of(context).textTheme.headlineSmall,
+            ),
           ),
           userInfo != null
               ? ListTile(
-                  onTap: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => UserEditScreen(
-                          userInfo: userInfo!,
-                        ),
-                      ),
-                    );
-                  },
                   title: Text(
                     userInfo!.getName(),
                     style: Theme.of(context).textTheme.titleLarge,
                   ),
                   subtitle: Text(
-                    userInfo!.status ?? "",
-                    style: Theme.of(context).textTheme.labelLarge,
+                    userInfo!.username,
+                    style: Theme.of(context).textTheme.labelLarge?.copyWith(
+                          fontSize: 20,
+                        ),
+                  ),
+                  trailing: IconButton(
+                    onPressed: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => UserEditScreen(
+                            userInfo: userInfo!,
+                          ),
+                        ),
+                      );
+                    },
+                    icon: const Icon(Icons.edit),
+                    splashRadius: 20,
                   ),
                   leading: Hero(
-                    transitionOnUserGestures: true,
+                    child: ProfilePicture(radius: 50, userInfo: userInfo!),
                     tag: "profile pic",
-                    child: ProfilePicture(radius: 30, userInfo: userInfo!),
+                    key: Key(userInfo!.username),
                   ),
                 )
               : SkeletonListTile(
@@ -81,25 +100,48 @@ class _SettingScreenState extends State<SettingScreen> {
           const SizedBox(
             height: 20,
           ),
-          ListTile(
-            onTap: () {
-              Navigator.pushNamed(context, "/registered_devices");
-            },
-            title: Text(
-              "Account Settings",
-              style: Theme.of(context).textTheme.titleLarge,
-            ),
-            subtitle: Text(
-              "Currently Registered devices: $registeredDevices",
-              style: Theme.of(context).textTheme.bodyLarge,
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 15.0, vertical: 5),
+            child: Text(
+              "Status message:",
+              style: Theme.of(context).textTheme.titleSmall,
             ),
           ),
-          ListTile(
-            onTap: () {},
-            title: Text(
-              "About",
-              style: Theme.of(context).textTheme.titleLarge,
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 13.0),
+            child: CustomTextFormField(
+              hintInfo: "",
+              labelInfo: "Status Message",
+              obscure: false,
+              autocorrect: false,
+              maxLines: 1,
+              minLines: 1,
+              noPadding: true,
+              submitCallback: (value) {},
+              textController: _statusController,
+              inputType: TextInputType.text,
             ),
+          ),
+          const SizedBox(
+            height: 60,
+          ),
+          PaddingText(text: "Security"),
+          CustomListtile(
+            title: "Manage devices",
+            icon: Icons.devices,
+            onTapCallback: () {
+              Navigator.pushNamed(context, "/registered_devices");
+            },
+          ),
+          const CustomListtile(title: "Change Password", icon: Icons.security),
+          const SizedBox(
+            height: 60,
+          ),
+          PaddingText(text: "Other"),
+          CustomListtile(
+            title: "About",
+            icon: Icons.info,
+            onTapCallback: () {},
           ),
           const SizedBox(
             height: 20,
