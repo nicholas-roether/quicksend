@@ -8,7 +8,6 @@ import 'package:image_picker_web/image_picker_web.dart';
 import 'package:path/path.dart' as path;
 import 'package:mime_type/mime_type.dart';
 import 'package:quicksend/client/quicksend_client.dart';
-import 'package:quicksend/widgets/custom_button.dart';
 import 'package:quicksend/widgets/custom_error_alert_widget.dart';
 import 'package:quicksend/widgets/custom_text_form_field.dart';
 import 'package:quicksend/widgets/image_source_dialog.dart';
@@ -167,31 +166,23 @@ class _UserEditScreenState extends State<UserEditScreen> {
                 labelInfo: "",
                 obscure: false,
                 textController: _displayController,
-              ),
-              CustomButton(
-                pressedCallback: () async {
-                  /*try {
+                submitCallback: (value) async {
+                  try {
                     final quicksendClient =
                         QuicksendClientProvider.get(context);
-                    await quicksendClient.updateUser(
-                        display: _displayController.text.isEmpty
-                            ? _displayController.text
-                            : null,
-                        // FIXME this option no longer exists.
-                        // password: _passwordController.text.isEmpty
-                        //     ? _passwordController.text
-                        //     : null,
-                        status: _statusController.text.isEmpty
-                            ? _statusController.text
-                            : null);
+                    await quicksendClient.updateUser(display: value);
                     Navigator.pop(context);
                     WidgetsBinding.instance.addPostFrameCallback(
                       (_) => ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(
-                          margin: EdgeInsets.all(5),
+                        SnackBar(
+                          margin: const EdgeInsets.all(5),
                           behavior: SnackBarBehavior.floating,
                           content: Text(
                             "Edited user information",
+                            style:
+                                Theme.of(context).textTheme.bodyLarge?.copyWith(
+                                      color: Colors.black,
+                                    ),
                           ),
                         ),
                       ),
@@ -203,9 +194,8 @@ class _UserEditScreenState extends State<UserEditScreen> {
                         return CustomErrorWidget(message: error.toString());
                       },
                     );
-                  }*/
+                  }
                 },
-                title: "Save changes",
               ),
             ],
           ),

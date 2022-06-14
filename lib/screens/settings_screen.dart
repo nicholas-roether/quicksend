@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:quicksend/client/quicksend_client.dart';
+import 'package:quicksend/screens/change_password_screen.dart';
 import 'package:quicksend/screens/settings/user_edit_screen.dart';
 import 'package:quicksend/widgets/custom_button.dart';
+import 'package:quicksend/widgets/custom_error_alert_widget.dart';
 import 'package:quicksend/widgets/custom_listttile.dart';
 import 'package:quicksend/widgets/custom_text_form_field.dart';
 import 'package:quicksend/widgets/padding_text.dart';
@@ -29,7 +31,12 @@ class _SettingScreenState extends State<SettingScreen> {
         registeredDevices = value.length.toString();
       });
     });
-    _statusController.text = userInfo?.status ?? "";
+    quicksendClient.getUserInfo().then((value) {
+      if (!mounted) return;
+      setState(() {
+        _statusController.text = value.status ?? "";
+      });
+    });
     super.initState();
   }
 
@@ -108,13 +115,40 @@ class _SettingScreenState extends State<SettingScreen> {
             padding: const EdgeInsets.symmetric(horizontal: 13.0),
             child: CustomTextFormField(
               hintInfo: "",
-              labelInfo: "Status Message",
+              labelInfo: "",
               obscure: false,
               autocorrect: false,
               maxLines: 1,
               minLines: 1,
               noPadding: true,
-              submitCallback: (value) {},
+              submitCallback: (value) async {
+                try {
+                  final quicksendClient = QuicksendClientProvider.get(context);
+                  await quicksendClient.updateUser(status: value);
+                  WidgetsBinding.instance.addPostFrameCallback(
+                    (_) => ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(
+                        margin: const EdgeInsets.all(5),
+                        behavior: SnackBarBehavior.floating,
+                        content: Text(
+                          "Edited user information",
+                          style:
+                              Theme.of(context).textTheme.bodyLarge?.copyWith(
+                                    color: Colors.black,
+                                  ),
+                        ),
+                      ),
+                    ),
+                  );
+                } catch (error) {
+                  showDialog(
+                    context: context,
+                    builder: (context) {
+                      return CustomErrorWidget(message: error.toString());
+                    },
+                  );
+                }
+              },
               textController: _statusController,
               inputType: TextInputType.text,
             ),
@@ -130,7 +164,20 @@ class _SettingScreenState extends State<SettingScreen> {
               Navigator.pushNamed(context, "/registered_devices");
             },
           ),
-          const CustomListtile(title: "Change Password", icon: Icons.security),
+          CustomListtile(
+            title: "Change Password",
+            icon: Icons.security,
+            onTapCallback: () {
+              Navigator.push(context, MaterialPageRoute(builder: (context) {
+                return ChangePasswordScreen(
+                  userInfo: userInfo,
+                );
+              }));
+            },
+          ),
+          const SizedBox(
+            height: 10,
+          ),
           Padding(
             padding: const EdgeInsets.symmetric(
               horizontal: 15.0,
