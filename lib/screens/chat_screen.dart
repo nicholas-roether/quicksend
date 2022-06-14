@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:image_compression_flutter/image_compression_flutter.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:image_picker_web/image_picker_web.dart';
 import 'package:path/path.dart' as path;
@@ -43,7 +44,16 @@ class _ChatScreenState extends State<ChatScreen> {
     if (imageInfo == null) return;
     String? mimeType = mime(path.basename((imageInfo.fileName)!));
 
-    await widget.chat.sendMessage((mimeType)!, (imageInfo.data)!);
+    Configuration config = const Configuration(
+      outputType: ImageOutputType.jpg,
+      quality: 25,
+    );
+
+    var input =
+        ImageFile(filePath: imageInfo.fileName!, rawBytes: imageInfo.data!);
+    var param = ImageFileConfiguration(input: input, config: config);
+    var output = await compressor.compress(param);
+    await widget.chat.sendMessage((mimeType)!, output.rawBytes);
   }
 
   void _sendImage(ImageSource source) async {
