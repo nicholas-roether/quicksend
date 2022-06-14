@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:quicksend/client/quicksend_client.dart';
+import 'package:quicksend/screens/chat_screen.dart';
 import 'package:quicksend/screens/homepage.dart';
 import 'package:quicksend/screens/login_screen.dart';
 import 'package:quicksend/screens/settings/registered_devices_screen.dart';
+import 'package:quicksend/screens/settings/user_edit_screen.dart';
 import 'package:quicksend/screens/user_profile_screen.dart';
 import 'package:quicksend/utils/my_themes.dart';
 
@@ -31,6 +33,7 @@ class MyApp extends StatelessWidget {
           },
           "/registered_devices": (context) => const RegisteredDevices(),
           "/user_profile": (context) => const UserProfileScreen(),
+          "/user_edit": (context) => const UserEditScreen(),
         },
       ),
     );

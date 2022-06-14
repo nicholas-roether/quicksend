@@ -14,8 +14,7 @@ import 'package:quicksend/widgets/image_source_dialog.dart';
 import 'package:quicksend/widgets/profile_picture.dart';
 
 class UserEditScreen extends StatefulWidget {
-  const UserEditScreen({Key? key, required this.userInfo}) : super(key: key);
-  final UserInfo userInfo;
+  const UserEditScreen({Key? key}) : super(key: key);
 
   @override
   State<UserEditScreen> createState() => _UserEditScreenState();
@@ -28,8 +27,9 @@ class _UserEditScreenState extends State<UserEditScreen> {
 
   @override
   void initState() {
-    _displayController.text = widget.userInfo.getName();
-    _statusController.text = widget.userInfo.status ?? "";
+    final userInfo = ModalRoute.of(context)!.settings.arguments as UserInfo;
+    _displayController.text = userInfo.getName();
+    _statusController.text = userInfo.status ?? "";
     _passwordController.text = "";
     super.initState();
   }
@@ -76,6 +76,7 @@ class _UserEditScreenState extends State<UserEditScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final userInfo = ModalRoute.of(context)!.settings.arguments as UserInfo;
     return Scaffold(
       appBar: AppBar(
         centerTitle: true,
@@ -115,7 +116,7 @@ class _UserEditScreenState extends State<UserEditScreen> {
                         },
                         child: ProfilePicture(
                           radius: 70,
-                          userInfo: widget.userInfo,
+                          userInfo: userInfo,
                         ),
                       ),
                     ),
@@ -145,7 +146,7 @@ class _UserEditScreenState extends State<UserEditScreen> {
               Padding(
                 padding: const EdgeInsets.only(bottom: 8.0),
                 child: Text(
-                  widget.userInfo.username,
+                  userInfo.username,
                   style: Theme.of(context).textTheme.titleLarge,
                 ),
               ),
