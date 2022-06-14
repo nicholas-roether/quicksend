@@ -275,6 +275,16 @@ class RequestManager {
     ));
   }
 
+  Future<void> updateDevice(
+    SignatureAuthenticator auth,
+    String id, {
+    String? name,
+  }) async {
+    Map<String, dynamic> body = {"id": id};
+    if (name != null) body["name"] = name;
+    await _request("POST", "/devices/update", auth: auth, body: body);
+  }
+
   Future<Uint8List> getSocketToken(SignatureAuthenticator auth) async {
     final res = await _request("GET", "/socket", auth: auth);
     return base64.decode(res["token"]);

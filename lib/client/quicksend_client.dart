@@ -101,6 +101,14 @@ class QuicksendClient with Initialized<QuicksendClient> {
     await _requestManager.removeDevice(auth, id);
   }
 
+  /// Updates the information associated with a device. Currently, this is only
+  /// the device's name.
+  Future<void> updateDevice(String id, {String? name}) async {
+    assertInit();
+    final auth = await _loginManager.getAuthenticator();
+    await _requestManager.updateDevice(auth, id, name: name);
+  }
+
   /// Returns the user info of the currently logged in account. Will throw a
   /// [LoginStateException] if this device is not logged into any account
   /// (use `quicksendClient.isLoggedIn()` to check beforehand), and throws a
