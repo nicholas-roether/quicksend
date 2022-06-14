@@ -9,11 +9,14 @@ class ProfilePicture extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return CircleAvatar(
-      radius: radius,
-      backgroundImage: const AssetImage("assets/img/profile-pic.png"),
-      foregroundImage:
-          userInfo.pfpUrl != null ? NetworkImage(userInfo.pfpUrl!) : null,
+    return SizedBox.square(
+      dimension: radius,
+      child: CircleAvatar(
+        radius: radius,
+        backgroundImage: const AssetImage("assets/img/profile-pic.png"),
+        foregroundImage:
+            userInfo.pfpUrl != null ? NetworkImage(userInfo.pfpUrl!) : null,
+      ),
     );
   }
 }

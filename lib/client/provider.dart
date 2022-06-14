@@ -41,9 +41,8 @@ class InitErrorAlert extends StatelessWidget {
 
 class QuicksendClientProvider extends StatefulWidget {
   final Widget child;
-  final client = QuicksendClient();
 
-  QuicksendClientProvider({
+  const QuicksendClientProvider({
     Key? key,
     required this.child,
   }) : super(key: key);
@@ -66,17 +65,18 @@ class InitErrorInfo {
 }
 
 class _QuicksendClientProviderState extends State<QuicksendClientProvider> {
-  bool didInit = false;
+  final client = QuicksendClient();
   InitErrorInfo? errorInfo;
 
   @override
   Widget build(BuildContext context) {
     if (errorInfo != null) return InitErrorAlert(errorInfo!);
 
-    if (!didInit) {
-      widget.client.init().then((value) {
+    if (!client.didInit()) {
+      errorInfo = null;
+      client.init().then((value) {
         if (!mounted) return;
-        setState(() => didInit = true);
+        setState(() {});
       }).catchError((error, stackTrace) {
         setState(() {
           errorInfo = InitErrorInfo(error, stackTrace);
@@ -89,9 +89,10 @@ class _QuicksendClientProviderState extends State<QuicksendClientProvider> {
         home: Scaffold(body: LoadingIndicator()),
       );
     }
+    if (errorInfo != null) return InitErrorAlert(errorInfo!);
 
     return Provider.value(
-      value: widget.client,
+      value: client,
       child: widget.child,
     );
   }

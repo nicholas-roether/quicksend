@@ -18,4 +18,8 @@ mixin Initialized<T> {
   void assertInit() {
     if (!_didInit) throw InitializationException<T>();
   }
+
+  bool didInit() {
+    return _didInit;
+  }
 }
