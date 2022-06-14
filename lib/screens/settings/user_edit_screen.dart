@@ -115,7 +115,7 @@ class _UserEditScreenState extends State<UserEditScreen> {
                           }
                         },
                         child: ProfilePicture(
-                          radius: 70,
+                          radius: 140,
                           userInfo: widget.userInfo,
                         ),
                       ),
