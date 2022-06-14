@@ -69,20 +69,17 @@ class _SettingScreenState extends State<SettingScreen> {
                           fontSize: 20,
                         ),
                   ),
-                  trailing: IconButton(
-                    onPressed: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => UserEditScreen(
-                            userInfo: userInfo!,
-                          ),
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => UserEditScreen(
+                          userInfo: userInfo!,
                         ),
-                      );
-                    },
-                    icon: const Icon(Icons.edit),
-                    splashRadius: 20,
-                  ),
+                      ),
+                    );
+                  },
+                  trailing: const Icon(Icons.edit),
                   leading: Hero(
                     child: ProfilePicture(radius: 24, userInfo: userInfo!),
                     tag: "profile pic",
@@ -134,18 +131,6 @@ class _SettingScreenState extends State<SettingScreen> {
             },
           ),
           const CustomListtile(title: "Change Password", icon: Icons.security),
-          const SizedBox(
-            height: 60,
-          ),
-          PaddingText(text: "Other"),
-          CustomListtile(
-            title: "About",
-            icon: Icons.info,
-            onTapCallback: () {},
-          ),
-          const SizedBox(
-            height: 20,
-          ),
           Padding(
             padding: const EdgeInsets.symmetric(
               horizontal: 15.0,
@@ -157,6 +142,18 @@ class _SettingScreenState extends State<SettingScreen> {
               },
               title: "Logout",
             ),
+          ),
+          const SizedBox(
+            height: 60,
+          ),
+          PaddingText(text: "Other"),
+          CustomListtile(
+            title: "About",
+            icon: Icons.info,
+            onTapCallback: () {},
+          ),
+          const SizedBox(
+            height: 20,
           ),
         ],
       ),
