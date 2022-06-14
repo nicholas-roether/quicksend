@@ -51,8 +51,10 @@ class MessageBox extends StatelessWidget {
           return const SizedBox(
             height: 200,
             width: 200,
-            child: CircularProgressIndicator(
-              color: Colors.black,
+            child: Center(
+              child: CircularProgressIndicator(
+                color: Colors.black,
+              ),
             ),
           );
         }
@@ -64,8 +66,10 @@ class MessageBox extends StatelessWidget {
           return const SizedBox(
             height: 200,
             width: 200,
-            child: CircularProgressIndicator(
-              color: Colors.black,
+            child: Center(
+              child: CircularProgressIndicator(
+                color: Colors.black,
+              ),
             ),
           );
         }
