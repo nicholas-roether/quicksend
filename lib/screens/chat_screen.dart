@@ -87,9 +87,11 @@ class _ChatScreenState extends State<ChatScreen> {
     return SafeArea(
       child: Scaffold(
         appBar: AppBar(
-          title: Hero(
-            transitionOnUserGestures: true,
-            tag: "username" + widget.userInfo.username,
+          title: GestureDetector(
+            onTap: () {
+              Navigator.pushNamed(context, "/user_profile",
+                  arguments: widget.userInfo);
+            },
             child: Text(
               widget.userInfo.getName(),
               style: Theme.of(context).textTheme.headlineSmall,
