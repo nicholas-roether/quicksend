@@ -3,6 +3,7 @@ import 'package:quicksend/client/quicksend_client.dart';
 import 'package:quicksend/screens/homepage.dart';
 import 'package:quicksend/screens/login_screen.dart';
 import 'package:quicksend/screens/settings/registered_devices_screen.dart';
+import 'package:quicksend/screens/user_profile_screen.dart';
 import 'package:quicksend/utils/my_themes.dart';
 
 final quicksendClient = QuicksendClient();
@@ -29,6 +30,7 @@ class MyApp extends StatelessWidget {
                 : const LoginScreen();
           },
           "/registered_devices": (context) => const RegisteredDevices(),
+          "/user_profile": (context) => const UserProfileScreen(),
         },
       ),
     );
