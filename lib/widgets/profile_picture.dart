@@ -10,7 +10,7 @@ class ProfilePicture extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return SizedBox.square(
-      dimension: radius,
+      dimension: 2 * radius,
       child: CircleAvatar(
         radius: radius,
         backgroundImage: const AssetImage("assets/img/profile-pic.png"),
