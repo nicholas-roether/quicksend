@@ -80042,7 +80042,7 @@ p=A.a3(b).R8.as
 q=A.c1(q,m,m,m,p==null?m:p.P_(20),m,m)
 p=A.a4s(m,B.Bl,m,new A.alZ(n,b),20,m)
 o=n.d
-p=A.a5S(A.z8(new A.q1(50,o,m),new A.dT(o.b,t.kK),"profile pic",!1),m,q,r,p)
+p=A.a5S(A.z8(new A.q1(24,o,m),new A.dT(o.b,t.kK),"profile pic",!1),m,q,r,p)
 r=p}else r=A.awX(!0,!0,A.awW(A.lX(20)),B.dq)
 return A.Cj(A.kr(A.a([B.fi,new A.bs(B.Au,s,m),r,B.fi,new A.bs(B.Av,A.c1("Status message:",m,m,m,A.a3(b).R8.x,m,m),m),new A.bs(B.At,A.tb(!1,"",B.ww,"Status Message",1,1,!0,!1,new A.am_(),n.f),m),B.wi,new A.AJ("Security",m),A.auC(B.B2,new A.am0(b),"Manage devices"),B.zR,B.wi,new A.AJ("Other",m),A.auC(B.B5,new A.am1(),"About"),B.fi,new A.bs(B.dq,new A.t9(new A.am2(l,b),"Logout",m),m)],t.p),B.di,B.ap,B.aF),B.W)}}
 A.am4.prototype={
