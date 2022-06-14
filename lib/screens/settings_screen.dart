@@ -84,7 +84,7 @@ class _SettingScreenState extends State<SettingScreen> {
                     splashRadius: 20,
                   ),
                   leading: Hero(
-                    child: ProfilePicture(radius: 50, userInfo: userInfo!),
+                    child: ProfilePicture(radius: 24, userInfo: userInfo!),
                     tag: "profile pic",
                     key: Key(userInfo!.username),
                   ),
