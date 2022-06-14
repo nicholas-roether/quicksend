@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:quicksend/client/quicksend_client.dart';
 import 'package:quicksend/screens/change_password_screen.dart';
-import 'package:quicksend/screens/settings/user_edit_screen.dart';
 import 'package:quicksend/widgets/custom_button.dart';
 import 'package:quicksend/widgets/custom_error_alert_widget.dart';
 import 'package:quicksend/widgets/custom_listttile.dart';
@@ -77,14 +76,8 @@ class _SettingScreenState extends State<SettingScreen> {
                         ),
                   ),
                   onTap: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => UserEditScreen(
-                          userInfo: userInfo!,
-                        ),
-                      ),
-                    );
+                    Navigator.pushNamed(context, "/user_edit",
+                        arguments: userInfo);
                   },
                   trailing: const Icon(Icons.edit),
                   leading: Hero(
