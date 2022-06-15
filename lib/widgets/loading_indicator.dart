@@ -2,24 +2,47 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:loading_animation_widget/loading_animation_widget.dart';
+import 'package:quicksend/utils/utils.dart';
 
 class LoadingIndicator extends StatelessWidget {
   LoadingIndicator({
     Key? key,
   }) : super(key: key);
-  final List<String> statements = [
-    "Loading...",
+  final List<String> quips = [
     "Refactoring the whole database...",
-    "Trying to find your brain...",
-    "Generating RSA Key...",
-    "Generating your Chatlist..."
+    "Generating your chatlist...",
+    "Getting things ready...",
+    "Driving out the bugs...",
+    "Cleaning out sand grains...",
+    "Downloading more RAM...",
+    "Coming up with loading quips...",
+    "Fastening screws and bolts...",
+    "Warming up...",
+    "Powering up engines...",
+    "Calculating the meaning of life...",
+    "Processing some data...",
+    "Deploying nanomachines...",
+    "Computing all whole numbers...",
+    "Instigating bit flips...",
+    "Invoking dark magic...",
+    "Stitching neural nets...",
+    "Rubbing CPU cores together...",
+    "Disabling safety features...",
+    "Sending data through time...",
+    "Removing dust...",
+    "Performing fancy calculations...",
+    "Applying hot glue...",
+    "Securing parts with tape...",
+    "Engaging redundant mechanisms...",
+    "Locating the start button...",
+    "Clearing error logs..."
   ];
 
-  Stream<String> _showMessages() async* {
-    for (int i = 0; i <= statements.length - 1; i++) {
+  Stream<String> _getQuips() async* {
+    final Iterable<int> randIndecies = Utils.randomIndecies(quips.length);
+    for (int index in randIndecies) {
+      yield quips[index];
       await Future.delayed(const Duration(seconds: 3));
-      if (i == statements.length - 1) i = 0;
-      yield statements[i];
     }
   }
 
@@ -34,7 +57,7 @@ class LoadingIndicator extends StatelessWidget {
             size: 50,
           ),
           StreamBuilder<String>(
-            initialData: statements[0],
+            initialData: quips[0],
             builder: (context, snapshot) {
               return Text(
                 snapshot.data.toString(),
@@ -42,7 +65,7 @@ class LoadingIndicator extends StatelessWidget {
                 textAlign: TextAlign.center,
               );
             },
-            stream: _showMessages(),
+            stream: _getQuips(),
           ),
         ],
       ),
