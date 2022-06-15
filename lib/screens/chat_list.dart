@@ -31,8 +31,8 @@ class ChatList extends StatelessWidget {
               return Dismissible(
                 key: Key(chats[index].recipientId),
                 child: ChatTile(chat: chats[index]),
-                confirmDismiss: (dismissDirection) async {
-                  if (dismissDirection == DismissDirection.endToStart) {
+                onDismissed: (direction) async {
+                  if (direction == DismissDirection.endToStart) {
                     try {
                       await quicksendClient
                           .getChatList()
@@ -43,7 +43,6 @@ class ChatList extends StatelessWidget {
                           content: Text("Deleted chat"),
                         ),
                       );
-                      return true;
                     } on Exception catch (_) {
                       showDialog(
                         context: context,
@@ -53,10 +52,9 @@ class ChatList extends StatelessWidget {
                           );
                         },
                       );
-                      return false;
                     }
                   }
-                  if (dismissDirection == DismissDirection.startToEnd) {
+                  if (direction == DismissDirection.startToEnd) {
                     try {
                       await quicksendClient
                           .getChatList()
@@ -67,7 +65,6 @@ class ChatList extends StatelessWidget {
                           content: Text("Archived chat"),
                         ),
                       );
-                      return true;
                     } on Exception catch (_) {
                       showDialog(
                         context: context,
@@ -77,14 +74,47 @@ class ChatList extends StatelessWidget {
                           );
                         },
                       );
-                      return false;
                     }
                   }
-                  return null;
+                },
+                confirmDismiss: (dismissDirection) async {
+                  if (dismissDirection == DismissDirection.endToStart) {
+                    return await showDialog(
+                      context: context,
+                      builder: (context) {
+                        return AlertDialog(
+                          title: const Text('Are you sure?'),
+                          content: const Text(
+                              "This action will delete all messages from this device!"),
+                          actions: <Widget>[
+                            TextButton(
+                              onPressed: () {
+                                Navigator.of(context).pop(true);
+                              },
+                              child: Text(
+                                'Sure!',
+                                style: Theme.of(context).textTheme.bodyLarge,
+                              ),
+                            ),
+                            TextButton(
+                              onPressed: () {
+                                Navigator.of(context).pop(false);
+                              },
+                              child: Text(
+                                'Nope',
+                                style: Theme.of(context).textTheme.bodyLarge,
+                              ),
+                            )
+                          ],
+                        );
+                      },
+                    );
+                  }
+                  return true;
                 },
                 secondaryBackground: Container(
                   decoration: const BoxDecoration(color: Colors.red),
-                  child: const Icon(Icons.delete),
+                  child: const Icon(Icons.delete, color: Colors.white),
                   alignment: Alignment.centerRight,
                   padding: const EdgeInsets.symmetric(horizontal: 8.0),
                 ),
@@ -92,12 +122,11 @@ class ChatList extends StatelessWidget {
                   decoration: BoxDecoration(
                     color: Theme.of(context).colorScheme.secondary,
                   ),
-                  child: const Icon(Icons.archive),
+                  child: const Icon(Icons.archive, color: Colors.white),
                   alignment: Alignment.centerLeft,
                   padding: const EdgeInsets.symmetric(horizontal: 8.0),
                 ),
                 direction: DismissDirection.horizontal,
-                // add removeChat function
               );
             },
             itemCount: chats.length,

@@ -46,26 +46,60 @@ class RegisteredDevices extends StatelessWidget {
             itemBuilder: (context, index) {
               return Dismissible(
                 key: Key(snapshot.data![index].name),
-                confirmDismiss: (_) async {
+                onDismissed: (_) async {
                   try {
                     await quicksendClient
                         .removeDevice(snapshot.data![index].id);
-                    return true;
                   } on Exception catch (_) {
                     showDialog(
                       context: context,
                       builder: (context) {
                         return const CustomErrorWidget(
-                            message:
-                                "Cannot remove the device that is currently in use!");
+                          message:
+                              "Cannot remove the device that is currently in use!",
+                        );
                       },
                     );
-                    return false;
                   }
+                },
+                confirmDismiss: (DismissDirection direction) async {
+                  return await showDialog(
+                    context: context,
+                    builder: (context) {
+                      return AlertDialog(
+                        title: const Text('Are you sure?'),
+                        content: const Text(
+                            "This action will logout the selected device and therefore delete all messages on that device"),
+                        actions: <Widget>[
+                          TextButton(
+                            onPressed: () {
+                              Navigator.of(context).pop(true);
+                            },
+                            child: Text(
+                              'Sure!',
+                              style: Theme.of(context).textTheme.bodyLarge,
+                            ),
+                          ),
+                          TextButton(
+                            onPressed: () {
+                              Navigator.of(context).pop(false);
+                            },
+                            child: Text(
+                              'Nope',
+                              style: Theme.of(context).textTheme.bodyLarge,
+                            ),
+                          )
+                        ],
+                      );
+                    },
+                  );
                 },
                 background: Container(
                   decoration: const BoxDecoration(color: Colors.red),
-                  child: const Icon(Icons.delete),
+                  child: const Icon(
+                    Icons.delete,
+                    color: Colors.white,
+                  ),
                   alignment: Alignment.centerRight,
                   padding: const EdgeInsets.symmetric(horizontal: 8.0),
                 ),
