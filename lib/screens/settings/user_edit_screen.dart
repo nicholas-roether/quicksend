@@ -14,8 +14,7 @@ import 'package:quicksend/widgets/image_source_dialog.dart';
 import 'package:quicksend/widgets/profile_picture.dart';
 
 class UserEditScreen extends StatefulWidget {
-  const UserEditScreen({Key? key, required this.userInfo}) : super(key: key);
-  final UserInfo userInfo;
+  const UserEditScreen({Key? key}) : super(key: key);
 
   @override
   State<UserEditScreen> createState() => _UserEditScreenState();
@@ -25,14 +24,7 @@ class _UserEditScreenState extends State<UserEditScreen> {
   final TextEditingController _statusController = TextEditingController();
   final TextEditingController _displayController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
-
-  @override
-  void initState() {
-    _displayController.text = widget.userInfo.getName();
-    _statusController.text = widget.userInfo.status ?? "";
-    _passwordController.text = "";
-    super.initState();
-  }
+  UserInfo? userInfo;
 
   void _setProfilePicture(ImageSource source) async {
     final quicksendClient = QuicksendClientProvider.get(context);
@@ -56,14 +48,13 @@ class _UserEditScreenState extends State<UserEditScreen> {
     Navigator.pop(context);
   }
 
-  void _setProfilePictureWeb() async {
+  Future<void> _setProfilePictureWeb() async {
     final quicksendClient = QuicksendClientProvider.get(context);
     try {
       final imageInfo = await ImagePickerWeb.getImageInfo;
       if (imageInfo == null) return;
       await quicksendClient.setUserPfp(
           mime(path.basename(imageInfo.fileName!))!, imageInfo.data!);
-      setState(() {});
     } on PlatformException catch (_) {
       showDialog(
         context: context,
@@ -76,6 +67,15 @@ class _UserEditScreenState extends State<UserEditScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final quicksendClient = QuicksendClientProvider.get(context);
+    quicksendClient.getUserInfo().then((value) {
+      setState(() {
+        userInfo = value;
+        _displayController.text = userInfo!.getName();
+        _statusController.text = userInfo?.status ?? "";
+        _passwordController.text = "";
+      });
+    });
     return Scaffold(
       appBar: AppBar(
         centerTitle: true,
@@ -102,7 +102,8 @@ class _UserEditScreenState extends State<UserEditScreen> {
                       child: GestureDetector(
                         onTap: () {
                           if (kIsWeb) {
-                            _setProfilePictureWeb();
+                            _setProfilePictureWeb()
+                                .then((value) => setState(() {}));
                           } else {
                             showDialog(
                               context: context,
@@ -115,7 +116,7 @@ class _UserEditScreenState extends State<UserEditScreen> {
                         },
                         child: ProfilePicture(
                           radius: 70,
-                          userInfo: widget.userInfo,
+                          userInfo: userInfo,
                         ),
                       ),
                     ),
@@ -145,7 +146,7 @@ class _UserEditScreenState extends State<UserEditScreen> {
               Padding(
                 padding: const EdgeInsets.only(bottom: 8.0),
                 child: Text(
-                  widget.userInfo.username,
+                  userInfo?.username ?? "",
                   style: Theme.of(context).textTheme.titleLarge,
                 ),
               ),

@@ -80,8 +80,7 @@ class _SettingScreenState extends State<SettingScreen> {
                     Navigator.push(
                       context,
                       MaterialPageRoute(
-                        builder: (context) =>
-                            UserEditScreen(userInfo: userInfo!),
+                        builder: (context) => const UserEditScreen(),
                       ),
                     );
                   },

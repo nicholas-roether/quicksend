@@ -5,7 +5,7 @@ class ProfilePicture extends StatelessWidget {
   const ProfilePicture({Key? key, this.radius = 20, required this.userInfo})
       : super(key: key);
   final double radius;
-  final UserInfo userInfo;
+  final UserInfo? userInfo;
 
   @override
   Widget build(BuildContext context) {
@@ -15,7 +15,7 @@ class ProfilePicture extends StatelessWidget {
         radius: radius,
         backgroundImage: const AssetImage("assets/img/profile-pic.png"),
         foregroundImage:
-            userInfo.pfpUrl != null ? NetworkImage(userInfo.pfpUrl!) : null,
+            userInfo?.pfpUrl != null ? NetworkImage(userInfo!.pfpUrl!) : null,
       ),
     );
   }
