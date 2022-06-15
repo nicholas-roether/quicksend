@@ -26,6 +26,21 @@ class _UserEditScreenState extends State<UserEditScreen> {
   final TextEditingController _passwordController = TextEditingController();
   UserInfo? userInfo;
 
+  @override
+  void initState() {
+    final quicksendClient = QuicksendClientProvider.get(context);
+    quicksendClient.getUserInfo().then((value) {
+      if (!mounted) return;
+      setState(() {
+        userInfo = value;
+        _displayController.text = userInfo!.getName();
+        _statusController.text = userInfo?.status ?? "";
+        _passwordController.text = "";
+      });
+    });
+    super.initState();
+  }
+
   void _setProfilePicture(ImageSource source) async {
     final quicksendClient = QuicksendClientProvider.get(context);
     File? pickedImage;
@@ -67,15 +82,6 @@ class _UserEditScreenState extends State<UserEditScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final quicksendClient = QuicksendClientProvider.get(context);
-    quicksendClient.getUserInfo().then((value) {
-      setState(() {
-        userInfo = value;
-        _displayController.text = userInfo!.getName();
-        _statusController.text = userInfo?.status ?? "";
-        _passwordController.text = "";
-      });
-    });
     return Scaffold(
       appBar: AppBar(
         centerTitle: true,
