@@ -48,29 +48,32 @@ class _ChatTileState extends State<ChatTile> {
         padding: const EdgeInsets.symmetric(horizontal: 15),
       );
     }
-    return ListTile(
-      leading: ProfilePicture(userInfo: userInfo!),
-      trailing: widget.chat.hasUnreadMessages()
-          ? CircleAvatar(
-              backgroundColor: Theme.of(context).colorScheme.primary,
-              radius: 5,
-            )
-          : null,
-      title: Text(
-        userInfo!.getName(),
-        style: Theme.of(context).textTheme.titleLarge,
-      ),
-      subtitle: Text(getLastMessage(),
-          maxLines: 1, style: Theme.of(context).textTheme.labelLarge),
-      onTap: () => Navigator.push(
-        context,
-        MaterialPageRoute(
-          builder: (context) {
-            return ChatScreen(
-              userInfo: userInfo!,
-              chat: widget.chat,
-            );
-          },
+    return AnimatedBuilder(
+      animation: widget.chat,
+      builder: (context, child) => ListTile(
+        leading: ProfilePicture(userInfo: userInfo!),
+        trailing: widget.chat.hasUnreadMessages()
+            ? CircleAvatar(
+                backgroundColor: Theme.of(context).colorScheme.primary,
+                radius: 5,
+              )
+            : null,
+        title: Text(
+          userInfo!.getName(),
+          style: Theme.of(context).textTheme.titleLarge,
+        ),
+        subtitle: Text(getLastMessage(),
+            maxLines: 1, style: Theme.of(context).textTheme.labelLarge),
+        onTap: () => Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) {
+              return ChatScreen(
+                userInfo: userInfo!,
+                chat: widget.chat,
+              );
+            },
+          ),
         ),
       ),
     );
