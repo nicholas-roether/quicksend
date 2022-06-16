@@ -45,7 +45,7 @@ class _ChatScreenState extends State<ChatScreen> {
     String? mimeType = mime(path.basename((imageInfo.fileName)!));
 
     Configuration config = const Configuration(
-      outputType: ImageOutputType.jpg,
+      outputType: ImageOutputType.webpThenJpg,
       quality: 25,
     );
 
