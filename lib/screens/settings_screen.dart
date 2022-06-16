@@ -43,12 +43,14 @@ class _SettingScreenState extends State<SettingScreen> {
   @override
   Widget build(BuildContext context) {
     final quicksendClient = QuicksendClientProvider.get(context);
-    quicksendClient.getUserInfo().then((value) {
-      if (!mounted) return;
-      setState(() {
-        userInfo = value;
+    if (userInfo == null) {
+      quicksendClient.getUserInfo().then((value) {
+        if (!mounted) return;
+        setState(() {
+          userInfo = value;
+        });
       });
-    });
+    }
 
     return SingleChildScrollView(
       child: Column(

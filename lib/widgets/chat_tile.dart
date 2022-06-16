@@ -32,13 +32,13 @@ class _ChatTileState extends State<ChatTile> {
 
   @override
   Widget build(BuildContext context) {
-    widget.chat.getRecipient().then((value) {
-      if (!mounted) return;
-      setState(() {
-        userInfo = value;
-      });
-    });
     if (userInfo == null) {
+      widget.chat.getRecipient().then((value) {
+        if (!mounted) return;
+        setState(() {
+          userInfo = value;
+        });
+      });
       return SkeletonListTile(
         hasLeading: true,
         hasSubtitle: true,
