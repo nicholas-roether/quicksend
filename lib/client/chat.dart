@@ -78,6 +78,7 @@ class Chat extends ChangeNotifier {
   Future<void> markAsRead() async {
     _dbChat.hasUnreadMessages = false;
     await _dbChat.save();
+    notifyListeners();
   }
 
   /// Get the user info for the user this chat is with.
