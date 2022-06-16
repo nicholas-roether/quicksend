@@ -91,7 +91,7 @@ class _LoginScreenState extends State<LoginScreen> {
                       mainAxisAlignment: MainAxisAlignment.start,
                       children: [
                         Image.asset(
-                          "img/icon-transparent.png",
+                          "img/icon_transparent.png",
                           height: 200,
                         ),
                         Text(
