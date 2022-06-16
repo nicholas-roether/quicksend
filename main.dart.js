@@ -88597,7 +88597,8 @@ return A.B($async$oV,r)},
 J(a,b){var s,r=this,q=null,p=r.a.d
 B.e.ai(p.a8e(),p.ga0m())
 p.aX()
-r.a.d.zM().bv(0,new A.alh(r),t.P)
+p=r.a.d
+if(p.a.e)p.zM().bv(0,new A.alh(r),t.P)
 p=A.nE(q,A.bc(r.a.c.ob(),q,q,q,A.Z(b).R8.f,q,q),B.aB,!1,q,q,q,q,q,q,q,q,q,q,q,q,new A.ali(r,b),q,q,q,q,q,q)
 s=t.D
 return A.qU(!0,A.qW(A.to(A.a([new A.b3(B.b8,new A.lx(20,r.a.c,q),q)],s),!0,p),A.iQ(A.a([A.zO(A.eY(r.a.d,new A.alj(r),q),1),new A.b3(B.b8,A.lD(A.a([new A.wb(new A.alk(r,b),B.Cd,q),B.mf,A.zO(A.mK(!0,"",B.mm,"Enter a Message",5,1,!0,!1,new A.all(r),r.d),1),B.mf,new A.wb(r.gabW(),B.Cj,q)],s),B.at,B.ak,B.av),q)],s),B.at,B.ak,B.av),q,q),B.W,!0)}}
@@ -88988,7 +88989,7 @@ q.oe().bv(0,new A.apI(r),s)
 q.ky().bv(0,new A.apJ(r),s)
 r.bz()},
 J(a,b){var s,r,q,p,o=this,n=null,m=A.je(b,!1,t._)
-m.ky().bv(0,new A.apz(o),t.P)
+if(o.d==null)m.ky().bv(0,new A.apz(o),t.P)
 s=A.bc("Profile",n,n,n,A.Z(b).R8.f,n,n)
 r=o.d
 if(r!=null){r=A.bc(r.ob(),n,n,n,A.Z(b).R8.r,n,n)
@@ -89098,13 +89099,11 @@ A.RK.prototype={
 Vy(){if(this.a.c.AK()!=null)switch(this.a.c.AK().b){case"text/plain":return B.A.cQ(0,this.a.c.AK().f)
 case"image/jpeg":return"Image"
 case"image/png":return"Image"}return"message..."},
-J(a,b){var s,r,q,p=this,o=null
-p.a.c.VE().bv(0,new A.alo(p),t.P)
-s=p.d
-if(s==null)return A.aBw(!0,!0,A.aBv(A.ms(20)),B.ce)
-r=p.a.c.a.e?A.ayN(A.Z(b).as.b,o,o,5):o
-q=A.bc(p.d.ob(),o,o,o,A.Z(b).R8.r,o,o)
-return A.a8D(new A.lx(20,s,o),new A.alp(p,b),A.bc(p.Vy(),1,o,o,A.Z(b).R8.as,o,o),q,r)}}
+J(a,b){var s,r,q=this,p=null,o=q.d
+if(o==null){q.a.c.VE().bv(0,new A.alo(q),t.P)
+return A.aBw(!0,!0,A.aBv(A.ms(20)),B.ce)}s=q.a.c.a.e?A.ayN(A.Z(b).as.b,p,p,5):p
+r=A.bc(q.d.ob(),p,p,p,A.Z(b).R8.r,p,p)
+return A.a8D(new A.lx(20,o,p),new A.alp(q,b),A.bc(q.Vy(),1,p,p,A.Z(b).R8.as,p,p),r,s)}}
 A.alo.prototype={
 $1(a){var s=this.a
 if(s.c==null)return
