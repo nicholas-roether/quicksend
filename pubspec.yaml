@@ -46,10 +46,10 @@ flutter_icons:
 
 flutter_native_splash:
   color: "#0e0f19"
-  image: assets/img/Icon-transparent.png
+  image: assets/img/icon-transparent.png
   android_12:
     color: "#0e0f19"
-    image: assets/img/Icon-transparent.png
+    image: assets/img/icon-transparent.png
 
 flutter:
   uses-material-design: true
