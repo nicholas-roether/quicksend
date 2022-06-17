@@ -3,16 +3,18 @@ import 'package:flutter/material.dart';
 class MyThemes {
   static const Color _primaryColor = Color(0xffffcb5c);
   static const Color _secondaryColor = Color(0xff84826a);
-  static const Color _backgroundColor = Color(0xFF0e0f19);
+  static const Color _backgroundColor = Color(0xff0e0f19);
+  static const Color _surfaceColor = Color(0xff1d1f34);
 
   static ThemeData mainTheme = ThemeData(
     colorScheme: const ColorScheme.dark(
       primary: _primaryColor,
       secondary: _secondaryColor,
       background: _backgroundColor,
-      surface: _backgroundColor,
+      surface: _surfaceColor,
       shadow: Colors.transparent,
     ),
+    dialogTheme: const DialogTheme(backgroundColor: _surfaceColor),
     snackBarTheme: const SnackBarThemeData(
       backgroundColor: _secondaryColor,
       contentTextStyle: TextStyle(
@@ -24,7 +26,10 @@ class MyThemes {
       backgroundColor: _primaryColor,
       foregroundColor: Colors.black,
     ),
-    appBarTheme: const AppBarTheme(shadowColor: Colors.transparent),
+    appBarTheme: const AppBarTheme(
+      color: Colors.transparent,
+      shadowColor: Colors.transparent,
+    ),
     scaffoldBackgroundColor: const Color(0xff0e0f19),
     bottomAppBarTheme: const BottomAppBarTheme(color: _backgroundColor),
     navigationBarTheme: const NavigationBarThemeData(
@@ -43,6 +48,17 @@ class MyThemes {
         textStyle: const TextStyle(
           fontWeight: FontWeight.w600,
         ),
+      ),
+    ),
+    popupMenuTheme: const PopupMenuThemeData(color: _surfaceColor),
+    textButtonTheme: TextButtonThemeData(
+      style: ButtonStyle(
+        foregroundColor: MaterialStateProperty.all(_primaryColor),
+        textStyle: MaterialStateProperty.all(TextStyle(
+          foreground: Paint()..color = _primaryColor,
+          fontFamily: "Quicksand",
+          fontWeight: FontWeight.w500,
+        )),
       ),
     ),
     fontFamily: 'Quicksand',

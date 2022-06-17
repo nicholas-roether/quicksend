@@ -74,19 +74,13 @@ class RegisteredDevices extends StatelessWidget {
                             onPressed: () {
                               Navigator.of(context).pop(true);
                             },
-                            child: Text(
-                              'Sure!',
-                              style: Theme.of(context).textTheme.bodyLarge,
-                            ),
+                            child: const Text('Sure!'),
                           ),
                           TextButton(
                             onPressed: () {
                               Navigator.of(context).pop(false);
                             },
-                            child: Text(
-                              'Nope',
-                              style: Theme.of(context).textTheme.bodyLarge,
-                            ),
+                            child: const Text('Nope'),
                           )
                         ],
                       );
