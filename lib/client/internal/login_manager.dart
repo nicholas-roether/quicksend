@@ -93,6 +93,8 @@ class LoginManager with Initialized<LoginManager> {
   Future<void> _localLogout() async {
     await _db.setDeviceID(null);
     await _db.setUserID(null);
+    await _db.setEncryptionKey(null);
+    await _db.setSignatureKey(null);
   }
 
   @override

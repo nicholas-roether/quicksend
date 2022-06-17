@@ -161,7 +161,7 @@ class ClientDB with Initialized<ClientDB> {
     return await _secureStorage.read(key: "signature-key");
   }
 
-  Future<void> setSignatureKey(String key) async {
+  Future<void> setSignatureKey(String? key) async {
     assertInit();
     await _secureStorage.write(key: "signature-key", value: key);
   }
@@ -171,7 +171,7 @@ class ClientDB with Initialized<ClientDB> {
     return await _secureStorage.read(key: "encryption-key");
   }
 
-  Future<void> setEncryptionKey(String key) async {
+  Future<void> setEncryptionKey(String? key) async {
     assertInit();
     await _secureStorage.write(key: "encryption-key", value: key);
   }
