@@ -62,8 +62,7 @@ class LoginManager with Initialized<LoginManager> {
     assertInit();
     assertLoggedIn();
     final SignatureAuthenticator auth = await getAuthenticator();
-    final String deviceID = _db.getDeviceID() as String;
-    await _requestManager.removeDevice(auth, deviceID);
+    await _requestManager.removeCurrentDevice(auth);
     await _localLogout();
   }
 

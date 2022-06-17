@@ -94,11 +94,13 @@ class QuicksendClient with Initialized<QuicksendClient> {
   /// Removes the device with the provided [id] from this account. Throws
   /// an exception when attempting to remove the device that is currently logged
   /// in.
-  Future<void> removeDevice(String id) async {
+  Future<void> removeDevice(String password, String id) async {
     if (id == _loginManager.deviceId) {
       throw Exception("Cannot remove the device that is currently in use");
     }
-    final auth = await _loginManager.getAuthenticator();
+    final sigAuth = await _loginManager.getAuthenticator();
+    final userInfo = await _requestManager.getUserInfo(sigAuth);
+    final auth = BasicAuthenticator(userInfo.username, password);
     await _requestManager.removeDevice(auth, id);
   }
 

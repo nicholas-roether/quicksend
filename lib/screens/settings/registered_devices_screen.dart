@@ -48,8 +48,9 @@ class RegisteredDevices extends StatelessWidget {
                 key: Key(snapshot.data![index].name),
                 onDismissed: (_) async {
                   try {
-                    await quicksendClient
-                        .removeDevice(snapshot.data![index].id);
+                    // FIXME password required here
+                    // await quicksendClient
+                    //     .removeDevice(snapshot.data![index].id);
                   } on Exception catch (_) {
                     showDialog(
                       context: context,

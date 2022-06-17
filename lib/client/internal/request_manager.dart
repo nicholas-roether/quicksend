@@ -257,9 +257,13 @@ class RequestManager {
     return res["id"];
   }
 
-  Future<void> removeDevice(SignatureAuthenticator auth, String id) async {
+  Future<void> removeDevice(BasicAuthenticator auth, String id) async {
     final body = {"id": id};
     await _request("POST", "/devices/remove", auth: auth, body: body);
+  }
+
+  Future<void> removeCurrentDevice(SignatureAuthenticator auth) async {
+    await _request("POST", "/devices/remove-current", auth: auth);
   }
 
   Future<List<DeviceInfo>> listDevices(SignatureAuthenticator auth) async {
