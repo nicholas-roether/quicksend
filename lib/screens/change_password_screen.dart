@@ -51,7 +51,7 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
                 height: 10,
               ),
               Padding(
-                padding: const EdgeInsets.only(bottom: 5.0),
+                padding: const EdgeInsets.only(bottom: 2.0),
                 child: Text(
                   "Account name:",
                   style: Theme.of(context).textTheme.titleSmall,

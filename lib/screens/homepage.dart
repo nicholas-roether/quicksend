@@ -67,7 +67,7 @@ class _HomePageState extends State<HomePage> {
                         hintInfo: "",
                         minLines: 1,
                         maxLines: 1,
-                        labelInfo: "Benutzername",
+                        labelInfo: "Username",
                         obscure: false,
                         autocorrect: false,
                         textController: _popUpController,
