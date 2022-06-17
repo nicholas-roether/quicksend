@@ -88776,7 +88776,7 @@ case 2:return A.z(o,r)}})
 return A.B($async$ti,r)},
 J(a,b){var s,r,q,p,o,n,m,l=this,k=null,j="Register",i=l.w===B.dU?"Login":j
 i=A.to(k,k,A.bc(i,k,k,k,A.Z(b).R8.f,k,k))
-if(!l.x){s=A.aBe(k,k,new A.tq("img/icon_transparent.png",k,k))
+if(!l.x){s=A.aBe(k,k,new A.tq("assets/img/icon_transparent.png",k,k))
 r=l.w===B.dU?"Welcome back!":"Welcome to Quicksend!"
 r=A.bc(r,k,k,k,A.Z(b).R8.d,B.eh,k)
 q=A.mK(!1,"Enter a Username",k,"Username",1,1,!1,!1,k,l.e)
