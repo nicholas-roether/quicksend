@@ -87,6 +87,7 @@ class QuicksendClient with Initialized<QuicksendClient> {
   Future<void> logOut() async {
     assertInit();
     await _loginManager.logOut();
+    _requestManager.clearOwnUserInfoCache();
     await _onLoggedOut();
   }
 
