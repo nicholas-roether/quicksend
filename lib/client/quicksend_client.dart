@@ -177,6 +177,13 @@ class QuicksendClient with Initialized<QuicksendClient> {
     return _getChatManager().refreshMessages();
   }
 
+  /// Returns the ID of the device that is currently logged in.
+  String getCurrentDeviceID() {
+    assertInit();
+    _loginManager.assertLoggedIn();
+    return _db.getDeviceID()!;
+  }
+
   /// Gets a list of all devices registered to this account
   Future<List<DeviceInfo>> getRegisteredDevices() async {
     assertInit();
