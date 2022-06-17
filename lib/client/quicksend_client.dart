@@ -188,7 +188,9 @@ class QuicksendClient with Initialized<QuicksendClient> {
   Future<List<DeviceInfo>> getRegisteredDevices() async {
     assertInit();
     final auth = await _loginManager.getAuthenticator();
-    return await _requestManager.listDevices(auth);
+    var devices = await _requestManager.listDevices(auth);
+    devices.sort(((a, b) => b.lastActivity.compareTo(a.lastActivity)));
+    return devices;
   }
 
   ChatManager _getChatManager() {
