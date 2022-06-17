@@ -160,13 +160,15 @@ class _SettingScreenState extends State<SettingScreen> {
           CustomListtile(
             title: "Manage devices",
             icon: Icons.devices,
+            trailingIcon: Icons.arrow_right,
             onTapCallback: () {
               Navigator.pushNamed(context, "/registered_devices");
             },
           ),
           CustomListtile(
-            title: "Change Password",
+            title: "Change password",
             icon: Icons.security,
+            trailingIcon: Icons.arrow_right,
             onTapCallback: () {
               Navigator.push(context, MaterialPageRoute(builder: (context) {
                 return ChangePasswordScreen(
@@ -197,7 +199,11 @@ class _SettingScreenState extends State<SettingScreen> {
           CustomListtile(
             title: "About",
             icon: Icons.info,
-            onTapCallback: () {},
+            trailingIcon: Icons.arrow_right,
+            onTapCallback: () {
+              showAboutDialog(
+                  context: context, applicationVersion: "1.0.2 beta");
+            },
           ),
           const SizedBox(
             height: 20,

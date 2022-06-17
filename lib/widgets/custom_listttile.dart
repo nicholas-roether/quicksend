@@ -6,11 +6,15 @@ class CustomListtile extends StatelessWidget {
       required this.title,
       this.subtitle,
       this.icon,
+      this.iconColor,
+      this.trailingIcon,
       this.onTapCallback})
       : super(key: key);
   final String title;
   final String? subtitle;
   final IconData? icon;
+  final Color? iconColor;
+  final IconData? trailingIcon;
   final void Function()? onTapCallback;
 
   @override
@@ -26,7 +30,12 @@ class CustomListtile extends StatelessWidget {
         icon,
         size: Theme.of(context).iconTheme.size,
       ),
-      trailing: const Icon(Icons.arrow_right),
+      trailing: trailingIcon != null
+          ? Icon(
+              trailingIcon,
+              color: iconColor,
+            )
+          : null,
     );
   }
 }
