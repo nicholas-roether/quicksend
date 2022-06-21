@@ -34,6 +34,13 @@ class QuicksendClient with Initialized<QuicksendClient> {
   Future<void> onInit() async {
     await _db.init();
     await _loginManager.init();
+    Future.doWhile(() async {
+      await Future.delayed(const Duration(minutes: 1));
+      if (_loginManager.isLoggedIn()) {
+        await refreshMessages();
+      }
+      return true;
+    });
   }
 
   @override
