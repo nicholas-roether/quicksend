@@ -33,10 +33,12 @@ class _ChatScreenState extends State<ChatScreen> {
 
   void _sendMessage() async {
     if (_chatController.text.trim().isEmpty) return;
-    await widget.chat.sendTextMessage(_chatController.text);
-    setState(() {
-      _chatController.text = "";
+    widget.chat.sendTextMessage(_chatController.text).then((_) {
+      setState(() {
+        _chatController.text = "";
+      });
     });
+    setState(() {});
   }
 
   void _sendImageForWeb() async {
