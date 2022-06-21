@@ -31,10 +31,10 @@ class ChatScreen extends StatefulWidget {
 class _ChatScreenState extends State<ChatScreen> {
   final TextEditingController _chatController = TextEditingController();
 
-  void _sendMessage() {
+  void _sendMessage() async {
     if (_chatController.text.trim().isEmpty) return;
+    await widget.chat.sendTextMessage(_chatController.text);
     setState(() {
-      widget.chat.sendTextMessage(_chatController.text);
       _chatController.text = "";
     });
   }
