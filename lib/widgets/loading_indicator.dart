@@ -1,7 +1,6 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
-import 'package:loading_animation_widget/loading_animation_widget.dart';
 import 'package:quicksend/utils/utils.dart';
 
 class LoadingIndicator extends StatelessWidget {
@@ -52,9 +51,9 @@ class LoadingIndicator extends StatelessWidget {
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          LoadingAnimationWidget.dotsTriangle(
-            color: Theme.of(context).colorScheme.primary,
-            size: 50,
+          Image.asset(
+            "assets/img/loading_anim.gif",
+            scale: 8,
           ),
           StreamBuilder<String>(
             initialData: quips[0],
