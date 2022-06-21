@@ -31,17 +31,12 @@ class ChatScreen extends StatefulWidget {
 class _ChatScreenState extends State<ChatScreen> {
   final TextEditingController _chatController = TextEditingController();
 
-  void _sendMessage() async {
+  Future<void> _sendMessage() async {
     if (_chatController.text.trim().isEmpty) return;
-    widget.chat.sendTextMessage(_chatController.text).then((_) {
-      setState(() {
-        _chatController.text = "";
-      });
-    });
-    setState(() {});
+    widget.chat.sendTextMessage(_chatController.text);
   }
 
-  void _sendImageForWeb() async {
+  Future<void> _sendImageForWeb() async {
     final imageInfo = await ImagePickerWeb.getImageInfo;
     if (imageInfo == null) return;
     String? mimeType = mime(path.basename((imageInfo.fileName)!));
@@ -58,7 +53,7 @@ class _ChatScreenState extends State<ChatScreen> {
     await widget.chat.sendMessage((mimeType)!, output.rawBytes);
   }
 
-  void _sendImage(ImageSource source) async {
+  Future<void> _sendImage(ImageSource source) async {
     File? pickedImage;
     final _picker = ImagePicker();
     try {
@@ -77,6 +72,11 @@ class _ChatScreenState extends State<ChatScreen> {
       );
     }
     Navigator.pop(context);
+  }
+
+  void redrawBeforeAndAfter(Future future) {
+    future.then((_) => setState((() {})));
+    setState(() {});
   }
 
   @override
@@ -137,13 +137,15 @@ class _ChatScreenState extends State<ChatScreen> {
                   SmallFAB(
                     onPressedCallback: () {
                       if (kIsWeb) {
-                        _sendImageForWeb();
+                        redrawBeforeAndAfter(_sendImageForWeb());
                       } else {
                         showDialog(
                           context: context,
                           builder: (context) {
                             return ImageSourceDialog(
-                                iconButtonCallback: _sendImage);
+                              iconButtonCallback: (image) =>
+                                  redrawBeforeAndAfter(_sendImage(image)),
+                            );
                           },
                         );
                       }
@@ -162,7 +164,9 @@ class _ChatScreenState extends State<ChatScreen> {
                       obscure: false,
                       inputType: TextInputType.multiline,
                       textController: _chatController,
-                      submitCallback: (_) => _sendMessage(),
+                      submitCallback: (_) => redrawBeforeAndAfter(
+                        _sendMessage(),
+                      ),
                       noPadding: true,
                     ),
                   ),
@@ -171,7 +175,9 @@ class _ChatScreenState extends State<ChatScreen> {
                   ),
                   //message sender
                   SmallFAB(
-                    onPressedCallback: _sendMessage,
+                    onPressedCallback: () => redrawBeforeAndAfter(
+                      _sendMessage(),
+                    ),
                     icon: Icons.send,
                   ),
                 ],
