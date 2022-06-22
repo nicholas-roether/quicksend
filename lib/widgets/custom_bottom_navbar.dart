@@ -22,8 +22,6 @@ class CustomBottomNavbar extends StatelessWidget {
       ],
       currentIndex: currentIndex,
       onTap: setIndex,
-      backgroundColor: Theme.of(context).backgroundColor,
-      selectedItemColor: Theme.of(context).primaryColor,
     );
   }
 }

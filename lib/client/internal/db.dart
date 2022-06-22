@@ -5,6 +5,8 @@ import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 // ignore: implementation_imports
 import 'package:hive/src/adapters/date_time_adapter.dart';
+// ignore: implementation_imports
+import 'package:hive/src/adapters/ignored_type_adapter.dart';
 import 'package:quicksend/client/internal/crypto_utils.dart';
 import 'package:quicksend/client/internal/db_models/db_chat.dart';
 import 'db_models/db_message.dart';
@@ -27,6 +29,7 @@ class V1Transition extends VersionTransition {
     final chatList = await Hive.openBox<dynamic>("chat-list");
     final chatListValues = List.from(chatList.values);
     await chatList.clear();
+    Hive.registerAdapter(DBChatAdapter(), override: true);
     for (final id in chatListValues) {
       chatList.put(id, DBChat(id, false));
     }
@@ -35,9 +38,26 @@ class V1Transition extends VersionTransition {
   }
 }
 
+class V2Transition extends VersionTransition {
+  @override
+  Future<void> apply(Box general) async {
+    Hive.registerAdapter(const IgnoredTypeAdapter(2), override: true);
+    final chatList = await Hive.openBox<dynamic>("chat-list");
+    final chatListKeys = List.from(chatList.keys);
+    await chatList.clear();
+    Hive.registerAdapter(DBChatAdapter(), override: true);
+    for (final id in chatListKeys) {
+      chatList.put(id, DBChat(id, false));
+    }
+    await general.put("version", 2);
+    await chatList.close();
+  }
+}
+
 final List<VersionTransition> versionTransitions = [
   V0Transition(),
-  V1Transition()
+  V1Transition(),
+  V2Transition()
 ];
 
 class ClientDB with Initialized<ClientDB> {
@@ -55,10 +75,11 @@ class ClientDB with Initialized<ClientDB> {
   Future<void> onInit() async {
     await Hive.initFlutter();
     Hive.registerAdapter(DateTimeAdapter(), internal: true);
-    Hive.registerAdapter(DBMessageAdapter());
-    Hive.registerAdapter(DBChatAdapter());
     await Hive.openBox("general");
     await _applyVersionTransitions();
+
+    Hive.registerAdapter(DBMessageAdapter(), override: true);
+    Hive.registerAdapter(DBChatAdapter(), override: true);
 
     final _chatList = await Hive.openBox<DBChat>("chat-list");
     await Future.wait(
@@ -140,7 +161,7 @@ class ClientDB with Initialized<ClientDB> {
     return await _secureStorage.read(key: "signature-key");
   }
 
-  Future<void> setSignatureKey(String key) async {
+  Future<void> setSignatureKey(String? key) async {
     assertInit();
     await _secureStorage.write(key: "signature-key", value: key);
   }
@@ -150,7 +171,7 @@ class ClientDB with Initialized<ClientDB> {
     return await _secureStorage.read(key: "encryption-key");
   }
 
-  Future<void> setEncryptionKey(String key) async {
+  Future<void> setEncryptionKey(String? key) async {
     assertInit();
     await _secureStorage.write(key: "encryption-key", value: key);
   }
@@ -192,7 +213,7 @@ class ClientDB with Initialized<ClientDB> {
   }
 
   Future<void> _applyVersionTransitions() async {
-    final int version = _general.get("version") ?? 0;
+    final int version = _general.get("version", defaultValue: 0);
     if (versionTransitions.length - 1 == version) return;
     for (final transition in versionTransitions.sublist(version + 1)) {
       await transition.apply(_general);

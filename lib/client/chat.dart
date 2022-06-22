@@ -56,9 +56,12 @@ class Chat extends ChangeNotifier {
   }
 
   /// Loads all saved messages for this chat and broadcasts them.
-  void loadSavedMessages() {
+  void loadSavedMessages() async {
     final messages = _loadMessagesFromDB();
     messages.forEach(_addMessage);
+
+    /// Ensure widgets calling this method don't get rebuilt immediately
+    await Future.delayed(Duration.zero);
     notifyListeners();
   }
 
@@ -78,6 +81,7 @@ class Chat extends ChangeNotifier {
   Future<void> markAsRead() async {
     _dbChat.hasUnreadMessages = false;
     await _dbChat.save();
+    notifyListeners();
   }
 
   /// Get the user info for the user this chat is with.

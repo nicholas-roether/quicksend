@@ -154,13 +154,19 @@ class RequestManager {
     SignatureAuthenticator auth, {
     String? display,
     String? status,
-    String? password,
   }) async {
     Map<String, String> body = {};
     if (display != null) body["display"] = display;
     if (status != null) body["status"] = status;
-    if (password != null) body["password"] = password;
     await _request("POST", "/user/update", auth: auth, body: body);
+  }
+
+  Future<void> updatePassword(
+    BasicAuthenticator auth,
+    String newPassword,
+  ) async {
+    final body = {"newPassword": newPassword};
+    await _request("POST", "/user/change-pwd", auth: auth, body: body);
   }
 
   Future<String> setUserPfp(
@@ -251,9 +257,13 @@ class RequestManager {
     return res["id"];
   }
 
-  Future<void> removeDevice(SignatureAuthenticator auth, String id) async {
+  Future<void> removeDevice(BasicAuthenticator auth, String id) async {
     final body = {"id": id};
     await _request("POST", "/devices/remove", auth: auth, body: body);
+  }
+
+  Future<void> removeCurrentDevice(SignatureAuthenticator auth) async {
+    await _request("POST", "/devices/remove-current", auth: auth);
   }
 
   Future<List<DeviceInfo>> listDevices(SignatureAuthenticator auth) async {
@@ -267,6 +277,16 @@ class RequestManager {
         lastActivity: DateTime.parse(e["lastActivity"]),
       ),
     ));
+  }
+
+  Future<void> updateDevice(
+    SignatureAuthenticator auth,
+    String id, {
+    String? name,
+  }) async {
+    Map<String, dynamic> body = {"id": id};
+    if (name != null) body["name"] = name;
+    await _request("POST", "/devices/update", auth: auth, body: body);
   }
 
   Future<Uint8List> getSocketToken(SignatureAuthenticator auth) async {

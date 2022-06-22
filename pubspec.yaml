@@ -28,6 +28,7 @@ dependencies:
   image_picker: ^0.8.5+3
   device_info_plus: ^3.2.4
   easy_image_viewer: ^1.0.4
+  image_compression_flutter: ^1.0.2
 
 dev_dependencies:
   flutter_test:
@@ -45,10 +46,10 @@ flutter_icons:
 
 flutter_native_splash:
   color: "#0e0f19"
-  image: assets/img/icon-transparent.png
+  image: assets/img/icon_transparent.png
   android_12:
     color: "#0e0f19"
-    image: assets/img/icon-transparent.png
+    image: assets/img/icon_transparent.png
 
 flutter:
   uses-material-design: true

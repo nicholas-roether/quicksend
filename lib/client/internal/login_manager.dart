@@ -62,8 +62,7 @@ class LoginManager with Initialized<LoginManager> {
     assertInit();
     assertLoggedIn();
     final SignatureAuthenticator auth = await getAuthenticator();
-    final String deviceID = _db.getDeviceID() as String;
-    await _requestManager.removeDevice(auth, deviceID);
+    await _requestManager.removeCurrentDevice(auth);
     await _localLogout();
   }
 
@@ -93,6 +92,8 @@ class LoginManager with Initialized<LoginManager> {
   Future<void> _localLogout() async {
     await _db.setDeviceID(null);
     await _db.setUserID(null);
+    await _db.setEncryptionKey(null);
+    await _db.setSignatureKey(null);
   }
 
   @override

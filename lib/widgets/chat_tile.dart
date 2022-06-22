@@ -32,13 +32,13 @@ class _ChatTileState extends State<ChatTile> {
 
   @override
   Widget build(BuildContext context) {
-    widget.chat.getRecipient().then((value) {
-      if (!mounted) return;
-      setState(() {
-        userInfo = value;
-      });
-    });
     if (userInfo == null) {
+      widget.chat.getRecipient().then((value) {
+        if (!mounted) return;
+        setState(() {
+          userInfo = value;
+        });
+      });
       return SkeletonListTile(
         hasLeading: true,
         hasSubtitle: true,
@@ -48,49 +48,32 @@ class _ChatTileState extends State<ChatTile> {
         padding: const EdgeInsets.symmetric(horizontal: 15),
       );
     }
-    return ListTile(
-      leading: ProfilePicture(userInfo: userInfo!),
-      trailing: widget.chat.hasUnreadMessages()
-          ? CircleAvatar(
-              backgroundColor: Theme.of(context).primaryColor,
-              radius: 5,
-            )
-          : null,
-      title: Stack(
-        children: [
-          Text(
-            userInfo!.getName(),
-            style: Theme.of(context)
-                .textTheme
-                .headline6
-                ?.merge(const TextStyle(color: Colors.transparent)),
+    return AnimatedBuilder(
+      animation: widget.chat,
+      builder: (context, child) => ListTile(
+        leading: ProfilePicture(userInfo: userInfo!),
+        trailing: widget.chat.hasUnreadMessages()
+            ? CircleAvatar(
+                backgroundColor: Theme.of(context).colorScheme.primary,
+                radius: 5,
+              )
+            : null,
+        title: Text(
+          userInfo!.getName(),
+          style: Theme.of(context).textTheme.titleLarge,
+        ),
+        subtitle: Text(getLastMessage(),
+            maxLines: 1, style: Theme.of(context).textTheme.labelLarge),
+        onTap: () => Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) {
+              return ChatScreen(
+                userInfo: userInfo!,
+                chat: widget.chat,
+              );
+            },
           ),
-          Hero(
-            tag: "username" + userInfo!.username,
-            child: Text(
-              userInfo!.getName(),
-              style: Theme.of(context).textTheme.headline6,
-            ),
-          ),
-        ],
-      ),
-      subtitle: Text(
-        getLastMessage(),
-        maxLines: 1,
-        style: Theme.of(context)
-            .textTheme
-            .bodyText1
-            ?.copyWith(color: Theme.of(context).secondaryHeaderColor),
-      ),
-      onTap: () => Navigator.push(
-        context,
-        MaterialPageRoute(
-          builder: (context) {
-            return ChatScreen(
-              userInfo: userInfo!,
-              chat: widget.chat,
-            );
-          },
         ),
       ),
     );

@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:image_compression_flutter/image_compression_flutter.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:image_picker_web/image_picker_web.dart';
 import 'package:path/path.dart' as path;
@@ -30,23 +31,32 @@ class ChatScreen extends StatefulWidget {
 class _ChatScreenState extends State<ChatScreen> {
   final TextEditingController _chatController = TextEditingController();
 
-  void _sendMessage() {
+  Future<void> _sendMessage() async {
     if (_chatController.text.trim().isEmpty) return;
+    widget.chat.sendTextMessage(_chatController.text);
     setState(() {
-      widget.chat.sendTextMessage(_chatController.text);
       _chatController.text = "";
     });
   }
 
-  void _sendImageForWeb() async {
+  Future<void> _sendImageForWeb() async {
     final imageInfo = await ImagePickerWeb.getImageInfo;
     if (imageInfo == null) return;
     String? mimeType = mime(path.basename((imageInfo.fileName)!));
 
-    await widget.chat.sendMessage((mimeType)!, (imageInfo.data)!);
+    Configuration config = const Configuration(
+      outputType: ImageOutputType.webpThenJpg,
+      quality: 25,
+    );
+
+    var input =
+        ImageFile(filePath: imageInfo.fileName!, rawBytes: imageInfo.data!);
+    var param = ImageFileConfiguration(input: input, config: config);
+    var output = await compressor.compress(param);
+    await widget.chat.sendMessage((mimeType)!, output.rawBytes);
   }
 
-  void _sendImage(ImageSource source) async {
+  Future<void> _sendImage(ImageSource source) async {
     File? pickedImage;
     final _picker = ImagePicker();
     try {
@@ -67,22 +77,31 @@ class _ChatScreenState extends State<ChatScreen> {
     Navigator.pop(context);
   }
 
+  void redrawBeforeAndAfter(Future future) {
+    future.then((_) => setState((() {})));
+    setState(() {});
+  }
+
   @override
   Widget build(BuildContext context) {
     widget.chat.loadSavedMessages();
-    widget.chat.markAsRead().then((value) {
-      if (!mounted) return;
-      setState(() {});
-    });
+    if (widget.chat.hasUnreadMessages()) {
+      widget.chat.markAsRead().then((value) {
+        if (!mounted) return;
+        setState(() {});
+      });
+    }
     return SafeArea(
       child: Scaffold(
         appBar: AppBar(
-          title: Hero(
-            transitionOnUserGestures: true,
-            tag: "username" + widget.userInfo.username,
+          title: GestureDetector(
+            onTap: () {
+              Navigator.pushNamed(context, "/user_profile",
+                  arguments: widget.userInfo);
+            },
             child: Text(
               widget.userInfo.getName(),
-              style: Theme.of(context).textTheme.headline5,
+              style: Theme.of(context).textTheme.headlineSmall,
             ),
           ),
           centerTitle: true,
@@ -121,13 +140,15 @@ class _ChatScreenState extends State<ChatScreen> {
                   SmallFAB(
                     onPressedCallback: () {
                       if (kIsWeb) {
-                        _sendImageForWeb();
+                        redrawBeforeAndAfter(_sendImageForWeb());
                       } else {
                         showDialog(
                           context: context,
                           builder: (context) {
                             return ImageSourceDialog(
-                                iconButtonCallback: _sendImage);
+                              iconButtonCallback: (image) =>
+                                  redrawBeforeAndAfter(_sendImage(image)),
+                            );
                           },
                         );
                       }
@@ -146,7 +167,9 @@ class _ChatScreenState extends State<ChatScreen> {
                       obscure: false,
                       inputType: TextInputType.multiline,
                       textController: _chatController,
-                      submitCallback: (_) => _sendMessage(),
+                      submitCallback: (_) => redrawBeforeAndAfter(
+                        _sendMessage(),
+                      ),
                       noPadding: true,
                     ),
                   ),
@@ -155,7 +178,9 @@ class _ChatScreenState extends State<ChatScreen> {
                   ),
                   //message sender
                   SmallFAB(
-                    onPressedCallback: _sendMessage,
+                    onPressedCallback: () => redrawBeforeAndAfter(
+                      _sendMessage(),
+                    ),
                     icon: Icons.send,
                   ),
                 ],

@@ -34,6 +34,13 @@ class QuicksendClient with Initialized<QuicksendClient> {
   Future<void> onInit() async {
     await _db.init();
     await _loginManager.init();
+    Future.doWhile(() async {
+      await Future.delayed(const Duration(minutes: 1));
+      if (_loginManager.isLoggedIn()) {
+        await refreshMessages();
+      }
+      return true;
+    });
   }
 
   @override
@@ -87,18 +94,29 @@ class QuicksendClient with Initialized<QuicksendClient> {
   Future<void> logOut() async {
     assertInit();
     await _loginManager.logOut();
+    _requestManager.clearOwnUserInfoCache();
     await _onLoggedOut();
   }
 
   /// Removes the device with the provided [id] from this account. Throws
   /// an exception when attempting to remove the device that is currently logged
   /// in.
-  Future<void> removeDevice(String id) async {
+  Future<void> removeDevice(String password, String id) async {
     if (id == _loginManager.deviceId) {
       throw Exception("Cannot remove the device that is currently in use");
     }
-    final auth = await _loginManager.getAuthenticator();
+    final sigAuth = await _loginManager.getAuthenticator();
+    final userInfo = await _requestManager.getUserInfo(sigAuth);
+    final auth = BasicAuthenticator(userInfo.username, password);
     await _requestManager.removeDevice(auth, id);
+  }
+
+  /// Updates the information associated with a device. Currently, this is only
+  /// the device's name.
+  Future<void> updateDevice(String id, {String? name}) async {
+    assertInit();
+    final auth = await _loginManager.getAuthenticator();
+    await _requestManager.updateDevice(auth, id, name: name);
   }
 
   /// Returns the user info of the currently logged in account. Will throw a
@@ -121,11 +139,10 @@ class QuicksendClient with Initialized<QuicksendClient> {
   }
 
   /// Update data for the current user. This method can be used to change the
-  /// current user's status, display name, and/or password.
+  /// current user's status and/or display name.
   Future<void> updateUser({
     String? status,
     String? display,
-    String? password,
   }) async {
     assertInit();
     final auth = await _loginManager.getAuthenticator();
@@ -133,9 +150,19 @@ class QuicksendClient with Initialized<QuicksendClient> {
       auth,
       status: status,
       display: display,
-      password: password,
     );
     _requestManager.clearOwnUserInfoCache();
+  }
+
+  /// Update the current user's password. It is required to provide the current
+  /// password to perform this action.
+  Future<void> updatePassword(
+    String currentPassword,
+    String newPassword,
+  ) async {
+    final userInfo = await getUserInfo();
+    final auth = BasicAuthenticator(userInfo.username, currentPassword);
+    await _requestManager.updatePassword(auth, newPassword);
   }
 
   /// Sets the logged in user's profile picture
@@ -157,11 +184,20 @@ class QuicksendClient with Initialized<QuicksendClient> {
     return _getChatManager().refreshMessages();
   }
 
+  /// Returns the ID of the device that is currently logged in.
+  String getCurrentDeviceID() {
+    assertInit();
+    _loginManager.assertLoggedIn();
+    return _db.getDeviceID()!;
+  }
+
   /// Gets a list of all devices registered to this account
   Future<List<DeviceInfo>> getRegisteredDevices() async {
     assertInit();
     final auth = await _loginManager.getAuthenticator();
-    return await _requestManager.listDevices(auth);
+    var devices = await _requestManager.listDevices(auth);
+    devices.sort(((a, b) => b.lastActivity.compareTo(a.lastActivity)));
+    return devices;
   }
 
   ChatManager _getChatManager() {

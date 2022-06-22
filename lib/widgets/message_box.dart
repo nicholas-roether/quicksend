@@ -24,9 +24,10 @@ class MessageBox extends StatelessWidget {
             children: [
               Text(
                 message.asString(),
-                style: Theme.of(context).textTheme.bodyText1?.copyWith(
-                      color: Colors.black,
-                    ),
+                style: Theme.of(context)
+                    .textTheme
+                    .bodyText1
+                    ?.copyWith(color: Colors.black),
               ),
               const Padding(
                 padding: EdgeInsets.only(left: 8.0),
@@ -50,8 +51,10 @@ class MessageBox extends StatelessWidget {
           return const SizedBox(
             height: 200,
             width: 200,
-            child: CircularProgressIndicator(
-              color: Colors.black,
+            child: Center(
+              child: CircularProgressIndicator(
+                color: Colors.black,
+              ),
             ),
           );
         }
@@ -63,8 +66,10 @@ class MessageBox extends StatelessWidget {
           return const SizedBox(
             height: 200,
             width: 200,
-            child: CircularProgressIndicator(
-              color: Colors.black,
+            child: Center(
+              child: CircularProgressIndicator(
+                color: Colors.black,
+              ),
             ),
           );
         }
@@ -85,8 +90,8 @@ class MessageBox extends StatelessWidget {
         child: Card(
           elevation: 2,
           color: message.direction == MessageDirection.outgoing
-              ? Theme.of(context).primaryColor
-              : Theme.of(context).secondaryHeaderColor,
+              ? Theme.of(context).colorScheme.primary
+              : Theme.of(context).colorScheme.secondary,
           child: Padding(
             padding: const EdgeInsets.all(8.0),
             child: messageBoxContent(context),

@@ -21,7 +21,7 @@ class ChatList extends StatelessWidget {
             return Center(
               child: Text(
                 'Press the "+" button to add a chat',
-                style: Theme.of(context).textTheme.headline4,
+                style: Theme.of(context).textTheme.displaySmall,
                 textAlign: TextAlign.center,
               ),
             );
@@ -31,26 +31,18 @@ class ChatList extends StatelessWidget {
               return Dismissible(
                 key: Key(chats[index].recipientId),
                 child: ChatTile(chat: chats[index]),
-                confirmDismiss: (dismissDirection) async {
-                  if (dismissDirection == DismissDirection.endToStart) {
+                onDismissed: (direction) async {
+                  if (direction == DismissDirection.endToStart) {
                     try {
                       await quicksendClient
                           .getChatList()
                           .deleteChat(chats[index].recipientId);
                       ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(
-                          backgroundColor: Theme.of(context).primaryColor,
-                          duration: const Duration(seconds: 2),
-                          content: Text(
-                            "Deleted chat",
-                            style: Theme.of(context)
-                                .textTheme
-                                .bodyText2
-                                ?.copyWith(color: Colors.black),
-                          ),
+                        const SnackBar(
+                          duration: Duration(seconds: 2),
+                          content: Text("Deleted chat"),
                         ),
                       );
-                      return true;
                     } on Exception catch (_) {
                       showDialog(
                         context: context,
@@ -60,28 +52,19 @@ class ChatList extends StatelessWidget {
                           );
                         },
                       );
-                      return false;
                     }
                   }
-                  if (dismissDirection == DismissDirection.startToEnd) {
+                  if (direction == DismissDirection.startToEnd) {
                     try {
                       await quicksendClient
                           .getChatList()
                           .archiveChat(chats[index].recipientId);
                       ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(
-                          backgroundColor: Theme.of(context).primaryColor,
-                          duration: const Duration(seconds: 2),
-                          content: Text(
-                            "Archived chat",
-                            style: Theme.of(context)
-                                .textTheme
-                                .bodyText2
-                                ?.copyWith(color: Colors.black),
-                          ),
+                        const SnackBar(
+                          duration: Duration(seconds: 2),
+                          content: Text("Archived chat"),
                         ),
                       );
-                      return true;
                     } on Exception catch (_) {
                       showDialog(
                         context: context,
@@ -91,26 +74,53 @@ class ChatList extends StatelessWidget {
                           );
                         },
                       );
-                      return false;
                     }
                   }
-                  return null;
+                },
+                confirmDismiss: (dismissDirection) async {
+                  if (dismissDirection == DismissDirection.endToStart) {
+                    return await showDialog(
+                      context: context,
+                      builder: (context) {
+                        return AlertDialog(
+                          title: const Text('Are you sure?'),
+                          content: const Text(
+                              "This action will delete all messages from this device!"),
+                          actions: <Widget>[
+                            TextButton(
+                              onPressed: () {
+                                Navigator.of(context).pop(true);
+                              },
+                              child: const Text('Sure!'),
+                            ),
+                            TextButton(
+                              onPressed: () {
+                                Navigator.of(context).pop(false);
+                              },
+                              child: const Text('Nope'),
+                            )
+                          ],
+                        );
+                      },
+                    );
+                  }
+                  return true;
                 },
                 secondaryBackground: Container(
                   decoration: const BoxDecoration(color: Colors.red),
-                  child: const Icon(Icons.delete),
+                  child: const Icon(Icons.delete, color: Colors.white),
                   alignment: Alignment.centerRight,
                   padding: const EdgeInsets.symmetric(horizontal: 8.0),
                 ),
                 background: Container(
-                  decoration:
-                      BoxDecoration(color: Theme.of(context).primaryColor),
-                  child: const Icon(Icons.archive),
+                  decoration: BoxDecoration(
+                    color: Theme.of(context).colorScheme.secondary,
+                  ),
+                  child: const Icon(Icons.archive, color: Colors.white),
                   alignment: Alignment.centerLeft,
                   padding: const EdgeInsets.symmetric(horizontal: 8.0),
                 ),
                 direction: DismissDirection.horizontal,
-                // add removeChat function
               );
             },
             itemCount: chats.length,

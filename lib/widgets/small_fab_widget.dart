@@ -13,7 +13,6 @@ class SmallFAB extends StatelessWidget {
       heroTag: icon,
       onPressed: onPressedCallback,
       child: Icon(icon),
-      backgroundColor: Theme.of(context).primaryColor,
       elevation: 3,
     );
   }
