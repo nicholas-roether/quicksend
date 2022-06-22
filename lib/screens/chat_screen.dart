@@ -34,6 +34,9 @@ class _ChatScreenState extends State<ChatScreen> {
   Future<void> _sendMessage() async {
     if (_chatController.text.trim().isEmpty) return;
     widget.chat.sendTextMessage(_chatController.text);
+    setState(() {
+      _chatController.text = "";
+    });
   }
 
   Future<void> _sendImageForWeb() async {
