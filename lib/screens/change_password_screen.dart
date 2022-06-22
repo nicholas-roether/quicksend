@@ -24,7 +24,7 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
       appBar: AppBar(
         centerTitle: true,
         title: Text(
-          "Change Password",
+          "Change password",
           style: Theme.of(context).textTheme.headlineSmall,
         ),
       ),
