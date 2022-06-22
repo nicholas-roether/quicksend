@@ -10,6 +10,7 @@ class CustomTextFormField extends StatelessWidget {
     this.noPadding = false,
     required this.obscure,
     this.submitCallback,
+    this.validationCallback,
     this.autocorrect = true,
     this.minLines,
     this.maxLines,
@@ -23,6 +24,7 @@ class CustomTextFormField extends StatelessWidget {
   final TextEditingController? textController;
   final TextInputType? inputType;
   final void Function(String)? submitCallback;
+  final Function(String?)? validationCallback;
   final bool autocorrect;
 
   @override
@@ -47,9 +49,9 @@ class CustomTextFormField extends StatelessWidget {
         validator: (value) {
           if (value != null && value.isEmpty) {
             return "Please fill in $labelInfo";
-          } else {
-            return null;
           }
+          if (validationCallback != null) return validationCallback!(value);
+          return null;
         },
         keyboardType: inputType,
         obscureText: obscure,
