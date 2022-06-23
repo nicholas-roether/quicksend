@@ -182,7 +182,9 @@ class Chat extends ChangeNotifier {
     _db.addMessage(recipientId, dbMessage);
     _addMessage(message);
 
-    _dbChat.hasUnreadMessages = true;
+    if (message.direction == MessageDirection.incoming) {
+      _dbChat.hasUnreadMessages = true;
+    }
     await _dbChat.save();
     notifyListeners();
   }
