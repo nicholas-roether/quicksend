@@ -52,6 +52,16 @@ class _ChatScreenState extends State<ChatScreen> {
     //     ImageFile(filePath: imageInfo.fileName!, rawBytes: imageInfo.data!);
     // var param = ImageFileConfiguration(input: input, config: config);
     // var output = await compressor.compress(param);
+    if (imageInfo.data!.length >= 2097152) {
+      return showDialog(
+        context: context,
+        builder: (context) {
+          return const CustomErrorWidget(
+            message: "Images can't be larger than 2MB",
+          );
+        },
+      );
+    }
     await widget.chat.sendMessage((mimeType)!, imageInfo.data!);
   }
 
