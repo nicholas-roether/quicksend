@@ -4,8 +4,6 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:image_picker_web/image_picker_web.dart';
-import 'package:path/path.dart' as path;
 import 'package:mime_type/mime_type.dart';
 import 'package:quicksend/client/quicksend_client.dart';
 import 'package:quicksend/widgets/custom_error_alert_widget.dart';
@@ -63,7 +61,7 @@ class _UserEditScreenState extends State<UserEditScreen> {
     Navigator.pop(context);
   }
 
-  Future<void> _setProfilePictureWeb() async {
+  /*Future<void> _setProfilePictureWeb() async {
     final quicksendClient = QuicksendClientProvider.get(context);
     try {
       final imageInfo = await ImagePickerWeb.getImageInfo;
@@ -78,7 +76,7 @@ class _UserEditScreenState extends State<UserEditScreen> {
         },
       );
     }
-  }
+  }*/
 
   @override
   Widget build(BuildContext context) {
@@ -108,8 +106,8 @@ class _UserEditScreenState extends State<UserEditScreen> {
                       child: GestureDetector(
                         onTap: () {
                           if (kIsWeb) {
-                            _setProfilePictureWeb()
-                                .then((value) => setState(() {}));
+                            //_setProfilePictureWeb()
+                              //  .then((value) => setState(() {}));
                           } else {
                             showDialog(
                               context: context,

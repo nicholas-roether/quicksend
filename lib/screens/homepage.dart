@@ -94,31 +94,29 @@ class _HomePageState extends State<HomePage> {
 
   @override
   Widget build(BuildContext context) {
-    return SafeArea(
-      child: Scaffold(
-        bottomNavigationBar: CustomBottomNavbar(
-          currentIndex: selectedIndex,
-          setIndex: (int index) {
-            setState(() {
-              selectedIndex = index;
-            });
-          },
-        ),
-        floatingActionButton: selectedIndex == 0
-            ? FloatingActionButton(
-                onPressed: showChatPopup,
-                child: const Icon(Icons.add),
-              )
-            : const SizedBox(),
-        appBar: AppBar(
-          centerTitle: true,
-          title: Text(
-            selectedIndex == 0 ? "Chats" : "Settings",
-            style: Theme.of(context).textTheme.headlineSmall,
-          ),
-        ),
-        body: selectedIndex == 0 ? const ChatList() : const SettingScreen(),
+    return Scaffold(
+      bottomNavigationBar: CustomBottomNavbar(
+        currentIndex: selectedIndex,
+        setIndex: (int index) {
+          setState(() {
+            selectedIndex = index;
+          });
+        },
       ),
+      floatingActionButton: selectedIndex == 0
+          ? FloatingActionButton(
+              onPressed: showChatPopup,
+              child: const Icon(Icons.add),
+            )
+          : const SizedBox(),
+      appBar: AppBar(
+        centerTitle: true,
+        title: Text(
+          selectedIndex == 0 ? "Chats" : "Settings",
+          style: Theme.of(context).textTheme.headlineSmall,
+        ),
+      ),
+      body: selectedIndex == 0 ? const ChatList() : const SettingScreen(),
     );
   }
 }

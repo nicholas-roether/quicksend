@@ -49,5 +49,9 @@
 		<string>Permission needed to send images and use profile pictures</string>
 		<key>NSCameraUsageDescription</key>
 		<string>Permission needed to send images and use profile pictures</string>
-	</dict>
+		<key>CADisableMinimumFrameDurationOnPhone</key>
+	<true/>
+	<key>UIApplicationSupportsIndirectInputEvents</key>
+	<true/>
+</dict>
 </plist>

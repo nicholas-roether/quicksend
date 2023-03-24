@@ -4,8 +4,6 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:image_picker_web/image_picker_web.dart';
-import 'package:path/path.dart' as path;
 import 'package:mime_type/mime_type.dart';
 import 'package:quicksend/client/models.dart';
 import 'package:quicksend/widgets/custom_error_alert_widget.dart';
@@ -38,7 +36,7 @@ class _ChatScreenState extends State<ChatScreen> {
     });
   }
 
-  Future<void> _sendImageForWeb() async {
+  /*Future<void> _sendImageForWeb() async {
     final imageInfo = await ImagePickerWeb.getImageInfo;
     if (imageInfo == null) return;
     String? mimeType = mime(path.basename((imageInfo.fileName)!));
@@ -63,7 +61,7 @@ class _ChatScreenState extends State<ChatScreen> {
       );
     }
     await widget.chat.sendMessage((mimeType)!, imageInfo.data!);
-  }
+  }*/
 
   Future<void> _sendImage(ImageSource source) async {
     File? pickedImage;
@@ -100,103 +98,101 @@ class _ChatScreenState extends State<ChatScreen> {
         setState(() {});
       });
     }
-    return SafeArea(
-      child: Scaffold(
-        appBar: AppBar(
-          title: GestureDetector(
-            onTap: () {
-              Navigator.pushNamed(context, "/user_profile",
-                  arguments: widget.userInfo);
-            },
-            child: Text(
-              widget.userInfo.getName(),
-              style: Theme.of(context).textTheme.headlineSmall,
-            ),
+    return Scaffold(
+      appBar: AppBar(
+        title: GestureDetector(
+          onTap: () {
+            Navigator.pushNamed(context, "/user_profile",
+                arguments: widget.userInfo);
+          },
+          child: Text(
+            widget.userInfo.getName(),
+            style: Theme.of(context).textTheme.headlineSmall,
           ),
-          centerTitle: true,
-          actions: [
-            Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: ProfilePicture(userInfo: widget.userInfo),
-            ),
-          ],
         ),
-        body: Column(
-          children: [
-            Expanded(
-              flex: 1,
-              child: AnimatedBuilder(
-                animation: widget.chat,
-                builder: (context, _) => Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: ListView.builder(
-                    itemBuilder: (context, index) {
-                      return MessageBox(
-                        message: widget.chat.getMessages().elementAt(index),
-                      );
-                    },
-                    itemCount: widget.chat.getMessages().length,
-                    reverse: true,
-                  ),
+        centerTitle: true,
+        actions: [
+          Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: ProfilePicture(userInfo: widget.userInfo),
+          ),
+        ],
+      ),
+      body: Column(
+        children: [
+          Expanded(
+            flex: 1,
+            child: AnimatedBuilder(
+              animation: widget.chat,
+              builder: (context, _) => Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: ListView.builder(
+                  itemBuilder: (context, index) {
+                    return MessageBox(
+                      message: widget.chat.getMessages().elementAt(index),
+                    );
+                  },
+                  itemCount: widget.chat.getMessages().length,
+                  reverse: true,
                 ),
               ),
             ),
-            Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: Row(
-                children: [
-                  //image sender
-                  SmallFAB(
-                    onPressedCallback: () {
-                      if (kIsWeb) {
-                        redrawBeforeAndAfter(_sendImageForWeb());
-                      } else {
-                        showDialog(
-                          context: context,
-                          builder: (context) {
-                            return ImageSourceDialog(
-                              iconButtonCallback: (image) =>
-                                  redrawBeforeAndAfter(_sendImage(image)),
-                            );
-                          },
-                        );
-                      }
-                    },
-                    icon: Icons.image,
-                  ),
-                  const SizedBox(
-                    width: 10,
-                  ),
-                  Expanded(
-                    child: CustomTextFormField(
-                      hintInfo: "",
-                      minLines: 1,
-                      maxLines: 5,
-                      labelInfo: "Enter a Message",
-                      obscure: false,
-                      inputType: TextInputType.multiline,
-                      textController: _chatController,
-                      submitCallback: (_) => redrawBeforeAndAfter(
-                        _sendMessage(),
-                      ),
-                      noPadding: true,
-                    ),
-                  ),
-                  const SizedBox(
-                    width: 10,
-                  ),
-                  //message sender
-                  SmallFAB(
-                    onPressedCallback: () => redrawBeforeAndAfter(
+          ),
+          Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: Row(
+              children: [
+                //image sender
+                SmallFAB(
+                  onPressedCallback: () {
+                    if (kIsWeb) {
+                      //redrawBeforeAndAfter(_sendImageForWeb());
+                    } else {
+                      showDialog(
+                        context: context,
+                        builder: (context) {
+                          return ImageSourceDialog(
+                            iconButtonCallback: (image) =>
+                                redrawBeforeAndAfter(_sendImage(image)),
+                          );
+                        },
+                      );
+                    }
+                  },
+                  icon: Icons.image,
+                ),
+                const SizedBox(
+                  width: 10,
+                ),
+                Expanded(
+                  child: CustomTextFormField(
+                    hintInfo: "",
+                    minLines: 1,
+                    maxLines: 5,
+                    labelInfo: "Enter a Message",
+                    obscure: false,
+                    inputType: TextInputType.multiline,
+                    textController: _chatController,
+                    submitCallback: (_) => redrawBeforeAndAfter(
                       _sendMessage(),
                     ),
-                    icon: Icons.send,
+                    noPadding: true,
                   ),
-                ],
-              ),
-            )
-          ],
-        ),
+                ),
+                const SizedBox(
+                  width: 10,
+                ),
+                //message sender
+                SmallFAB(
+                  onPressedCallback: () => redrawBeforeAndAfter(
+                    _sendMessage(),
+                  ),
+                  icon: Icons.send,
+                ),
+              ],
+            ),
+          )
+        ],
       ),
     );
   }

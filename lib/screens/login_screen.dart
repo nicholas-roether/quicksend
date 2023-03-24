@@ -71,98 +71,96 @@ class _LoginScreenState extends State<LoginScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return SafeArea(
-      child: Scaffold(
-        appBar: AppBar(
-          title: Text(
-            mode == LoginMode.login ? "Login" : "Register",
-            style: Theme.of(context).textTheme.headlineSmall,
-          ),
+    return Scaffold(
+      appBar: AppBar(
+        title: Text(
+          mode == LoginMode.login ? "Login" : "Register",
+          style: Theme.of(context).textTheme.headlineSmall,
         ),
-        body: !_isLoading
-            ? SingleChildScrollView(
-                child: Form(
-                  key: _formKey,
-                  child: Padding(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 15.0,
-                    ),
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.start,
-                      children: [
-                        Image.asset(
-                          "assets/img/icon_transparent.png",
-                          height: 200,
+      ),
+      body: !_isLoading
+          ? SingleChildScrollView(
+              child: Form(
+                key: _formKey,
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 15.0,
+                  ),
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    children: [
+                      Image.asset(
+                        "assets/img/icon_transparent.png",
+                        height: 200,
+                      ),
+                      Text(
+                        mode == LoginMode.login
+                            ? "Welcome back!"
+                            : "Welcome to Quicksend!",
+                        style: Theme.of(context).textTheme.headlineLarge,
+                        textAlign: TextAlign.center,
+                      ),
+                      const SizedBox(height: 50),
+                      CustomTextFormField(
+                        maxLines: 1,
+                        minLines: 1,
+                        hintInfo: "Enter a Username",
+                        labelInfo: "Username",
+                        obscure: false,
+                        autocorrect: false,
+                        textController: _usernameController,
+                      ),
+                      CustomTextFormField(
+                        hintInfo: "Enter a password",
+                        labelInfo: "Password",
+                        obscure: true,
+                        autocorrect: false,
+                        inputType: TextInputType.visiblePassword,
+                        textController: _passwordController,
+                      ),
+                      mode == LoginMode.register
+                          ? CustomTextFormField(
+                              minLines: 1,
+                              maxLines: 1,
+                              hintInfo: "Enter a Display Name",
+                              labelInfo: "Display Name",
+                              obscure: false,
+                              autocorrect: false,
+                              textController: _displaynameController,
+                            )
+                          : const SizedBox(
+                              height: 0,
+                            ),
+                      Padding(
+                        padding: const EdgeInsets.only(bottom: 15.0),
+                        child: TextButton(
+                          onPressed: () {
+                            if (mode == LoginMode.login) {
+                              setState(() {
+                                mode = LoginMode.register;
+                              });
+                            } else {
+                              setState(() {
+                                mode = LoginMode.login;
+                              });
+                            }
+                          },
+                          child: Text(mode == LoginMode.login
+                              ? "New here? Create an account"
+                              : "Already registered? Click to login"),
                         ),
-                        Text(
-                          mode == LoginMode.login
-                              ? "Welcome back!"
-                              : "Welcome to Quicksend!",
-                          style: Theme.of(context).textTheme.headlineLarge,
-                          textAlign: TextAlign.center,
-                        ),
-                        const SizedBox(height: 50),
-                        CustomTextFormField(
-                          maxLines: 1,
-                          minLines: 1,
-                          hintInfo: "Enter a Username",
-                          labelInfo: "Username",
-                          obscure: false,
-                          autocorrect: false,
-                          textController: _usernameController,
-                        ),
-                        CustomTextFormField(
-                          hintInfo: "Enter a password",
-                          labelInfo: "Password",
-                          obscure: true,
-                          autocorrect: false,
-                          inputType: TextInputType.visiblePassword,
-                          textController: _passwordController,
-                        ),
-                        mode == LoginMode.register
-                            ? CustomTextFormField(
-                                minLines: 1,
-                                maxLines: 1,
-                                hintInfo: "Enter a Display Name",
-                                labelInfo: "Display Name",
-                                obscure: false,
-                                autocorrect: false,
-                                textController: _displaynameController,
-                              )
-                            : const SizedBox(
-                                height: 0,
-                              ),
-                        Padding(
-                          padding: const EdgeInsets.only(bottom: 15.0),
-                          child: TextButton(
-                            onPressed: () {
-                              if (mode == LoginMode.login) {
-                                setState(() {
-                                  mode = LoginMode.register;
-                                });
-                              } else {
-                                setState(() {
-                                  mode = LoginMode.login;
-                                });
-                              }
-                            },
-                            child: Text(mode == LoginMode.login
-                                ? "New here? Create an account"
-                                : "Already registered? Click to login"),
-                          ),
-                        ),
-                        CustomButton(
-                          pressedCallback: _submit,
-                          title: mode == LoginMode.login ? "Login" : "Register",
-                        ),
-                        const SizedBox(height: 50),
-                      ],
-                    ),
+                      ),
+                      CustomButton(
+                        pressedCallback: _submit,
+                        title: mode == LoginMode.login ? "Login" : "Register",
+                      ),
+                      const SizedBox(height: 50),
+                    ],
                   ),
                 ),
-              )
-            : LoadingIndicator(),
-      ),
+              ),
+            )
+          : LoadingIndicator(),
     );
   }
 }
