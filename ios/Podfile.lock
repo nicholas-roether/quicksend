@@ -79,7 +79,7 @@ EXTERNAL SOURCES:
 
 SPEC CHECKSUMS:
   device_info_plus: e5c5da33f982a436e103237c0c85f9031142abed
-  fast_rsa: c0a26bdaaa226caedabaff8a62d4d21b2138eaf4
+  fast_rsa: a1139edfaf5b36c19ce63a3adb07e925d5d59a93
   Flutter: f04841e97a9d0b0a8025694d0796dd46242b2854
   flutter_image_compress: 5a5e9aee05b6553048b8df1c3bc456d0afaac433
   flutter_native_splash: 52501b97d1c0a5f898d687f1646226c1f93c56ef

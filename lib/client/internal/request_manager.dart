@@ -3,7 +3,6 @@ import 'dart:typed_data';
 
 import 'package:dio/dio.dart' as dio;
 import 'package:intl/intl.dart';
-import 'package:archive/archive.dart';
 import 'package:quicksend/config.dart';
 
 import '../exceptions.dart';
@@ -105,7 +104,8 @@ class RequestManager {
       "password": password,
       "display": display
     };
-    final res = await _request("POST", "/user/create", body: body);
+    final res = await _request("POST", "/user/create",
+        body: body, compress: false, acceptCompressed: false);
     return res["id"];
   }
 
@@ -303,7 +303,7 @@ class RequestManager {
     _userInfoName.clear();
   }
 
-  List<int> _compressRequest(String request, dio.RequestOptions options) {
+  /*List<int> _compressRequest(String request, dio.RequestOptions options) {
     final gzip = GZipEncoder();
     options.headers["Content-Encoding"] = "gzip";
     final compressed = gzip.encode(utf8.encode(request));
@@ -317,7 +317,7 @@ class RequestManager {
     final gzip = GZipDecoder();
     final decompressed = gzip.decodeBytes(body);
     return decompressed;
-  }
+  }*/
 
   Future<dynamic> _request(
     String method,
@@ -332,21 +332,21 @@ class RequestManager {
     options.method = method;
     options.responseType = dio.ResponseType.bytes;
 
-    if (Config.compressRequests && compress) {
+    /*if (Config.compressRequests && compress) {
       options.requestEncoder = _compressRequest;
     }
     if (acceptCompressed) {
       options.headers ??= {};
       options.headers!["Accept-Encoding"] = "gzip";
-    }
+    }*/
 
     await auth?.authenticate(target, options);
     final response = await _dio.request(target, data: body, options: options);
     if (response.statusCode == null) throw Exception("Something broke :(");
 
-    if (response.headers.value(dio.Headers.contentEncodingHeader) == "gzip") {
+    /*if (response.headers.value(dio.Headers.contentEncodingHeader) == "gzip") {
       response.data = _decompressResponse(response.data);
-    }
+    }*/
 
     if (response.statusCode == 204) return null;
     final resObject = jsonDecode(utf8.decode(response.data));
