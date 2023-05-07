@@ -1,6 +1,6 @@
 class Config {
-  static const backendUri = "https://karaninc.de";
-  static const socketUri = "wss://karaninc.de";
+  static const backendUri = "https://karaninc.de:8443";
+  static const socketUri = "wss://karaninc.de:8443";
   static const compressRequests = false;
   static const logWebSocketConnectionLoss = false;
 }
